@@ -1,11 +1,15 @@
 package com.lotos4u.text.chess.pieces;
 
-import com.lotos4u.text.chess.general.ChessBoard;
 
 public class Point {
-	
+	/**
+	 * Horizontal coordinate of point
+	 */
 	private int x;
 	
+	/**
+	 * Vertical coordinate of point
+	 */
 	private int y;
 	
 	public Point(int x, int y) {

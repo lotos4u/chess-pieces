@@ -20,6 +20,14 @@ abstract public class Piece {
 		this.position = position;
 	}
 
+	/**
+	 * Set position to zeros (make not positioned)
+	 */
+	public void drop() {
+		position.setX(0);
+		position.setY(0);
+	}
+	
 	public void setBoard(ChessBoard board) {
 		this.board = board;
 	}
@@ -31,7 +39,7 @@ abstract public class Piece {
 	public boolean isTakePoint(Point p){
 		if(!board.isPointOnBoard(p) ||!board.isPointOnBoard(position))
 			return false;
-		List<Point> takePoints = getTakePoints();
+		List<Point> takePoints = getPointsTakeble();
 		for (Iterator<Point> iterator = takePoints.iterator(); iterator.hasNext();) {
 			Point point = (Point) iterator.next();
 			if(p.equals(point))
@@ -40,7 +48,7 @@ abstract public class Piece {
 		return false;
 	}
 	
-	public List<Point> getTakePoints(){
+	public List<Point> getPointsTakeble(){
 		List<Point> res = new ArrayList<Point>();
 		return res;
 	}
@@ -56,7 +64,7 @@ abstract public class Piece {
 	
 	@Override
 	public String toString() {
-		return getName() + " " + position + " [" + getTakePoints() + "]";
+		return getName() + " " + position + ", can take at: [" + getPointsTakeble() + "]";
 	}
 	
 	public abstract boolean isValidMove(Point point);

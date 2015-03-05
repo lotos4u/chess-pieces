@@ -5,8 +5,8 @@ import java.util.List;
 public class Rook extends Piece {
 
 	@Override
-	public List<Point> getTakePoints() {
-		List<Point> res = super.getTakePoints();
+	public List<Point> getPointsTakeble() {
+		List<Point> res = super.getPointsTakeble();
 
 		if(!board.isPointOnBoard(position))
 			return res;

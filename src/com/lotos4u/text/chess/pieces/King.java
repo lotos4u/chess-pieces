@@ -6,8 +6,8 @@ import java.util.List;
 public class King extends Piece {
 
 	@Override
-	public List<Point> getTakePoints() {
-		List<Point> res = super.getTakePoints();
+	public List<Point> getPointsTakeble() {
+		List<Point> res = super.getPointsTakeble();
 		
 		Point[] takePoints = new Point[]{
 				new Point(position.getX(), position.getY() + 1),
