@@ -28,12 +28,18 @@ public class ChessBoard {
 		this.ySize = ySize;
 	}
 
+	/**
+	 * Create a ChessBoard with specified size and chess pieces.
+	 * @param xSize - horizontal size
+	 * @param ySize - vertical size
+	 * @param pieces - list with chess pieces (not positioned)
+	 */
 	public ChessBoard(int xSize, int ySize, List<Piece> pieces) {
 		this(xSize, ySize);
 		putPieces(pieces);
 	}
 	/**
-	 * Add chess pieces (instead of existed, if they are)
+	 * Add chess pieces (instead of existed, if they are). 
 	 * @param pieces
 	 */
 	public void putPieces(List<Piece> pieces){
@@ -57,7 +63,9 @@ public class ChessBoard {
 		dropPieces();
 		for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
 			Piece piece = (Piece) iterator.next();
-			
+			List<Point> free = getPointsFree();
+			//System.out.println("Free: " + free);
+			piece.setPosition(free.get(0));
 		}
 		return;
 	}
@@ -66,15 +74,13 @@ public class ChessBoard {
 	 * (i.e. not-positioned) are only will arranged.
 	 * @return
 	 */
-	
 	public List<Piece> arrangePieces(){
 		for (Iterator<Piece> pieceIter = pieces.iterator(); pieceIter.hasNext();) {
 			Piece piece = (Piece) pieceIter.next();
 			if(!piece.isPositioned()){
 				List<Point> points = getPointsAll(); //all board points
-				
 				for (Iterator<Point> pointIter = points.iterator(); pointIter.hasNext();) {
-					Point point = (Point) pointIter.next(); //Current point
+					Point point = (Point) pointIter.next(); //Current point - one of all possible points on a board
 					boolean isFree = true; //Current point is free (or not)
 					for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
 						Piece pc = (Piece) iterator.next(); //Current piece
@@ -143,14 +149,17 @@ public class ChessBoard {
 	 */
 	public List<Point> getPointsTakeble(){
 		List<Point> res = new ArrayList<Point>();
-		if(isArranged()){
-			for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
-				Piece piece = (Piece) iterator.next();
-				res.addAll(piece.getPointsTakeble());
-			}
-		}
+        for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
+            Piece piece = (Piece) iterator.next();
+            if(piece.isPositioned())
+                res.addAll(piece.getPointsTakeble());
+        }
 		return res;
 	}
+	/**
+	 * 
+	 * @return list with board points on what peaces are already positioned
+	 */
 	public List<Point> getPointsPositioned() {
 		List<Point> res = new ArrayList<Point>();
 		for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
@@ -174,6 +183,9 @@ public class ChessBoard {
 			if(!positioned.contains(point) && !takeble.contains(point))
 				res.add(point);
 		}
+		//System.out.println("positioned: " + positioned);
+		//System.out.println("takeble: " + takeble);
+		//System.out.println("Free: " + res);
 		return res;
 	}
 	
