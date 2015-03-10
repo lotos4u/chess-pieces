@@ -21,11 +21,21 @@ public class ChessBoard {
 	 * Chess pieces of this board
 	 */
 	private List<Piece> pieces = new ArrayList<Piece>();
+    /**
+     * All points on the board, from which the board is consists
+     */
+    private List<Point> points = new ArrayList<Point>();
 
 	public ChessBoard(int xSize, int ySize) {
 		super();
 		this.xSize = xSize;
 		this.ySize = ySize;
+		for (int x = 1; x <= xSize; x++) {
+            for (int y = 1; y <= ySize; y++) {
+                Point point = new Point(x, y, this);
+                points.add(point);
+            }
+        }
 	}
 
 	/**
@@ -45,10 +55,15 @@ public class ChessBoard {
 	public void putPieces(List<Piece> pieces){
 		this.pieces.clear();
 		this.pieces.addAll(pieces);
-		for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
-			Piece piece = (Piece) iterator.next();
-			piece.setBoard(this);
-		}
+	}
+	
+	public Point getPointAt(int x, int y){
+	    for (Iterator<Point> i = points.iterator(); i.hasNext();) {
+            Point point = (Point) i.next();
+            if((point.getX() == x) && (point.getY() == y))
+                return point;
+        }
+	    return null;
 	}
 	/**
 	 * Remove all pieces arrangement by dropping each of them
@@ -145,13 +160,13 @@ public class ChessBoard {
 	 * @return list with all points, located on this board
 	 */
 	public List<Point> getPointsAll(){
-		List<Point> res = new ArrayList<Point>();
+		/*List<Point> res = new ArrayList<Point>();
 		for (int x = 1; x <= xSize; x++) {
 			for (int y = 1; y <= ySize; y++) {
 				res.add(new Point(x, y));
 			}
-		}
-		return res;
+		}*/
+		return Collections.unmodifiableList(points);
 	}
 	/**
 	 * 
@@ -172,11 +187,17 @@ public class ChessBoard {
 	 */
 	public List<Point> getPointsPositioned() {
 		List<Point> res = new ArrayList<Point>();
+		for (Iterator<Point> i = points.iterator(); i.hasNext();) {
+            Point p = (Point) i.next();
+            if(p.getPiece() != null)
+                res.add(p);
+        }
+		/*
 		for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
 			Piece piece = (Piece) iterator.next();
 			if(piece.isPositioned())
 				res.add(piece.getPosition());
-		}
+		}*/
 		return res;
 	}
 	/**
@@ -186,11 +207,10 @@ public class ChessBoard {
 	public List<Point> getPointsFree() {
 		List<Point> res = new ArrayList<Point>();
 		List<Point> all = getPointsAll();
-		List<Point> positioned = getPointsPositioned();
 		List<Point> takeble = getPointsTakeble();
 		for (Iterator<Point> iterator = all.iterator(); iterator.hasNext();) {
 			Point point = (Point) iterator.next();
-			if(!positioned.contains(point) && !takeble.contains(point))
+			if(point.isFree() && !takeble.contains(point))
 				res.add(point);
 		}
 		//System.out.println("positioned: " + positioned);
@@ -200,6 +220,14 @@ public class ChessBoard {
 	}
 	
 	public boolean isPointTakeble(Point point){
+        for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
+            Piece piece = (Piece) iterator.next();
+            if(piece.isTakePoint(point))
+                return true;
+        }
+        return false;
+            
+	    /*
 		for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
 			Piece piece = (Piece) iterator.next();
 			List<Point> points = piece.getPointsTakeble();
@@ -208,14 +236,14 @@ public class ChessBoard {
 				if(point.equals(p))return true;
 			}
 		}
-		return false;
+		return false;*/
 	}
 	
 	public Piece getPieceAtPoint(Point point){
 		if(isPointOnBoard(point)){
 			for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
 				Piece piece = (Piece) iterator.next();
-				if(piece.getPosition().equals(point))
+				if(piece.isPositioned() && piece.getPosition().equals(point))
 					return piece;
 			}
 		}
@@ -229,7 +257,8 @@ public class ChessBoard {
 		for (Iterator<Point> iterator = points.iterator(); iterator.hasNext();) {
 			Point point = (Point) iterator.next();
 			Piece piece = getPieceAtPoint(point);
-			res += point + ": " + piece + "\n";
+			String p = piece != null ? piece.toString() : "-";
+			res += point + ": " + p + "\n";
 		}
 		return res;
 	}

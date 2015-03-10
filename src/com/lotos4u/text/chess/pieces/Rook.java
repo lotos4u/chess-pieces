@@ -6,21 +6,7 @@ public class Rook extends Piece {
 
 	@Override
 	public List<Point> getPointsTakeble() {
-		List<Point> res = super.getPointsTakeble();
-
-		if(board == null || !board.isPointOnBoard(position))
-			return res;
-
-		for (int x = 1; x <= board.getxSize(); x++) {
-			if(x != position.getX())
-				res.add(new Point(x, position.getY()));
-		}
-		for (int y = 1; y <= board.getySize(); y++) {
-			if(y != position.getY())
-				res.add(new Point(position.getX(), y));
-		}
-			
-		return res;
+		return Piece.getRookTakeble(position);
 	}
 
 	@Override

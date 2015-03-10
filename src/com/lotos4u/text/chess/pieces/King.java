@@ -7,28 +7,7 @@ public class King extends Piece {
 
 	@Override
 	public List<Point> getPointsTakeble() {
-		List<Point> res = super.getPointsTakeble();
-		
-		Point[] takePoints = new Point[]{
-				new Point(position.getX(), position.getY() + 1),
-				new Point(position.getX(), position.getY() - 1),
-				new Point(position.getX() + 1, position.getY()),
-				new Point(position.getX() + 1, position.getY() + 1),
-				new Point(position.getX() + 1, position.getY() - 1),
-				new Point(position.getX() - 1, position.getY()),
-				new Point(position.getX() - 1, position.getY() + 1),		
-				new Point(position.getX() - 1, position.getY() - 1)
-		};
-		
-		if(board == null || !board.isPointOnBoard(position))
-			return res;
-		
-		for (int i = 0; i < takePoints.length; i++) {
-			if(board.isPointOnBoard(takePoints[i])){
-				res.add(takePoints[i]);
-			}
-		}
-		return res;
+	    return Piece.getKingTakeble(position);
 	}
 
 	@Override

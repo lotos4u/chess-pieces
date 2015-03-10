@@ -16,26 +16,19 @@ public class Point implements Comparable<Point> {
 	 */
 	private int y;
 	/**
-	 * Minimal value of horizontal coordinate
+	 * 
 	 */
-	private int xMin = 1;
-    /**
-     * Minimal value of vertical coordinate
-     */
-	private int yMin = 1;
-    /**
-     * Maximal value of horizontal coordinate
-     */
-    private int xMax = Integer.MAX_VALUE;
-    /**
-     * Maximal value of vertical coordinate
-     */
-    private int yMax = Integer.MAX_VALUE;
-	
-	public Point(int x, int y) {
+	private ChessBoard board;
+	/**
+	 * Piece, which is occupies this point
+	 */
+	private Piece piece;
+
+	public Point(int x, int y, ChessBoard board) {
 		super();
 		this.x = x;
 		this.y = y;
+		this.board = board;
 	}
 
 	public int getX() {
@@ -53,26 +46,17 @@ public class Point implements Comparable<Point> {
 	public void setY(int y) {
 		this.y = y;
 	}
-
-	public int getxMax() {
-        return xMax;
+	
+    public ChessBoard getBoard() {
+        return board;
     }
 
-    public void setxMax(int xMax) {
-        this.xMax = xMax;
+    public Piece getPiece() {
+        return piece;
     }
 
-    public int getyMax() {
-        return yMax;
-    }
-
-    public void setyMax(int yMax) {
-        this.yMax = yMax;
-    }
-    
-    public void setMax(ChessBoard board){
-        xMax = board.getxSize();
-        yMax = board.getySize();
+    public void setPiece(Piece piece) {
+        this.piece = piece;
     }
 
     @Override
@@ -88,6 +72,8 @@ public class Point implements Comparable<Point> {
             return false;
         if (y != p.getY())
             return false;
+        if (!board.equals(obj))
+            return false;
         return true;		
 	}
 
@@ -97,52 +83,53 @@ public class Point implements Comparable<Point> {
         int result = 1;
         result = prime * result + x;
         result = prime * result + y;
+        result = prime * result + board.hashCode();
         return result;
 	}
 
 	@Override
 	public String toString() {
-		return "(" + x + ", " + y + ") [" + getNeighbors().size() + "]";
+		//return "(x=" + x + ", y=" + y + ", " + getNeighbors().size() + "n)";
+	    return "(" + x + ", " + y + ")";
 	}
 
 	public List<Point> getNeighbors(){
 	    List<Point> res = new ArrayList<Point>();
 	    if((x + y) < 2)
 	        return res;
-	    boolean leftable = (x > xMin);
-	    boolean uppable = (y > yMin);
+	    boolean leftable = (x > 1);
+	    boolean uppable = (y > 1);
 	    if(leftable)
-	        res.add(new Point(x-1, y));
+	        res.add(board.getPointAt(x-1, y));
         if(uppable)
-            res.add(new Point(x, y-1));
+            res.add(board.getPointAt(x, y-1));
         if(leftable && uppable)
-            res.add(new Point(x-1, y-1));
+            res.add(board.getPointAt(x-1, y-1));
         
-        boolean rightable = (x < xMax);
-        boolean downable = (y < yMax);
+        boolean rightable = (x < board.getxSize());
+        boolean downable = (y < board.getySize());
         if(rightable)
-            res.add(new Point(x+1, y));
+            res.add(board.getPointAt(x+1, y));
         if(downable)
-            res.add(new Point(x, y+1));
+            res.add(board.getPointAt(x, y+1));
         if(rightable && downable)
-            res.add(new Point(x+1, y+1));
+            res.add(board.getPointAt(x+1, y+1));
 
         if(leftable && downable)
-            res.add(new Point(x-1, y+1));
+            res.add(board.getPointAt(x-1, y+1));
         if(rightable && uppable)
-            res.add(new Point(x+1, y-1));
+            res.add(board.getPointAt(x+1, y-1));
         
 	    return res;
 	}
 	
-	
+	public boolean isFree(){
+	    return piece == null;
+	}
     @Override
     public int compareTo(Point o) {
         Integer myNeighbors = getNeighbors().size();
         Integer hisNeighbors = o.getNeighbors().size();
-        System.out.println(toString() + "(" + myNeighbors + " and " + hisNeighbors + "): " + (myNeighbors.compareTo(hisNeighbors)));
         return myNeighbors.compareTo(hisNeighbors);
     }
-	
-	
 }

@@ -1,10 +1,11 @@
 package com.lotos4u.text.chess.pieces;
 
+import java.util.List;
+
 public class Knight extends Piece {
 
     @Override
     public boolean isValidMove(Point point) {
-        // TODO Auto-generated method stub
         return true;
     }
 
@@ -18,4 +19,8 @@ public class Knight extends Piece {
         return 20;
     }
 
+    @Override
+    public List<Point> getPointsTakeble() {
+        return Piece.getKnightTakeble(position);
+    }
 }

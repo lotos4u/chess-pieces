@@ -1,5 +1,7 @@
 package com.lotos4u.text.chess.pieces;
 
+import java.util.List;
+
 public class Elephant extends Piece {
 
     @Override
@@ -8,13 +10,17 @@ public class Elephant extends Piece {
     }
 
     @Override
+    public List<Point> getPointsTakeble() {
+        return Piece.getElephantTakeble(position);
+    }
+    
+    @Override
     public String getName() {
         return "Elephant";
     }
 
     @Override
     public int getTakebility() {
-        // TODO Auto-generated method stub
         return 50;
     }
 
