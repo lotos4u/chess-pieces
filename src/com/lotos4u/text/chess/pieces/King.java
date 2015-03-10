@@ -20,7 +20,7 @@ public class King extends Piece {
 				new Point(position.getX() - 1, position.getY() - 1)
 		};
 		
-		if(!board.isPointOnBoard(position))
+		if(board == null || !board.isPointOnBoard(position))
 			return res;
 		
 		for (int i = 0; i < takePoints.length; i++) {
@@ -40,5 +40,11 @@ public class King extends Piece {
 	public boolean isValidMove(Point point) {
 		return true;
 	}
+
+    @Override
+    public int getTakebility() {
+        return 10;
+    }
+
 
 }

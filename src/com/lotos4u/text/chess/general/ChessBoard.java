@@ -59,19 +59,29 @@ public class ChessBoard {
 			piece.drop();
 		}
 	}
+
+
 	public void arrangePiecesWisely(){
 		dropPieces();
+		Collections.sort(pieces);
 		for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
 			Piece piece = (Piece) iterator.next();
 			List<Point> free = getPointsFree();
-			//System.out.println("Free: " + free);
-			piece.setPosition(free.get(0));
+			Collections.sort(free);
+			if(free.size() > 0){
+			    piece.setPosition(free.get(0));
+			}
+			else{
+			    System.out.println("No wise solution! Free points are absent for " + piece.getName());
+			}
 		}
+		
 		return;
 	}
 	/**
 	 * Arrange chess pieces on the board. Pieces with zero coordinates 
 	 * (i.e. not-positioned) are only will arranged.
+	 * Positions "takebility" doesn't taking into account. 
 	 * @return
 	 */
 	public List<Piece> arrangePieces(){

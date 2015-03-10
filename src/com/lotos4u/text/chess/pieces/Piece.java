@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.lotos4u.text.chess.general.ChessBoard;
 
-abstract public class Piece {
+abstract public class Piece implements Comparable<Piece> {
 
     protected ChessBoard board;
 
@@ -64,11 +64,27 @@ abstract public class Piece {
 
     @Override
     public String toString() {
-        return getName() + " " + position + ", can take at: [" + getPointsTakeble() + "]";
+        List<Point> takeble = getPointsTakeble();
+        if(takeble.size() > 0){
+            return getName() + " " + position + ", can take at: [" + takeble + "]";    
+        }
+        else{
+            return getName() + " " + position;
+        }
+        
     }
 
     public abstract boolean isValidMove(Point point);
 
     public abstract String getName();
+    
+    public abstract int getTakebility();
 
+    @Override
+    public int compareTo(Piece o) {
+        Integer t1 = getTakebility();
+        Integer t2 = o.getTakebility();
+        return t2.compareTo(t1);
+    }
+    
 }
