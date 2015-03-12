@@ -18,17 +18,15 @@ abstract public class Piece implements Comparable<Piece> {
         if(this.position != null)
             this.position.setPiece(null);
         this.position = position;
-        position.setPiece(this);
+        if(position != null)
+            position.setPiece(this);
     }
 
     /**
      * Set position to zeros (make not positioned)
      */
     public void drop() {
-        if(position == null)
-            return;
-        position.setPiece(null);
-        position = null;
+        setPosition(null);
     }
 
     public ChessBoard getBoard() {

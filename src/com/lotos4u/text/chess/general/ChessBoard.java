@@ -70,8 +70,7 @@ public class ChessBoard {
 	 */
 	public void dropPieces(){
 		for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
-			Piece piece = (Piece) iterator.next();
-			piece.drop();
+			((Piece) iterator.next()).drop();
 		}
 	}
 
