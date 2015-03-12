@@ -1,6 +1,7 @@
 package com.lotos4u.text.chess.general;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.lotos4u.text.chess.pieces.Elephant;
@@ -41,10 +42,10 @@ public class Main {
 
         //System.out.println("Compare " + king1.getName() + " to " + rook1.getName() + ": " + king1.compareTo(rook1));
         //System.out.println("Compare " + rook1.getName() + " to " + king1.getName() + ": " + rook1.compareTo(king1));
-		ChessBoard board33 = new ChessBoard(3, 3);
-		ChessBoard board55 = new ChessBoard(5, 5);
+        WiseChessBoard board33 = new WiseChessBoard(3, 3);
+		WiseChessBoard board55 = new WiseChessBoard(5, 5);
 		
-		ChessBoard board = board33;
+		WiseChessBoard board = board33;
 		
 		System.out.println("Board initial");
 		System.out.println(board);
@@ -75,8 +76,10 @@ public class Main {
 		//Collections.sort(pieces);
 		//System.out.println("Sorted: " + pieces);
 		
+		Collections.sort(pieces);
+		System.out.println("Pieces: " + pieces);
 		board.putPieces(pieces);
-
+		
 		
 		/*
 		board.arrangePieces();
@@ -86,7 +89,10 @@ public class Main {
 		System.out.println(board.getPointsFree());
 		*/
 		
-		board.arrangePiecesWisely();
+		//board.arrangePiecesStupidly();
+		//System.exit(0);
+		
+		board.arrangePiecesWisely(0);
 		System.out.println("Board after wise arrangement");
 		System.out.println(board);
         System.out.println("Free points on the board");
