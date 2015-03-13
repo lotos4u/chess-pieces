@@ -13,8 +13,44 @@ import com.lotos4u.text.chess.pieces.Rook;
 
 public class Main {
 
+    public static void test1(){
+        Rook rook1 = new Rook();
+        King king1 = new King();
+        King king2 = new King();
+        ChessBoard board = new ChessBoard(3, 3);
+        List<Piece> pieces = new ArrayList<Piece>();
+        pieces.add(rook1);
+        pieces.add(king1);
+        pieces.add(king2);
+        board.setPieces(pieces);
+        List<ChessBoard> boards = board.arrangePiecesVariants(board);
+    }
+    
+    public static void test2(){
+        Rook rook1 = new Rook();
+        Rook rook2 = new Rook();
+        Knight knight1 = new Knight();
+        Knight knight2 = new Knight();
+        Knight knight3 = new Knight();
+        Knight knight4 = new Knight();
+        ChessBoard board = new ChessBoard(3, 3);
+        List<Piece> pieces = new ArrayList<Piece>();
+        pieces.add(rook1);
+        pieces.add(rook2);
+        pieces.add(knight1);
+        pieces.add(knight2);
+        pieces.add(knight3);
+        pieces.add(knight4);
+        board.setPieces(pieces);
+        List<ChessBoard> boards = board.arrangePiecesVariants(board);
+    }
+    
 	public static void main(String[] args) {
-	    //testPoints();System.exit(0);
+	    test1();
+	    //test2();
+	    
+	    System.exit(0);
+	    
 		Rook rook1 = new Rook();
 		Rook rook2 = new Rook();
 		Rook rook3 = new Rook();
@@ -40,68 +76,75 @@ public class Main {
         Queen queen3 = new Queen();
         Queen queen4 = new Queen();
 
-        //System.out.println("Compare " + king1.getName() + " to " + rook1.getName() + ": " + king1.compareTo(rook1));
-        //System.out.println("Compare " + rook1.getName() + " to " + king1.getName() + ": " + rook1.compareTo(king1));
-        WiseChessBoard board33 = new WiseChessBoard(3, 3);
-		WiseChessBoard board55 = new WiseChessBoard(5, 5);
+        //Log.out("Compare " + king1.getName() + " to " + rook1.getName() + ": " + king1.compareTo(rook1));
+        //Log.out("Compare " + rook1.getName() + " to " + king1.getName() + ": " + rook1.compareTo(king1));
+        ChessBoard board33 = new ChessBoard(3, 3);
+        ChessBoard board55 = new ChessBoard(5, 5);
 		
-		WiseChessBoard board = board33;
+        ChessBoard board = board33;
 		
-		System.out.println("Board initial");
-		System.out.println(board);
+		//Log.out("Board initial");
+		//Log.out(board);
 		
 		//ChessBoard board2 = new ChessBoard(5, 5);
         //elephant1.setPosition(board2.getPointAt(3, 3));
 		//queen1.setPosition(board2.getPointAt(3, 3));
-        //System.out.println(queen1.getPointsTakeble());
+        //Log.out(queen1.getPointsTakeble());
         //System.exit(0);
         
 		//Point point = new Point(3, 3);
-		//System.out.println("Neighbors of " + point + " are: " + point.getNeighbors(board));
+		//Log.out("Neighbors of " + point + " are: " + point.getNeighbors(board));
 		
-		//System.out.println("Neighbors of " + point + " are: " + point.getNeighbors(board55));
+		//Log.out("Neighbors of " + point + " are: " + point.getNeighbors(board55));
 		
 		//queen1.setPosition(board.getPointAt(3, 3));
-		//System.out.println(queen1.getPointsTakeble());System.exit(0);
+		//Log.out(queen1.getPointsTakeble());System.exit(0);
 		List<Piece> pieces = new ArrayList<Piece>();
-		pieces.add(queen1);
+		//pieces.add(queen1);
 		pieces.add(rook1);
-		pieces.add(rook2);
-		//pieces.add(king1);
+		//pieces.add(rook2);
 		//pieces.add(rook3);
-        //pieces.add(king2);
+        pieces.add(king1);
+		pieces.add(king2);
         //pieces.add(king3);
 		
-        //System.out.println("Unsorted: " + pieces);
+        //Log.out("Unsorted: " + pieces);
 		//Collections.sort(pieces);
-		//System.out.println("Sorted: " + pieces);
+		//Log.out("Sorted: " + pieces);
 		
 		Collections.sort(pieces);
-		System.out.println("Pieces: " + pieces);
-		board.putPieces(pieces);
+		Log.out("Pieces: " + pieces);
+		board.setPieces(pieces);
 		
 		
 		/*
 		board.arrangePieces();
-		System.out.println("Board after normal arrangement");
-		System.out.println(board);
-		System.out.println("Free points on the board");
-		System.out.println(board.getPointsFree());
+		Log.out("Board after normal arrangement");
+		Log.out(board);
+		Log.out("Free points on the board");
+		Log.out(board.getPointsFree());
 		*/
 		
 		//board.arrangePiecesStupidly();
 		//System.exit(0);
 		
+		List<ChessBoard> boards = board.arrangePiecesVariants(board);
+		//Log.out("There are " + boards.size() + " valid arrangements:");
+		for (int j = 0; j < boards.size(); j++) {
+		    //Log.out("--- Variant #" + j + " ---\n" + boards.get(j));    
+        }
+		
+		/*
 		board.arrangePiecesWisely(0);
-		System.out.println("Board after wise arrangement");
-		System.out.println(board);
-        System.out.println("Free points on the board");
-        System.out.println(board.getPointsFree());
-        System.out.println("Positioned points on the board");
-        System.out.println(board.getPointsPositioned());
-        System.out.println("Takeble points on the board");
-        System.out.println(board.getPointsTakeble());
-
+		Log.out("Board after wise arrangement");
+		Log.out(board);
+        Log.out("Free points on the board");
+        Log.out(board.getPointsFree());
+        Log.out("Positioned points on the board");
+        Log.out(board.getPointsPositioned());
+        Log.out("Takeble points on the board");
+        Log.out(board.getPointsTakeble());
+		 */
 	}
 
 	public static void testPoints(){
@@ -123,14 +166,14 @@ public class Main {
 	    points.add(p3);
 	    points.add(p4);
 	    
-	    System.out.println("Neighbors of " + p1 + " are " + p1.getNeighbors());
-	    System.out.println("Neighbors of " + p2 + " are " + p2.getNeighbors());
-	    System.out.println("Neighbors of " + p3 + " are " + p3.getNeighbors());
-	    System.out.println("Neighbors of " + p4 + " are " + p4.getNeighbors());
+	    Log.out("Neighbors of " + p1 + " are " + p1.getNeighbors());
+	    Log.out("Neighbors of " + p2 + " are " + p2.getNeighbors());
+	    Log.out("Neighbors of " + p3 + " are " + p3.getNeighbors());
+	    Log.out("Neighbors of " + p4 + " are " + p4.getNeighbors());
 	    
-	    System.out.println("Unsorted points: " + points);
+	    Log.out("Unsorted points: " + points);
 	    Collections.sort(points);
-	    System.out.println("Sorted points: " + points);
+	    Log.out("Sorted points: " + points);
 	    
 	    */
 	}

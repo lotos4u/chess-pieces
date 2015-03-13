@@ -1,7 +1,6 @@
 package com.lotos4u.text.chess.pieces;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.lotos4u.text.chess.general.ChessBoard;
@@ -36,14 +35,12 @@ abstract public class Piece implements Comparable<Piece> {
     }
 
     public boolean isTakePoint(Point p){
-        if((getBoard() != null) && !getBoard().isPointOnBoard(p))
+        if(getBoard() == null)
+           return false;
+        if(!getBoard().equals(p.getBoard()))
             return false;
         List<Point> takePoints = getPointsTakeble();
-        for (int i = 0; i < takePoints.size(); i++) {
-            if(p.equals(takePoints.get(i)))
-                return true;
-        }
-        return false;
+        return takePoints.contains(p);
     }
 
     public boolean isPositioned(){
@@ -73,10 +70,12 @@ abstract public class Piece implements Comparable<Piece> {
 
     public static List<Point> getKingTakeble(Point position){
         List<Point> res = new ArrayList<Point>();
+        if(position == null)
+            return res;        
         ChessBoard board = position.getBoard();
         Point[] takePoints = new Point[]{
-                board.getPointAt(position.getX(), position.getY()),
-                board.getPointAt(position.getX(), position.getY()),
+                board.getPointAt(position.getX(), position.getY() + 1),
+                board.getPointAt(position.getX(), position.getY() - 1),
                 board.getPointAt(position.getX() + 1, position.getY()),
                 board.getPointAt(position.getX() + 1, position.getY() + 1),
                 board.getPointAt(position.getX() + 1, position.getY() - 1),
@@ -84,14 +83,13 @@ abstract public class Piece implements Comparable<Piece> {
                 board.getPointAt(position.getX() - 1, position.getY() + 1),
                 board.getPointAt(position.getX() - 1, position.getY() - 1)
         };
-        if(board == null || !board.isPointOnBoard(position))
-            return res;
         
         for (int i = 0; i < takePoints.length; i++) {
             if(takePoints[i] != null){
                 res.add(takePoints[i]);
             }
         }
+        //Log.out("King takeble at " + position + " :" + res);
         return res;
     }
     
@@ -115,33 +113,46 @@ abstract public class Piece implements Comparable<Piece> {
         Point point;
         for (int i = 1; i <= L; i++) {
             point = board.getPointAt(x + i, y + i);
-            //System.out.println(point);
             if(point != null)
                 res.add(point);
             
             point = board.getPointAt(x - i, y - i);
-            //System.out.println(point);
             if(point != null)
                 res.add(point);
             
             point = board.getPointAt(x + i, y - i);
-            //System.out.println(point);
             if(point != null)
                 res.add(point);
             
             point = board.getPointAt(x - i, y + i);
-            //System.out.println(point);
             if(point != null)
                 res.add(point);
-
-            //System.out.println(i);
-            //res.add(board.getPointAt(x, position.getY()));
         }
         return res;
     }
     
     public static List<Point> getKnightTakeble(Point position){
         List<Point> res = new ArrayList<Point>();
+        if(position == null)
+            return res;        
+        ChessBoard board = position.getBoard();
+        Point[] takePoints = new Point[]{
+                board.getPointAt(position.getX() - 1, position.getY() - 2),
+                board.getPointAt(position.getX() + 1, position.getY() - 2),
+                board.getPointAt(position.getX() - 2, position.getY() - 1),
+                board.getPointAt(position.getX() - 2, position.getY() + 1),
+                board.getPointAt(position.getX() - 1, position.getY() + 2),
+                board.getPointAt(position.getX() + 1, position.getY() + 2),
+                board.getPointAt(position.getX() + 2, position.getY() - 1),
+                board.getPointAt(position.getX() + 2, position.getY() + 1)
+        };
+        
+        for (int i = 0; i < takePoints.length; i++) {
+            if(takePoints[i] != null){
+                res.add(takePoints[i]);
+            }
+        }
+        //Log.out("King takeble at " + position + " :" + res);        
         return res;
     }
     
