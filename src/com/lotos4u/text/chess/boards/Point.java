@@ -1,9 +1,9 @@
-package com.lotos4u.text.chess.pieces;
+package com.lotos4u.text.chess.boards;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lotos4u.text.chess.general.ChessBoard;
+import com.lotos4u.text.chess.pieces.Piece;
 
 
 public class Point implements Comparable<Point> {
@@ -100,25 +100,25 @@ public class Point implements Comparable<Point> {
 	    boolean leftable = (x > 1);
 	    boolean uppable = (y > 1);
 	    if(leftable)
-	        res.add(board.getPointAt(x-1, y));
+	        res.add(board.getPoint(x-1, y));
         if(uppable)
-            res.add(board.getPointAt(x, y-1));
+            res.add(board.getPoint(x, y-1));
         if(leftable && uppable)
-            res.add(board.getPointAt(x-1, y-1));
+            res.add(board.getPoint(x-1, y-1));
         
         boolean rightable = (x < board.getxSize());
         boolean downable = (y < board.getySize());
         if(rightable)
-            res.add(board.getPointAt(x+1, y));
+            res.add(board.getPoint(x+1, y));
         if(downable)
-            res.add(board.getPointAt(x, y+1));
+            res.add(board.getPoint(x, y+1));
         if(rightable && downable)
-            res.add(board.getPointAt(x+1, y+1));
+            res.add(board.getPoint(x+1, y+1));
 
         if(leftable && downable)
-            res.add(board.getPointAt(x-1, y+1));
+            res.add(board.getPoint(x-1, y+1));
         if(rightable && uppable)
-            res.add(board.getPointAt(x+1, y-1));
+            res.add(board.getPoint(x+1, y-1));
         
 	    return res;
 	}

@@ -3,7 +3,8 @@ package com.lotos4u.text.chess.pieces;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lotos4u.text.chess.general.ChessBoard;
+import com.lotos4u.text.chess.boards.ChessBoard;
+import com.lotos4u.text.chess.boards.Point;
 
 abstract public class Piece implements Comparable<Piece> {
 
@@ -74,14 +75,14 @@ abstract public class Piece implements Comparable<Piece> {
             return res;        
         ChessBoard board = position.getBoard();
         Point[] takePoints = new Point[]{
-                board.getPointAt(position.getX(), position.getY() + 1),
-                board.getPointAt(position.getX(), position.getY() - 1),
-                board.getPointAt(position.getX() + 1, position.getY()),
-                board.getPointAt(position.getX() + 1, position.getY() + 1),
-                board.getPointAt(position.getX() + 1, position.getY() - 1),
-                board.getPointAt(position.getX() - 1, position.getY()),
-                board.getPointAt(position.getX() - 1, position.getY() + 1),
-                board.getPointAt(position.getX() - 1, position.getY() - 1)
+                board.getPoint(position.getX(), position.getY() + 1),
+                board.getPoint(position.getX(), position.getY() - 1),
+                board.getPoint(position.getX() + 1, position.getY()),
+                board.getPoint(position.getX() + 1, position.getY() + 1),
+                board.getPoint(position.getX() + 1, position.getY() - 1),
+                board.getPoint(position.getX() - 1, position.getY()),
+                board.getPoint(position.getX() - 1, position.getY() + 1),
+                board.getPoint(position.getX() - 1, position.getY() - 1)
         };
         
         for (int i = 0; i < takePoints.length; i++) {
@@ -112,19 +113,19 @@ abstract public class Piece implements Comparable<Piece> {
         int y = position.getY();
         Point point;
         for (int i = 1; i <= L; i++) {
-            point = board.getPointAt(x + i, y + i);
+            point = board.getPoint(x + i, y + i);
             if(point != null)
                 res.add(point);
             
-            point = board.getPointAt(x - i, y - i);
+            point = board.getPoint(x - i, y - i);
             if(point != null)
                 res.add(point);
             
-            point = board.getPointAt(x + i, y - i);
+            point = board.getPoint(x + i, y - i);
             if(point != null)
                 res.add(point);
             
-            point = board.getPointAt(x - i, y + i);
+            point = board.getPoint(x - i, y + i);
             if(point != null)
                 res.add(point);
         }
@@ -137,14 +138,14 @@ abstract public class Piece implements Comparable<Piece> {
             return res;        
         ChessBoard board = position.getBoard();
         Point[] takePoints = new Point[]{
-                board.getPointAt(position.getX() - 1, position.getY() - 2),
-                board.getPointAt(position.getX() + 1, position.getY() - 2),
-                board.getPointAt(position.getX() - 2, position.getY() - 1),
-                board.getPointAt(position.getX() - 2, position.getY() + 1),
-                board.getPointAt(position.getX() - 1, position.getY() + 2),
-                board.getPointAt(position.getX() + 1, position.getY() + 2),
-                board.getPointAt(position.getX() + 2, position.getY() - 1),
-                board.getPointAt(position.getX() + 2, position.getY() + 1)
+                board.getPoint(position.getX() - 1, position.getY() - 2),
+                board.getPoint(position.getX() + 1, position.getY() - 2),
+                board.getPoint(position.getX() - 2, position.getY() - 1),
+                board.getPoint(position.getX() - 2, position.getY() + 1),
+                board.getPoint(position.getX() - 1, position.getY() + 2),
+                board.getPoint(position.getX() + 1, position.getY() + 2),
+                board.getPoint(position.getX() + 2, position.getY() - 1),
+                board.getPoint(position.getX() + 2, position.getY() + 1)
         };
         
         for (int i = 0; i < takePoints.length; i++) {
@@ -163,11 +164,11 @@ abstract public class Piece implements Comparable<Piece> {
         ChessBoard board = position.getBoard();
         for (int x = 1; x <= board.getxSize(); x++) {
             if(x != position.getX())
-                res.add(board.getPointAt(x, position.getY()));
+                res.add(board.getPoint(x, position.getY()));
         }
         for (int y = 1; y <= board.getySize(); y++) {
             if(y != position.getY())
-                res.add(board.getPointAt(position.getX(), y));
+                res.add(board.getPoint(position.getX(), y));
         }
         return res;
     }
