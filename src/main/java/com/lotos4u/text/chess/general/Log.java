@@ -1,4 +1,4 @@
-package com.lotos4u.text.chess.general;
+package main.java.com.lotos4u.text.chess.general;
 
 public class Log {
     public static void out(Object o){

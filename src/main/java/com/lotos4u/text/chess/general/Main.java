@@ -1,16 +1,16 @@
-package com.lotos4u.text.chess.general;
+package main.java.com.lotos4u.text.chess.general;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.lotos4u.text.chess.boards.ChessBoard;
-import com.lotos4u.text.chess.pieces.Elephant;
-import com.lotos4u.text.chess.pieces.King;
-import com.lotos4u.text.chess.pieces.Knight;
-import com.lotos4u.text.chess.pieces.Piece;
-import com.lotos4u.text.chess.pieces.Queen;
-import com.lotos4u.text.chess.pieces.Rook;
+import main.java.com.lotos4u.text.chess.boards.ChessBoard;
+import main.java.com.lotos4u.text.chess.pieces.Elephant;
+import main.java.com.lotos4u.text.chess.pieces.King;
+import main.java.com.lotos4u.text.chess.pieces.Knight;
+import main.java.com.lotos4u.text.chess.pieces.Piece;
+import main.java.com.lotos4u.text.chess.pieces.Queen;
+import main.java.com.lotos4u.text.chess.pieces.Rook;
 
 public class Main {
     
