@@ -7,7 +7,7 @@ import java.util.List;
 
 import main.java.com.lotos4u.text.chess.general.Log;
 import main.java.com.lotos4u.text.chess.general.Utility;
-import main.java.com.lotos4u.text.chess.pieces.Elephant;
+import main.java.com.lotos4u.text.chess.pieces.Bishop;
 import main.java.com.lotos4u.text.chess.pieces.King;
 import main.java.com.lotos4u.text.chess.pieces.Knight;
 import main.java.com.lotos4u.text.chess.pieces.Piece;
@@ -42,8 +42,8 @@ public class ChessBoard {
                 pieces.add(new Knight());
             }else if (p instanceof Rook) {
                 pieces.add(new Rook());
-            }else if (p instanceof Elephant) {
-                pieces.add(new Elephant());
+            }else if (p instanceof Bishop) {
+                pieces.add(new Bishop());
             }else if (p instanceof Queen) {
                 pieces.add(new Queen());
             }

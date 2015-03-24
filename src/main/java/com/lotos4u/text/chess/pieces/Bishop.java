@@ -4,7 +4,7 @@ import java.util.List;
 
 import main.java.com.lotos4u.text.chess.boards.Point;
 
-public class Elephant extends Piece {
+public class Bishop extends Piece {
 
     @Override
     public boolean isValidMove(Point point) {
@@ -13,7 +13,7 @@ public class Elephant extends Piece {
 
     @Override
     public List<Point> getPointsTakeble() {
-        return Piece.getElephantTakeble(position);
+        return getBishopTakeble();
     }
     
     @Override

@@ -69,39 +69,7 @@ abstract public class Piece implements Comparable<Piece> {
         return t2.compareTo(t1);
     }
 
-    public static List<Point> getKingTakeble(Point position){
-        List<Point> res = new ArrayList<Point>();
-        if(position == null)
-            return res;        
-        ChessBoard board = position.getBoard();
-        Point[] takePoints = new Point[]{
-                board.getPoint(position.getX(), position.getY() + 1),
-                board.getPoint(position.getX(), position.getY() - 1),
-                board.getPoint(position.getX() + 1, position.getY()),
-                board.getPoint(position.getX() + 1, position.getY() + 1),
-                board.getPoint(position.getX() + 1, position.getY() - 1),
-                board.getPoint(position.getX() - 1, position.getY()),
-                board.getPoint(position.getX() - 1, position.getY() + 1),
-                board.getPoint(position.getX() - 1, position.getY() - 1)
-        };
-        
-        for (int i = 0; i < takePoints.length; i++) {
-            if(takePoints[i] != null){
-                res.add(takePoints[i]);
-            }
-        }
-        //Log.out("King takeble at " + position + " :" + res);
-        return res;
-    }
-    
-    public static List<Point> getQueenTakeble(Point position){
-        List<Point> res = new ArrayList<Point>();
-        res.addAll(getRookTakeble(position));
-        res.addAll(getElephantTakeble(position));
-        return res;
-    }
-    
-    public static List<Point> getElephantTakeble(Point position){
+    protected List<Point> getBishopTakeble(){
         List<Point> res = new ArrayList<Point>();
         if(position == null)
             return res;
@@ -132,32 +100,7 @@ abstract public class Piece implements Comparable<Piece> {
         return res;
     }
     
-    public static List<Point> getKnightTakeble(Point position){
-        List<Point> res = new ArrayList<Point>();
-        if(position == null)
-            return res;        
-        ChessBoard board = position.getBoard();
-        Point[] takePoints = new Point[]{
-                board.getPoint(position.getX() - 1, position.getY() - 2),
-                board.getPoint(position.getX() + 1, position.getY() - 2),
-                board.getPoint(position.getX() - 2, position.getY() - 1),
-                board.getPoint(position.getX() - 2, position.getY() + 1),
-                board.getPoint(position.getX() - 1, position.getY() + 2),
-                board.getPoint(position.getX() + 1, position.getY() + 2),
-                board.getPoint(position.getX() + 2, position.getY() - 1),
-                board.getPoint(position.getX() + 2, position.getY() + 1)
-        };
-        
-        for (int i = 0; i < takePoints.length; i++) {
-            if(takePoints[i] != null){
-                res.add(takePoints[i]);
-            }
-        }
-        //Log.out("King takeble at " + position + " :" + res);        
-        return res;
-    }
-    
-    public static List<Point> getRookTakeble(Point position){
+    protected List<Point> getRookTakeble(){
         List<Point> res = new ArrayList<Point>();
         if(position == null)
             return res;

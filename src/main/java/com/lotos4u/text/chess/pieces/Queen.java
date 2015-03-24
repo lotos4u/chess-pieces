@@ -1,5 +1,6 @@
 package main.java.com.lotos4u.text.chess.pieces;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import main.java.com.lotos4u.text.chess.boards.Point;
@@ -23,7 +24,10 @@ public class Queen extends Piece {
 
     @Override
     public List<Point> getPointsTakeble() {
-        return Piece.getQueenTakeble(position);
+        List<Point> res = new ArrayList<Point>();
+        res.addAll(getRookTakeble());
+        res.addAll(getBishopTakeble());
+        return res;
     }
 
 }

@@ -1,28 +1,51 @@
-package com.lotos4u.text.chess.general;
+package test.java.com.lotos4u.text.chess.general;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import main.java.com.lotos4u.text.chess.boards.ChessBoard;
+import main.java.com.lotos4u.text.chess.general.Log;
+import main.java.com.lotos4u.text.chess.pieces.Bishop;
+import main.java.com.lotos4u.text.chess.pieces.King;
+import main.java.com.lotos4u.text.chess.pieces.Knight;
+import main.java.com.lotos4u.text.chess.pieces.Piece;
+import main.java.com.lotos4u.text.chess.pieces.Queen;
+import main.java.com.lotos4u.text.chess.pieces.Rook;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.lotos4u.text.chess.boards.ChessBoard;
-import com.lotos4u.text.chess.pieces.Elephant;
-import com.lotos4u.text.chess.pieces.King;
-import com.lotos4u.text.chess.pieces.Knight;
-import com.lotos4u.text.chess.pieces.Piece;
-import com.lotos4u.text.chess.pieces.Queen;
-import com.lotos4u.text.chess.pieces.Rook;
-
 public class MainTest {
-    
-//    public static void main(String[] args) {
-//        test1();
-//        //test2();
-//        //testMisc();
-//    }
+    /**
+     * 2 Kings, 2 Queens, 2 Bishops and 1 Knight on 7×7 board
+     */
+    @Test public void testKKQQBBNon7x7(){
+        
+        King king1 = new King();
+        King king2 = new King();
+        Queen queen1 = new Queen();
+        Queen queen2 = new Queen();
+        Bishop bishop1 = new Bishop();
+        Bishop bishop2 = new Bishop();
+        Knight knight = new Knight();
+        ChessBoard board = new ChessBoard(7, 7);
+        List<Piece> pieces = new ArrayList<Piece>();
+        
+        pieces.add(king1);
+        pieces.add(king2);
+        pieces.add(queen1);
+        pieces.add(queen2);
+        pieces.add(bishop1);
+        pieces.add(bishop2);
+        pieces.add(knight);
 
+        board.setPieces(pieces);
+        List<ChessBoard> boards = board.arrangePiecesVariants();
+        
+        Assert.assertTrue(boards.size() > 0);
+    }
+    
     /**
      * 1 Rook and 2 Kings on 3x3 Board
      */
@@ -38,15 +61,13 @@ public class MainTest {
         board.setPieces(pieces);
         List<ChessBoard> boards = board.arrangePiecesVariants();
         
-        Assert.assertEquals(9, boards.size());
-
-        
+        Assert.assertEquals(4, boards.size());
     }
 
     /**
      * 2 Rooks and 4 Knights on 4x4 Board
      */
-    public static void test2(){
+    @Test public void testRRNNNNon4x4(){
         Rook rook1 = new Rook();
         Rook rook2 = new Rook();
         Knight knight1 = new Knight();
@@ -63,8 +84,9 @@ public class MainTest {
         pieces.add(knight4);
         board.setPieces(pieces);
         
-        board.arrangePiecesVariants();
-        //List<ChessBoard> boards = board.arrangePiecesVariants(board);
+        List<ChessBoard> boards = board.arrangePiecesVariants();
+        
+        Assert.assertEquals(8, boards.size());
     }
     
     public static void testMisc(){
@@ -78,10 +100,10 @@ public class MainTest {
         King king3 = new King();
         King king4 = new King();
 
-        Elephant elephant1 = new Elephant();
-        Elephant elephant2 = new Elephant();
-        Elephant elephant3 = new Elephant();
-        Elephant elephant4 = new Elephant();
+        Bishop elephant1 = new Bishop();
+        Bishop elephant2 = new Bishop();
+        Bishop elephant3 = new Bishop();
+        Bishop elephant4 = new Bishop();
 
         Knight knight1 = new Knight();
         Knight knight2 = new Knight();

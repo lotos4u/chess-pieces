@@ -8,7 +8,7 @@ public class Rook extends Piece {
 
 	@Override
 	public List<Point> getPointsTakeble() {
-		return Piece.getRookTakeble(position);
+		return getRookTakeble();
 	}
 
 	@Override
