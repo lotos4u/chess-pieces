@@ -20,7 +20,7 @@ public class MainTest {
     /**
      * 2 Kings, 2 Queens, 2 Bishops and 1 Knight on 7×7 board
      */
-    @Test public void testKKQQBBNon7x7(){
+    public void testKKQQBBNon7x7(){
         
         King king1 = new King();
         King king2 = new King();
@@ -45,11 +45,43 @@ public class MainTest {
         
         Assert.assertTrue(boards.size() > 0);
     }
+
+    /**
+     * 1 Rook and 2 Kings on 3x3 Board
+     */
+    @Test public void testRKKon3x3recursive(){
+        Rook rook1 = new Rook();
+        King king1 = new King();
+        King king2 = new King();
+        ChessBoard board = new ChessBoard(3, 3);
+        List<Piece> pieces = new ArrayList<Piece>();
+        pieces.add(rook1);
+        pieces.add(king1);
+        pieces.add(king2);
+        board.setPieces(pieces);
+        
+        
+        //List<ChessBoard> boards = board.arrangePiecesVariants();
+        //List<ChessBoard> boards = board.arrangeRecursivelyVariants();
+        
+        for (int i = 0; i < board.getPointsNumber(); i++) {
+            Log.out("\n--- Start point = " + i + " ---");
+            board.dropPieces();
+            board.arrangeRecursively(i, 0);    
+        }
+        
+
+        //board.dropPieces();
+        //board.arrangeRecursively(2, 0);    
+        
+        //List<ChessBoard> boards = board.arrangeRecursivelyVariants();
+        //Assert.assertEquals(4, boards.size());
+    }
     
     /**
      * 1 Rook and 2 Kings on 3x3 Board
      */
-    @Test public void testRKKon3x3(){
+    public void testRKKon3x3(){
         Rook rook1 = new Rook();
         King king1 = new King();
         King king2 = new King();
@@ -67,7 +99,7 @@ public class MainTest {
     /**
      * 2 Rooks and 4 Knights on 4x4 Board
      */
-    @Test public void testRRNNNNon4x4(){
+    public void testRRNNNNon4x4(){
         Rook rook1 = new Rook();
         Rook rook2 = new Rook();
         Knight knight1 = new Knight();

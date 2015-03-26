@@ -126,7 +126,7 @@ public class Point implements Comparable<Point> {
 	public boolean isFree(){
 	    return piece == null;
 	}
-    @Override
+    
     public int compareTo(Point o) {
         Integer myNeighbors = getNeighbors().size();
         Integer hisNeighbors = o.getNeighbors().size();

@@ -62,7 +62,7 @@ abstract public class Piece implements Comparable<Piece> {
         }
     }
 
-    @Override
+
     public int compareTo(Piece o) {
         Integer t1 = getTakebility();
         Integer t2 = o.getTakebility();

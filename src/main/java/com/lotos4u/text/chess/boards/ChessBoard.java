@@ -15,6 +15,7 @@ import main.java.com.lotos4u.text.chess.pieces.Queen;
 import main.java.com.lotos4u.text.chess.pieces.Rook;
 
 public class ChessBoard {
+    private int recursionCounter = 0;
 	/**
 	 * Horizontal board size
 	 */
@@ -36,19 +37,23 @@ public class ChessBoard {
 	    this(board.getxSize(), board.getySize());
 	    for (int i = 0; i < board.getPieces().size(); i++) {
 	        Piece p = board.getPiece(i);
+	        Piece newPiece = null;
 	        if (p instanceof King) {
-                pieces.add(new King());
+                newPiece = new King();
             }else if (p instanceof Knight) {
-                pieces.add(new Knight());
+                newPiece = new Knight();
             }else if (p instanceof Rook) {
-                pieces.add(new Rook());
+                newPiece = new Rook();
             }else if (p instanceof Bishop) {
-                pieces.add(new Bishop());
+                newPiece = new Bishop();
             }else if (p instanceof Queen) {
-                pieces.add(new Queen());
+                newPiece = new Queen();
             }
+	        Point point = p.getPosition();
+	        Point newPoint = new Point(point.getX(), point.getY(), this);
+	        newPiece.setPosition(newPoint);
+	        pieces.add(newPiece);
         }
-	    dropPieces();
 	}
 	
 	public ChessBoard(int xSize, int ySize) {
@@ -113,6 +118,74 @@ public class ChessBoard {
 			((Piece) iterator.next()).drop();
 		}
 	}
+	
+	public void arrangeRecursively(int startPoint, int startPiece){
+	    arrangeRecursively(startPoint, startPiece, pieces);
+	}
+	
+	protected void arrangeRecursively(int startPoint, int startPiece, List<Piece> unpositioned){
+        if((unpositioned == null) || (unpositioned.size() < 1))
+            return;
+        recursionCounter++;
+        Log.out("Arrange iteration #" + recursionCounter + ", pieces:" + unpositioned);
+        
+        Piece piece = unpositioned.get(startPiece);
+        if(!piece.isPositioned()){
+            Log.out("Try to put " + piece);
+            int pointIndex = startPoint;
+            for (int i = startPoint; i < points.size(); i++) {
+                Point point = points.get(pointIndex);
+                Log.out("Index=" + pointIndex + ", " + point);
+                if(!piece.isPositioned() && point.isFree() && !isPointTakeble(point)){
+                    piece.setPosition(point);
+                    if(isArrangeValid()){
+                        Log.out("Piece positioned: " + piece);
+                        break;
+                    }
+                    else{
+                        piece.drop();
+                    }
+                }
+                pointIndex = Utility.cycledInc(pointIndex, 0, points.size()-1);
+            }
+            if(piece.isPositioned()){
+                List<Piece> newList = new ArrayList<Piece>();
+                newList.addAll(unpositioned);
+                newList.remove(piece);
+                if(newList.size() < 1){
+                    Log.out("Arrangment complete!");
+                }
+                else{
+                    arrangeRecursively(startPoint, startPiece, newList);                    
+                }
+            }
+            else
+            {
+                Log.out("Arrangement is impossible for start point " + startPoint);
+                recursionCounter = 0;
+            }      
+            
+        }
+            
+
+	}
+	
+	public List<ChessBoard> arrangeRecursivelyVariants(){
+	    List<ChessBoard> res = new ArrayList<ChessBoard>();
+        for (int i = 0; i < points.size(); i++) {
+            dropPieces();
+            arrangeRecursively(i, 0);
+           //Log.out("Start point " + i);
+            Log.out(this);
+            if(isArrangedAndValid()){
+                ChessBoard board = new ChessBoard(this);
+                res.add(board);
+            }
+        }
+        return res;
+
+	}
+	
 	@Deprecated
 	public List<ChessBoard> arrangePointsForPiecesStupid(int startPoint){
 	    List<ChessBoard> res = new ArrayList<ChessBoard>();
@@ -366,6 +439,9 @@ public class ChessBoard {
 		return Collections.unmodifiableList(points);
 	}
 	
+	public int getPointsNumber(){
+	    return xSize*ySize;
+	}
 	/**
 	 * 
 	 * @return list with point on this board, which are takeble due to positioned pieces
