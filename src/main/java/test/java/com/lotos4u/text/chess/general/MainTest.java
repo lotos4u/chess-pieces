@@ -63,15 +63,26 @@ public class MainTest {
         
         //List<ChessBoard> boards = board.arrangePiecesVariants();
         //List<ChessBoard> boards = board.arrangeRecursivelyVariants();
+        //board.arrangeRecursivelyVariants();
         
+        
+        int validCOunter = 0;
         for (int i = 0; i < board.getPointsNumber(); i++) {
-            Log.out("\n--- Start point = " + i + " ---");
-            board.dropPieces();
-            board.arrangeRecursively(i, 0);    
+            for (int j = 0; j < board.getPiecesNumber(); j++) {
+                Log.out("\n--- Point " + i + ", Piece " + j +  " ---");
+                board.dropPieces();
+                board.arrangeRecursively(i, j);
+                if(board.isArrangedAndValid()){
+                    //Log.out("============== Arrange Valid, pt=" + i + ", pi=" + j);
+                    validCOunter++;
+                }
+            }
         }
+        Log.out("\nValid counter = " + validCOunter);
         
-
+        
         //board.dropPieces();
+        
         //board.arrangeRecursively(2, 0);    
         
         //List<ChessBoard> boards = board.arrangeRecursivelyVariants();

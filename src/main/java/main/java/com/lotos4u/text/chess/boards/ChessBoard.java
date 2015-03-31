@@ -124,22 +124,25 @@ public class ChessBoard {
 	}
 	
 	protected void arrangeRecursively(int startPoint, int startPiece, List<Piece> unpositioned){
+	    boolean log = true;
         if((unpositioned == null) || (unpositioned.size() < 1))
             return;
         recursionCounter++;
-        Log.out("Arrange iteration #" + recursionCounter + ", pieces:" + unpositioned);
-        
-        Piece piece = unpositioned.get(startPiece);
+        if(log)Log.out("Arrange iteration #" + recursionCounter + ", pieces:" + unpositioned);
+        int pieceIndex = startPiece;
+        while(pieceIndex >= unpositioned.size())
+            pieceIndex--;
+        Piece piece = unpositioned.get(pieceIndex);
         if(!piece.isPositioned()){
-            Log.out("Try to put " + piece);
+            if(log)Log.out("Try to put " + piece);
             int pointIndex = startPoint;
             for (int i = startPoint; i < points.size(); i++) {
                 Point point = points.get(pointIndex);
-                Log.out("Index=" + pointIndex + ", " + point);
+                if(log)Log.out("try point index=" + pointIndex + ", " + point);
                 if(!piece.isPositioned() && point.isFree() && !isPointTakeble(point)){
                     piece.setPosition(point);
                     if(isArrangeValid()){
-                        Log.out("Piece positioned: " + piece);
+                        if(log)Log.out("Piece positioned: " + piece);
                         break;
                     }
                     else{
@@ -153,7 +156,7 @@ public class ChessBoard {
                 newList.addAll(unpositioned);
                 newList.remove(piece);
                 if(newList.size() < 1){
-                    Log.out("Arrangment complete!");
+                    if(log)Log.out("Arrangment complete!");
                 }
                 else{
                     arrangeRecursively(startPoint, startPiece, newList);                    
@@ -161,29 +164,32 @@ public class ChessBoard {
             }
             else
             {
-                Log.out("Arrangement is impossible for start point " + startPoint);
+                if(log)Log.out("Arrangement is impossible for start point " + startPoint);
                 recursionCounter = 0;
             }      
             
         }
-            
-
 	}
 	
-	public List<ChessBoard> arrangeRecursivelyVariants(){
+	//public List<ChessBoard> arrangeRecursivelyVariants(){
+	public int arrangeRecursivelyVariants(){
 	    List<ChessBoard> res = new ArrayList<ChessBoard>();
-        for (int i = 0; i < points.size(); i++) {
-            dropPieces();
-            arrangeRecursively(i, 0);
-           //Log.out("Start point " + i);
-            Log.out(this);
-            if(isArrangedAndValid()){
-                ChessBoard board = new ChessBoard(this);
-                res.add(board);
+	    int validCounter = 0;
+        for (int startPoint = 0; startPoint < points.size(); startPoint++) {
+            for (int startPiece = 0; startPiece < pieces.size(); startPiece++) {
+                dropPieces();
+                arrangeRecursively(startPoint, startPiece);
+                if(isArrangedAndValid()){
+                    validCounter++;
+                    Log.out(this);
+                    //ChessBoard board = new ChessBoard(this);
+                    //board.arrangeRecursively(startPoint, startPiece);
+                    //res.add(board);
+                }
             }
         }
-        return res;
-
+        Log.out("Valid counter = " + validCounter);
+        return validCounter;
 	}
 	
 	@Deprecated
@@ -442,6 +448,10 @@ public class ChessBoard {
 	public int getPointsNumber(){
 	    return xSize*ySize;
 	}
+
+	public int getPiecesNumber(){
+        return pieces.size();
+    }
 	/**
 	 * 
 	 * @return list with point on this board, which are takeble due to positioned pieces
@@ -485,9 +495,6 @@ public class ChessBoard {
             if(points.get(i).isFree() && !takeble.contains(points.get(i)))
                 res.add(points.get(i));
         }
-		//Log.out("positioned: " + positioned);
-		//Log.out("takeble: " + takeble);
-		//Log.out("Free: " + res);
 		return res;
 	}
 	
