@@ -1,9 +1,9 @@
-package main.java.com.lotos4u.text.chess.pieces;
+package com.lotos4u.text.chess.pieces;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import main.java.com.lotos4u.text.chess.boards.Point;
+import com.lotos4u.text.chess.boards.Point;
 
 public class Queen extends Piece {
 

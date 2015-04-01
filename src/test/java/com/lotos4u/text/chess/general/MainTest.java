@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import main.java.com.lotos4u.text.chess.boards.ChessBoard;
-import main.java.com.lotos4u.text.chess.general.Log;
-import main.java.com.lotos4u.text.chess.pieces.Bishop;
-import main.java.com.lotos4u.text.chess.pieces.King;
-import main.java.com.lotos4u.text.chess.pieces.Knight;
-import main.java.com.lotos4u.text.chess.pieces.Piece;
-import main.java.com.lotos4u.text.chess.pieces.Queen;
-import main.java.com.lotos4u.text.chess.pieces.Rook;
+import com.lotos4u.text.chess.boards.ChessBoard;
+import com.lotos4u.text.chess.general.Log;
+import com.lotos4u.text.chess.pieces.Bishop;
+import com.lotos4u.text.chess.pieces.King;
+import com.lotos4u.text.chess.pieces.Knight;
+import com.lotos4u.text.chess.pieces.Piece;
+import com.lotos4u.text.chess.pieces.Queen;
+import com.lotos4u.text.chess.pieces.Rook;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,7 +20,7 @@ public class MainTest {
     /**
      * 2 Kings, 2 Queens, 2 Bishops and 1 Knight on 7×7 board
      */
-    public void testKKQQBBNon7x7(){
+	@Test public void testKKQQBBNon7x7(){
         
         King king1 = new King();
         King king2 = new King();
