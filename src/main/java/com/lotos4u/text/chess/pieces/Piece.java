@@ -1,10 +1,10 @@
-package com.lotos4u.text.chess.pieces;
+package main.java.com.lotos4u.text.chess.pieces;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lotos4u.text.chess.boards.ChessBoard;
-import com.lotos4u.text.chess.boards.Point;
+import main.java.com.lotos4u.text.chess.boards.ChessBoard;
+import main.java.com.lotos4u.text.chess.boards.Point;
 
 abstract public class Piece implements Comparable<Piece> {
 
