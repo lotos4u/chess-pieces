@@ -43,3 +43,6 @@ Temporary Items
 .apdisk
 /bin/
 /target/
+.settings/
+.project
+.classpath
