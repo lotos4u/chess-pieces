@@ -1,18 +1,18 @@
-package main.java.com.lotos4u.text.chess.boards;
+package com.lotos4u.text.chess.boards;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import main.java.com.lotos4u.text.chess.general.Log;
-import main.java.com.lotos4u.text.chess.general.Utility;
-import main.java.com.lotos4u.text.chess.pieces.Bishop;
-import main.java.com.lotos4u.text.chess.pieces.King;
-import main.java.com.lotos4u.text.chess.pieces.Knight;
-import main.java.com.lotos4u.text.chess.pieces.Piece;
-import main.java.com.lotos4u.text.chess.pieces.Queen;
-import main.java.com.lotos4u.text.chess.pieces.Rook;
+import com.lotos4u.text.chess.general.Log;
+import com.lotos4u.text.chess.general.Utility;
+import com.lotos4u.text.chess.pieces.Bishop;
+import com.lotos4u.text.chess.pieces.King;
+import com.lotos4u.text.chess.pieces.Knight;
+import com.lotos4u.text.chess.pieces.Piece;
+import com.lotos4u.text.chess.pieces.Queen;
+import com.lotos4u.text.chess.pieces.Rook;
 
 public class ChessBoard {
     private int recursionCounter = 0;

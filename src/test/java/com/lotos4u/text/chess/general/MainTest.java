@@ -1,20 +1,20 @@
-package test.java.com.lotos4u.text.chess.general;
+package com.lotos4u.text.chess.general;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import main.java.com.lotos4u.text.chess.boards.ChessBoard;
-import main.java.com.lotos4u.text.chess.general.Log;
-import main.java.com.lotos4u.text.chess.pieces.Bishop;
-import main.java.com.lotos4u.text.chess.pieces.King;
-import main.java.com.lotos4u.text.chess.pieces.Knight;
-import main.java.com.lotos4u.text.chess.pieces.Piece;
-import main.java.com.lotos4u.text.chess.pieces.Queen;
-import main.java.com.lotos4u.text.chess.pieces.Rook;
-
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import com.lotos4u.text.chess.boards.ChessBoard;
+import com.lotos4u.text.chess.pieces.Bishop;
+import com.lotos4u.text.chess.pieces.King;
+import com.lotos4u.text.chess.pieces.Knight;
+import com.lotos4u.text.chess.pieces.Piece;
+import com.lotos4u.text.chess.pieces.Queen;
+import com.lotos4u.text.chess.pieces.Rook;
 
 public class MainTest {
     /**
@@ -92,7 +92,7 @@ public class MainTest {
     /**
      * 1 Rook and 2 Kings on 3x3 Board
      */
-    public void testRKKon3x3(){
+    @Test @Ignore public void testRKKon3x3(){
         Rook rook1 = new Rook();
         King king1 = new King();
         King king2 = new King();
@@ -110,7 +110,7 @@ public class MainTest {
     /**
      * 2 Rooks and 4 Knights on 4x4 Board
      */
-    public void testRRNNNNon4x4(){
+    @Test @Ignore public void testRRNNNNon4x4(){
         Rook rook1 = new Rook();
         Rook rook2 = new Rook();
         Knight knight1 = new Knight();
@@ -132,7 +132,7 @@ public class MainTest {
         Assert.assertEquals(8, boards.size());
     }
     
-    public static void testMisc(){
+    @Test @Ignore public static void testMisc(){
         Rook rook1 = new Rook();
         Rook rook2 = new Rook();
         Rook rook3 = new Rook();
@@ -188,6 +188,4 @@ public class MainTest {
         List<ChessBoard> boards = board.arrangePiecesVariants();
         //Log.out("There are " + boards.size() + " valid arrangements:");
     }
-
-
 }
