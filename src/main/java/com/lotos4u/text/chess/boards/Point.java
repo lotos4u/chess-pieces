@@ -1,12 +1,9 @@
 package com.lotos4u.text.chess.boards;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.lotos4u.text.chess.pieces.Piece;
 
 
-public class Point implements Comparable<Point> {
+//public class Point implements Comparable<Point> {
+public class Point {
 	/**
 	 * Horizontal coordinate of point
 	 */
@@ -15,20 +12,12 @@ public class Point implements Comparable<Point> {
 	 * Vertical coordinate of point
 	 */
 	private int y;
-	/**
-	 * 
-	 */
-	private ChessBoard board;
-	/**
-	 * Piece, which is occupies this point
-	 */
-	private Piece piece;
 
-	public Point(int x, int y, ChessBoard board) {
+
+	public Point(int x, int y) {
 		super();
 		this.x = x;
 		this.y = y;
-		this.board = board;
 	}
 
 	public int getX() {
@@ -47,18 +36,10 @@ public class Point implements Comparable<Point> {
 		this.y = y;
 	}
 	
-    public ChessBoard getBoard() {
-        return board;
-    }
-
-    public Piece getPiece() {
-        return piece;
-    }
-
-    public void setPiece(Piece piece) {
-        this.piece = piece;
-    }
-
+	public boolean isPointEquals(Point p){
+		return (p.getX() == x) && (p.getY() == y);
+	}
+	
     @Override
 	public boolean equals(Object obj) {
         if (this == obj)
@@ -72,8 +53,6 @@ public class Point implements Comparable<Point> {
             return false;
         if (y != p.getY())
             return false;
-        if (!board.equals(obj))
-            return false;
         return true;		
 	}
 
@@ -83,17 +62,15 @@ public class Point implements Comparable<Point> {
         int result = 1;
         result = prime * result + x;
         result = prime * result + y;
-        result = prime * result + board.hashCode();
         return result;
 	}
 
 	@Override
 	public String toString() {
-		//return "(x=" + x + ", y=" + y + ", " + getNeighbors().size() + "n)";
 	    return "(" + x + ", " + y + ")";
 	}
-
-	public List<Point> getNeighbors(){
+/*
+	public List<Point> getPossibleNeighbors(){
 	    List<Point> res = new ArrayList<Point>();
 	    if((x + y) < 2)
 	        return res;
@@ -122,14 +99,13 @@ public class Point implements Comparable<Point> {
         
 	    return res;
 	}
-	
-	public boolean isFree(){
-	    return piece == null;
-	}
-    
+	*/
+
+/*    
     public int compareTo(Point o) {
         Integer myNeighbors = getNeighbors().size();
         Integer hisNeighbors = o.getNeighbors().size();
         return myNeighbors.compareTo(hisNeighbors);
     }
+    */
 }

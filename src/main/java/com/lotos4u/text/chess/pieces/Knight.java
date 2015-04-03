@@ -24,11 +24,10 @@ public class Knight extends Piece {
     }
 
     @Override
-    public List<Point> getPointsTakeble() {
+    public List<Point> getPointsTakeble(ChessBoard board) {
         List<Point> res = new ArrayList<Point>();
         if(position == null)
             return res;        
-        ChessBoard board = position.getBoard();
         Point[] takePoints = new Point[]{
                 board.getPoint(position.getX() - 1, position.getY() - 2),
                 board.getPoint(position.getX() + 1, position.getY() - 2),

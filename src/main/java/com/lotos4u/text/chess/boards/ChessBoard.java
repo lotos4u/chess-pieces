@@ -50,7 +50,7 @@ public class ChessBoard {
                 newPiece = new Queen();
             }
 	        Point point = p.getPosition();
-	        Point newPoint = new Point(point.getX(), point.getY(), this);
+	        Point newPoint = new Point(point.getX(), point.getY());
 	        newPiece.setPosition(newPoint);
 	        pieces.add(newPiece);
         }
@@ -62,7 +62,7 @@ public class ChessBoard {
 		this.ySize = ySize;
 		for (int x = 1; x <= xSize; x++) {
             for (int y = 1; y <= ySize; y++) {
-                Point point = new Point(x, y, this);
+                Point point = new Point(x, y);
                 points.add(point);
             }
         }
@@ -139,7 +139,7 @@ public class ChessBoard {
             for (int i = startPoint; i < points.size(); i++) {
                 Point point = points.get(pointIndex);
                 if(log)Log.out("try point index=" + pointIndex + ", " + point);
-                if(!piece.isPositioned() && point.isFree() && !isPointTakeble(point)){
+                if(!piece.isPositioned() && isPointFree(point) && !isPointTakeble(point)){
                     piece.setPosition(point);
                     if(isArrangeValid()){
                         if(log)Log.out("Piece positioned: " + piece);
@@ -173,7 +173,6 @@ public class ChessBoard {
 	
 	//public List<ChessBoard> arrangeRecursivelyVariants(){
 	public int arrangeRecursivelyVariants(){
-	    List<ChessBoard> res = new ArrayList<ChessBoard>();
 	    int validCounter = 0;
         for (int startPoint = 0; startPoint < points.size(); startPoint++) {
             for (int startPiece = 0; startPiece < pieces.size(); startPiece++) {
@@ -202,7 +201,7 @@ public class ChessBoard {
 	        
 	        pointIndex = Utility.cycledInc(pointIndex, 0, points.size() - 1);
 	        Point point = board.getPoint(pointIndex);
-            if(!point.isFree() || isPointTakeble(point))continue;
+            if(!isPointFree(point) || isPointTakeble(point))continue;
             
             for (int j = 0; j < pieces.size(); j++) {
                 Piece piece = board.getPiece(j);
@@ -282,7 +281,7 @@ public class ChessBoard {
                 Point point = points.get(pointIndex); //Select point with index 'pointIndex'
                 pointIndex = Utility.cycledInc(pointIndex, 0, points.size() - 1);
                 pointCounter++;
-                if(!point.isFree() || isPointTakeble(point))continue; //If selected point is free and not takeble
+                if(!isPointFree(point) || isPointTakeble(point))continue; //If selected point is free and not takeble
                 piece.setPosition(point);
                 if(!isArrangeValid()){
                     piece.drop();
@@ -310,7 +309,7 @@ public class ChessBoard {
             Point point = points.get(pointIndex); //Select point with index 'pointIndex'
             pointIndex = Utility.cycledInc(pointIndex, 0, points.size() - 1);
             //if(log)Log.out("Try point is: " + point);
-            if(!point.isFree() || isPointTakeble(point))continue; //If selected point is free and not takeble
+            if(!isPointFree(point) || isPointTakeble(point))continue; //If selected point is free and not takeble
             if(log)Log.out("Free point is: " + point);
             
             //We will try to put at this point next not-positioned piece
@@ -349,7 +348,7 @@ public class ChessBoard {
     
     
     
-    
+    /*
 	public void arrangePiecesOnPoints(){
 		dropPieces();
 		Collections.sort(pieces);
@@ -362,9 +361,8 @@ public class ChessBoard {
             Collections.sort(free); //
             if(log)Log.out("Free points: " + free);
             if(free.size() > 1){ //If there is at least 2 free point
-                /* We should select a point which occupation leads to 
-                 * maximum number of free points
-                 */
+                //We should select a point which occupation leads to 
+                //maximum number of free points
                 int selected = 0;
                 int size, maxSize = 0;
                 for (int j = 0; j < free.size(); j++) {
@@ -390,6 +388,7 @@ public class ChessBoard {
         }
 		return;
 	}
+	*/
 	
 	/**
 	 * Check all pieces having not null position.
@@ -461,7 +460,7 @@ public class ChessBoard {
         for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
             Piece piece = (Piece) iterator.next();
             if(piece.isPositioned()){
-                List<Point> takeble = piece.getPointsTakeble();
+                List<Point> takeble = piece.getPointsTakeble(this);
                 for (int i = 0; i < takeble.size(); i++) {
                     if(!res.contains(takeble.get(i)))res.add(takeble.get(i));
                 }
@@ -476,9 +475,9 @@ public class ChessBoard {
 	 */
 	public List<Point> getPointsPositioned() {
 		List<Point> res = new ArrayList<Point>();
-		for (Iterator<Point> i = points.iterator(); i.hasNext();) {
-            Point p = (Point) i.next();
-            if(p.getPiece() != null)
+		for (Iterator<Piece> i = pieces.iterator(); i.hasNext();) {
+			Point p = i.next().getPosition();
+            if(p != null)
                 res.add(p);
         }
 		return res;
@@ -492,15 +491,24 @@ public class ChessBoard {
 		List<Point> res = new ArrayList<Point>();
 		List<Point> takeble = getPointsTakeble();
 		for (int i = 0; i < points.size(); i++) {
-            if(points.get(i).isFree() && !takeble.contains(points.get(i)))
-                res.add(points.get(i));
+			Point p = points.get(i);
+            if(isPointFree(p) && !takeble.contains(p))
+                res.add(p);
         }
 		return res;
 	}
 	
+	public boolean isPointFree(Point point){
+	    for (int i = 0; i < pieces.size(); i++) {
+	    	Point p = pieces.get(i).getPosition();
+	    	if((p != null) && p.isPointEquals(point))return true;
+        }
+        return false;        
+	}
+
 	public boolean isPointTakeble(Point point){
 	    for (int i = 0; i < pieces.size(); i++) {
-            if(pieces.get(i).isTakePoint(point))
+            if(pieces.get(i).isTakePoint(this, point))
                 return true;
         }
         return false;        

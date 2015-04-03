@@ -10,11 +10,9 @@ import com.lotos4u.text.chess.boards.Point;
 public class King extends Piece {
 
 	@Override
-	public List<Point> getPointsTakeble() {
+	public List<Point> getPointsTakeble(ChessBoard board) {
         List<Point> res = new ArrayList<Point>();
-        if(position == null)
-            return res;        
-        ChessBoard board = position.getBoard();
+        if(position == null)return res;        
         Point[] takePoints = new Point[]{
                 board.getPoint(position.getX(), position.getY() + 1),
                 board.getPoint(position.getX(), position.getY() - 1),

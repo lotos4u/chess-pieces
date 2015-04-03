@@ -14,12 +14,8 @@ abstract public class Piece implements Comparable<Piece> {
         return position;
     }
     
-    public void setPosition(Point position) {
-        if(this.position != null)
-            this.position.setPiece(null);
-        this.position = position;
-        if(position != null)
-            position.setPiece(this);
+    public void setPosition(Point p) {
+        position = p;
     }
 
     /**
@@ -29,18 +25,8 @@ abstract public class Piece implements Comparable<Piece> {
         setPosition(null);
     }
 
-    public ChessBoard getBoard() {
-        if(position != null)
-            return position.getBoard();
-        return null;
-    }
-
-    public boolean isTakePoint(Point p){
-        if(getBoard() == null)
-           return false;
-        if(!getBoard().equals(p.getBoard()))
-            return false;
-        List<Point> takePoints = getPointsTakeble();
+    public boolean isTakePoint(ChessBoard board, Point p){
+        List<Point> takePoints = getPointsTakeble(board);
         return takePoints.contains(p);
     }
 
@@ -50,16 +36,10 @@ abstract public class Piece implements Comparable<Piece> {
 
     @Override
     public String toString() {
-        List<Point> takeble = getPointsTakeble();
         String pos = "(-,-)";
         if(position != null)
-            pos = position.toString();
-        if(takeble.size() > 0){
-            return getName() + " " + pos + ", can take at: [" + takeble + "]";    
-        }
-        else{
-            return getName() + " " + pos;
-        }
+        pos = position.toString();
+        return getName() + " " + pos;
     }
 
 
@@ -69,11 +49,10 @@ abstract public class Piece implements Comparable<Piece> {
         return t2.compareTo(t1);
     }
 
-    protected List<Point> getBishopTakeble(){
+    protected List<Point> getBishopTakeble(ChessBoard board){
         List<Point> res = new ArrayList<Point>();
         if(position == null)
             return res;
-        ChessBoard board = position.getBoard();
         float X = board.getxSize();
         float Y = board.getySize();
         int L = Math.round(Math.min(X,  Y));// (int)Math.round(Math.sqrt(X*X + Y*Y));
@@ -100,11 +79,10 @@ abstract public class Piece implements Comparable<Piece> {
         return res;
     }
     
-    protected List<Point> getRookTakeble(){
+    protected List<Point> getRookTakeble(ChessBoard board){
         List<Point> res = new ArrayList<Point>();
         if(position == null)
             return res;
-        ChessBoard board = position.getBoard();
         for (int x = 1; x <= board.getxSize(); x++) {
             if(x != position.getX())
                 res.add(board.getPoint(x, position.getY()));
@@ -116,7 +94,7 @@ abstract public class Piece implements Comparable<Piece> {
         return res;
     }
     
-    public abstract List<Point> getPointsTakeble();
+    public abstract List<Point> getPointsTakeble(ChessBoard board);
     
     public abstract boolean isValidMove(Point point);
 

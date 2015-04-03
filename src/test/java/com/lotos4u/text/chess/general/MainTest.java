@@ -20,7 +20,8 @@ public class MainTest {
     /**
      * 2 Kings, 2 Queens, 2 Bishops and 1 Knight on 7×7 board
      */
-	@Test public void testKKQQBBNon7x7(){
+	//@Test 
+	public void testKKQQBBNon7x7(){
         
         King king1 = new King();
         King king2 = new King();
@@ -49,7 +50,8 @@ public class MainTest {
     /**
      * 1 Rook and 2 Kings on 3x3 Board
      */
-    @Test public void testRKKon3x3recursive(){
+    @Test 
+    public void testRKKon3x3recursive(){
         Rook rook1 = new Rook();
         King king1 = new King();
         King king2 = new King();
@@ -132,7 +134,7 @@ public class MainTest {
         Assert.assertEquals(8, boards.size());
     }
     
-    @Test @Ignore public static void testMisc(){
+    @Test @Ignore public void testMisc(){
         Rook rook1 = new Rook();
         Rook rook2 = new Rook();
         Rook rook3 = new Rook();
