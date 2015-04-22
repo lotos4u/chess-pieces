@@ -10,7 +10,8 @@ abstract public class Piece implements Comparable<Piece> {
 
     protected Point position;
 
-    public Point getPosition() {
+    
+	public Point getPosition() {
         return position;
     }
     
@@ -18,7 +19,7 @@ abstract public class Piece implements Comparable<Piece> {
         position = p;
     }
 
-    /**
+	/**
      * Set position to zeros (make not positioned)
      */
     public void drop() {
