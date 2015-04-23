@@ -19,7 +19,7 @@ import com.lotos4u.text.chess.pieces.Rook;
 
 public class ChessBoard {
 	
-	private int recursionCounter = 0;
+	private int rc = 0;
 	/**
 	 * Horizontal board size
 	 */
@@ -142,31 +142,32 @@ public class ChessBoard {
 		boolean log_local = true;
 		boolean pauses = false;
 		boolean retVal = false;
-        recursionCounter++;
-        if(log)Log.out("Arrange iteration #" + recursionCounter + ", pieces:" + unpositioned);
+        rc++; //Recursion counter
+        if(log)Log.out("[" + rc + "] " + "Pieces:" + unpositioned);
         int pieceIndex = startPiece;
         int pieceCounter = 0;
         pieceIndex = Utility.putValueInRange(pieceIndex, 0, unpositioned.size()-1);
         Piece piece = unpositioned.get(pieceIndex);
         while(!piece.isPositioned() && (pieceCounter++ < unpositioned.size())) {
-            if(log)Log.out("Try to put " + piece);
+            if(log)Log.out("[" + rc + "] " + "Try to put " + piece);
             retVal = tryToPut(piece, startPoint, log_local);
             if(pauses)Log.pause();
             if (retVal) {
-            	if(log)Log.out("Success! " + piece);
+            	if(log)Log.out("[" + rc + "] " + "Success! " + piece);
             	if(unpositioned.size() > 1) {
                     List<Piece> newList = new ArrayList<Piece>();
                     newList.addAll(unpositioned);
                     newList.remove(piece);
                     retVal = arrangeRecursively(startPoint, startPiece, newList);
+                    if(log)Log.out("[" + rc + "] " + "Recursive call returned..." + retVal);
             	}
             	else {
-                    if(log)Log.out("Arrangment complete!");
+                    if(log)Log.out("[" + rc + "] " + "Arrangment complete!");
             	}                	
             }
             else
             {
-            	if(log)Log.out("Fail...");
+            	if(log)Log.out("[" + rc + "] " + "Fail...");
             }
             if(!retVal){
                 pieceIndex = Utility.cycledInc(pieceIndex, 0, unpositioned.size()-1);
@@ -175,9 +176,10 @@ public class ChessBoard {
         	//if(log)Log.out("Counter="+pieceCounter);
         }
         if(!piece.isPositioned()){
-        	if(log)Log.out("Arrangement is impossible: start point=" + startPoint + ", start piece=" + startPiece);
-        	recursionCounter = 0;
+        	if(log)Log.out("[" + rc + "] " + "Arrangement is impossible: start point=" + startPoint + ", start piece=" + startPiece);
+        	//rc = 0;
         }
+        rc--;
         return retVal;
 	}
 
@@ -191,18 +193,18 @@ public class ChessBoard {
             boolean isFree = isPointFree(point);
             boolean isTakeble = isPointTakeble(point);
             if(isFree && !isTakeble){
-            	if(log)Log.out("try point index=" + pointIndex + ", " + point);
+            	if(log)Log.out("[" + rc + "] " + "try point index=" + pointIndex + ", " + point);
                 piece.setPosition(point);
                 if(isArrangeValid()){
-                    if(log)Log.out("Piece positioned correctly: " + piece);
+                    if(log)Log.out("[" + rc + "] " + "Piece positioned correctly: " + piece);
                 }
                 else{
-                	if(log)Log.out("Position is incorrect!");
+                	if(log)Log.out("[" + rc + "] " + "Invalid arrangement! Have to drop...");
                     piece.drop();
                 }
             }
             else {
-            	if(log)Log.out("Can't use: " + point + ", free=" + isFree + ", takeble=" + isTakeble);
+            	//if(log)Log.out("Can't use: " + point + ", free=" + isFree + ", takeble=" + isTakeble);
             }
             pointIndex = Utility.cycledInc(pointIndex, 0, points.size()-1);
             if(pauses)Log.pause();
