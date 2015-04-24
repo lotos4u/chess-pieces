@@ -7,10 +7,17 @@ import com.lotos4u.text.chess.boards.ChessBoard;
 import com.lotos4u.text.chess.boards.Point;
 
 abstract public class Piece implements Comparable<Piece> {
-
-    protected Point position;
+	private static int pCounter;
+    private String name;
+	protected Point position;
 
     
+    
+	public Piece(String newName) {
+		super();
+		name = newName + pCounter++;
+	}
+
 	public Point getPosition() {
         return position;
     }
@@ -37,10 +44,8 @@ abstract public class Piece implements Comparable<Piece> {
 
     @Override
     public String toString() {
-        String pos = "(-,-)";
-        if(position != null)
-        pos = position.toString();
-        return getName() + " " + pos;
+        String pos = (position != null) ? (" " + position.toString()) : "";
+        return getName() + pos;
     }
 
 
@@ -95,11 +100,15 @@ abstract public class Piece implements Comparable<Piece> {
         return res;
     }
     
-    public abstract List<Point> getPointsTakeble(ChessBoard board);
-    
-    public abstract boolean isValidMove(Point point);
+    public String getName() {
+		return name;
+	}
 
-    public abstract String getName();
+	public boolean isSameKind(Piece p) {
+		return this.getClass().equals(p.getClass());
+	}
+    
+	public abstract List<Point> getPointsTakeble(ChessBoard board);
     
     public abstract int getTakebility();
 }

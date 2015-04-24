@@ -1,8 +1,5 @@
 package com.lotos4u.text.chess.boards;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -135,59 +132,75 @@ public class ChessBoard {
 	    return arrangeRecursively(startPoint, startPiece, pieces);
 	}
 	
+	protected List<Piece> getUnpositioned(List<Piece> input){
+		List<Piece> res = new ArrayList<Piece>();
+		for (Iterator<Piece> iterator = input.iterator(); iterator.hasNext();) {
+			Piece piece = iterator.next();
+			if (!piece.isPositioned())res.add(piece);
+		}
+		return res;
+	}
 	
 	protected boolean arrangeRecursively(int startPoint, int startPiece, List<Piece> unpositioned){
-		if(unpositioned.size() < 1)return true;
 		boolean log = true;
-		boolean log_local = true;
+		boolean log_local = false;
 		boolean pauses = false;
 		boolean retVal = false;
+		boolean recursionResult = false;
+		List<Point> possible = new ArrayList<Point>(points);
         rc++; //Recursion counter
         if(log)Log.out("[" + rc + "] " + "Pieces:" + unpositioned);
         int pieceIndex = startPiece;
         int pieceCounter = 0;
         pieceIndex = Utility.putValueInRange(pieceIndex, 0, unpositioned.size()-1);
         Piece piece = unpositioned.get(pieceIndex);
+        Piece prev = null;
         while(!piece.isPositioned() && (pieceCounter++ < unpositioned.size())) {
-            if(log)Log.out("[" + rc + "] " + "Try to put " + piece);
-            retVal = tryToPut(piece, startPoint, log_local);
+            if(log)Log.out("[" + rc + "] " + "Try to put " + piece + ", possible:" + possible);
+            retVal = tryToPut(piece, possible, startPoint, log_local);
             if(pauses)Log.pause();
             if (retVal) {
             	if(log)Log.out("[" + rc + "] " + "Success! " + piece);
             	if(unpositioned.size() > 1) {
-                    List<Piece> newList = new ArrayList<Piece>();
-                    newList.addAll(unpositioned);
-                    newList.remove(piece);
-                    retVal = arrangeRecursively(startPoint, startPiece, newList);
-                    if(log)Log.out("[" + rc + "] " + "Recursive call returned..." + retVal);
+            		recursionResult = arrangeRecursively(startPoint, startPiece, getUnpositioned(unpositioned));
+                    if(log)Log.out("[" + rc + "] " + "Recursive call returned..." + recursionResult);
+                    if(!recursionResult) {
+                    	if(log)Log.out("[" + rc + "] " + "Drop last piece..." + piece);
+                    	//wrong.add(piece.getPosition());
+                    	possible.remove(piece.getPosition());
+                    	piece.drop();
+                    }
             	}
             	else {
-                    if(log)Log.out("[" + rc + "] " + "Arrangment complete!");
+                    if(log)Log.out("[" + rc + "] " + "Arrangment complete!\n");
             	}                	
             }
             else
             {
-            	if(log)Log.out("[" + rc + "] " + "Fail...");
+        		if(log)Log.out("[" + rc + "] " + "Fail with " + piece + "...");
+        		prev = piece;
+        		int selectCounter = 0;
+        		while(!piece.isSameKind(prev) && (selectCounter < unpositioned.size())) {
+        			pieceIndex = Utility.cycledInc(pieceIndex, 0, unpositioned.size()-1);
+        			piece = unpositioned.get(pieceIndex);
+        		}
+        		if(piece.isSameKind(prev))pieceCounter =  unpositioned.size();
+        		if(log)Log.out("[" + rc + "] " + "Nothing to choose more... exiting...");
             }
-            if(!retVal){
-                pieceIndex = Utility.cycledInc(pieceIndex, 0, unpositioned.size()-1);
-        		piece = unpositioned.get(pieceIndex);
-            }
-        	//if(log)Log.out("Counter="+pieceCounter);
         }
         if(!piece.isPositioned()){
-        	if(log)Log.out("[" + rc + "] " + "Arrangement is impossible: start point=" + startPoint + ", start piece=" + startPiece);
+        	if(log)Log.out("[" + rc + "] " + "Arrangement is impossible: start point=" + startPoint + ", start piece=" + startPiece + " (Pieces: " + pieces + "\n");
         	//rc = 0;
         }
         rc--;
         return retVal;
 	}
 
-	protected boolean tryToPut(Piece piece, int startIndex, boolean log) {
+	protected boolean tryToPut(Piece piece, List<Point> possible, int startIndex, boolean log) {
 		int i = 0;
 		boolean pauses = false;
-		int pointIndex = startIndex;
-		List<Point> pts = points;
+		int pointIndex = Utility.putValueInRange(startIndex, 0, possible.size()-1);
+		List<Point> pts = new ArrayList<Point>(possible); 
         while((pts.size() > 0) && !piece.isPositioned() && (i++ < pts.size())) {
             Point point = pts.get(pointIndex);
             boolean isFree = isPointFree(point);
@@ -206,7 +219,7 @@ public class ChessBoard {
             else {
             	//if(log)Log.out("Can't use: " + point + ", free=" + isFree + ", takeble=" + isTakeble);
             }
-            pointIndex = Utility.cycledInc(pointIndex, 0, points.size()-1);
+            pointIndex = Utility.cycledInc(pointIndex, 0, possible.size()-1);
             if(pauses)Log.pause();
         }
         return (piece.isPositioned());
@@ -217,10 +230,10 @@ public class ChessBoard {
         for (int startPoint = 0; startPoint < points.size(); startPoint++) {
             for (int startPiece = 0; startPiece < pieces.size(); startPiece++) {
                 dropPieces();
-                Log.out("\n\n*********  Try (point=" + startPoint + ", piece=" + startPiece + ") *********");
+                Log.out("\n\n*********  Try (point=" + startPoint + " " + points.get(startPoint) + ", piece=" + startPiece + " (" + pieces.get(startPiece) + ")) *********");
                 arrangeRecursively(startPoint, startPiece);
                 if(isArrangedAndValid()){
-                	Log.out("Arrange Valid, point=" + startPoint + ", piece=" + startPiece);
+                	Log.out("Arrange Valid, point=" + startPoint + ", piece=" + startPiece + " (Pieces: " + pieces);
                     validCounter++;
                 }
                 else {

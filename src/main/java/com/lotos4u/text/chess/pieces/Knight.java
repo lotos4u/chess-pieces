@@ -8,15 +8,10 @@ import com.lotos4u.text.chess.boards.Point;
 
 public class Knight extends Piece {
 
-    @Override
-    public boolean isValidMove(Point point) {
-        return true;
-    }
-
-    @Override
-    public String getName() {
-        return "Knight";
-    }
+	
+    public Knight() {
+		super("Knight");
+	}
 
     @Override
     public int getTakebility() {

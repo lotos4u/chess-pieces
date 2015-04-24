@@ -6,22 +6,16 @@ import com.lotos4u.text.chess.boards.ChessBoard;
 import com.lotos4u.text.chess.boards.Point;
 
 public class Bishop extends Piece {
-
-    @Override
-    public boolean isValidMove(Point point) {
-        return true;
-    }
+	
+    public Bishop() {
+		super("Bishop");
+	}
 
     @Override
     public List<Point> getPointsTakeble(ChessBoard board) {
         return getBishopTakeble(board);
     }
     
-    @Override
-    public String getName() {
-        return "Elephant";
-    }
-
     @Override
     public int getTakebility() {
         return 50;

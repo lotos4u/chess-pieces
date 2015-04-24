@@ -16,12 +16,27 @@ import com.lotos4u.text.chess.pieces.Queen;
 import com.lotos4u.text.chess.pieces.Rook;
 
 public class MainTest {
+	
+	@Test @Ignore
+	public void testPieceSameKind() {
+        Log.out("\n\n********************** Test testPieceSameKind **********************\n");
+        King king1 = new King();
+        King king2 = new King();
+        Queen queen1 = new Queen();
+        Queen queen2 = new Queen();
+        Bishop bishop1 = new Bishop();
+        Bishop bishop2 = new Bishop();
+        
+        Log.out(king2.isSameKind(king1));
+        Log.out(king2.isSameKind(queen1));
+		
+	}
     /**
      * 2 Kings, 2 Queens, 2 Bishops and 1 Knight on 7×7 board
      */
 	@Test @Ignore
 	public void testKKQQBBNon7x7(){
-        
+        Log.out("\n\n********************** Test testKKQQBBNon7x7 **********************\n");
         King king1 = new King();
         King king2 = new King();
         Queen queen1 = new Queen();
@@ -51,6 +66,7 @@ public class MainTest {
      */
     @Test @Ignore
     public void testRKKon3x3(){
+    	Log.out("\n\n********************** Test testRKKon3x3 **********************\n");
         Rook rook1 = new Rook();
         King king1 = new King();
         King king2 = new King();
@@ -71,6 +87,7 @@ public class MainTest {
      */
     @Test
     public void testRRNNNNon4x4(){
+    	Log.out("\n\n********************** Test testRRNNNNon4x4 **********************\n");
         Rook rook1 = new Rook();
         Rook rook2 = new Rook();
         Knight knight1 = new Knight();

@@ -7,19 +7,13 @@ import com.lotos4u.text.chess.boards.Point;
 
 public class Rook extends Piece {
 
+	public Rook() {
+		super("Rook");
+	}
+
 	@Override
 	public List<Point> getPointsTakeble(ChessBoard board) {
 		return getRookTakeble(board);
-	}
-
-	@Override
-	public String getName() {
-		return "Rook";
-	}
-
-	@Override
-	public boolean isValidMove(Point point) {
-		return true;
 	}
 
     @Override
