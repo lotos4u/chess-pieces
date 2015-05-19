@@ -2,8 +2,10 @@ package com.lotos4u.text.chess.boards;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.lotos4u.text.chess.general.Log;
 import com.lotos4u.text.chess.general.Utility;
@@ -15,7 +17,9 @@ import com.lotos4u.text.chess.pieces.Queen;
 import com.lotos4u.text.chess.pieces.Rook;
 
 public class ChessBoard {
-	
+	/**
+	 * Recursion counter
+	 */
 	private int rc = 0;
 	/**
 	 * Horizontal board size
@@ -36,8 +40,8 @@ public class ChessBoard {
 
 	public ChessBoard (ChessBoard board){
 	    this(board.getxSize(), board.getySize());
-	    for (int i = 0; i < board.getPieces().size(); i++) {
-	        Piece p = board.getPiece(i);
+	    for (Iterator<Piece> iterator = board.pieces.iterator(); iterator.hasNext();) {
+			Piece p = (Piece) iterator.next();
 	        Piece newPiece = null;
 	        if (p instanceof King) {
                 newPiece = new King();
@@ -51,10 +55,10 @@ public class ChessBoard {
                 newPiece = new Queen();
             }
 	        Point point = p.getPosition();
-	        Point newPoint = new Point(point.getX(), point.getY());
-	        newPiece.setPosition(newPoint);
+	        if(point != null)
+	        	newPiece.setPosition(point.getX(), point.getY());
 	        pieces.add(newPiece);
-        }
+		}
 	}
 	
 	public ChessBoard(int xSize, int ySize) {
@@ -123,7 +127,7 @@ public class ChessBoard {
 	 */
 	public void dropPieces(){
 		for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
-			((Piece) iterator.next()).drop();
+			iterator.next().drop();
 		}
 	}
 	
@@ -142,7 +146,7 @@ public class ChessBoard {
 	}
 	
 	protected boolean arrangeRecursively(int startPoint, int startPiece, List<Piece> unpositioned){
-		boolean log = true;
+		boolean log = false;
 		boolean log_local = false;
 		boolean pauses = false;
 		boolean retVal = false;
@@ -166,7 +170,6 @@ public class ChessBoard {
                     if(log)Log.out("[" + rc + "] " + "Recursive call returned..." + recursionResult);
                     if(!recursionResult) {
                     	if(log)Log.out("[" + rc + "] " + "Drop last piece..." + piece);
-                    	//wrong.add(piece.getPosition());
                     	possible.remove(piece.getPosition());
                     	piece.drop();
                     }
@@ -190,7 +193,6 @@ public class ChessBoard {
         }
         if(!piece.isPositioned()){
         	if(log)Log.out("[" + rc + "] " + "Arrangement is impossible: start point=" + startPoint + ", start piece=" + startPiece + " (Pieces: " + pieces + "\n");
-        	//rc = 0;
         }
         rc--;
         return retVal;
@@ -216,9 +218,6 @@ public class ChessBoard {
                     piece.drop();
                 }
             }
-            else {
-            	//if(log)Log.out("Can't use: " + point + ", free=" + isFree + ", takeble=" + isTakeble);
-            }
             pointIndex = Utility.cycledInc(pointIndex, 0, possible.size()-1);
             if(pauses)Log.pause();
         }
@@ -226,22 +225,31 @@ public class ChessBoard {
 	}
 	
 	public int arrangeRecursivelyVariants(){
+		long start = System.currentTimeMillis();
+		Log.out("Board (" + xSize + ", " + ySize + "), " + pieces);
+		boolean log = false;
 	    int validCounter = 0;
+	    Set<ChessBoard> res = new HashSet<ChessBoard>();
         for (int startPoint = 0; startPoint < points.size(); startPoint++) {
             for (int startPiece = 0; startPiece < pieces.size(); startPiece++) {
                 dropPieces();
-                Log.out("\n\n*********  Try (point=" + startPoint + " " + points.get(startPoint) + ", piece=" + startPiece + " (" + pieces.get(startPiece) + ")) *********");
+                if(log)Log.out("\n\n*********  Try (point=" + startPoint + " " + points.get(startPoint) + ", piece=" + startPiece + " (" + pieces.get(startPiece) + ")) *********");
                 arrangeRecursively(startPoint, startPiece);
                 if(isArrangedAndValid()){
-                	Log.out("Arrange Valid, point=" + startPoint + ", piece=" + startPiece + " (Pieces: " + pieces);
+                	if(log)Log.out("Arrange Valid, point=" + startPoint + ", piece=" + startPiece + " (Pieces: " + pieces);
                     validCounter++;
+                    res.add(new ChessBoard(this));
                 }
                 else {
-                	Log.out("Invalid");
+                	if(log)Log.out("Invalid");
                 }
             }
         }
-        Log.out("Valid counter = " + validCounter);
+        if(log)Log.out("Valid arranges number (before Set-filter) = " + validCounter);
+        validCounter = res.size();
+        Log.out("Valid arranges number (after Set-filter) = " + validCounter);
+        long end = System.currentTimeMillis();
+        Log.out("Arrangement performed in " + (end - start) + " ms");
         return validCounter;
 	}
 	
@@ -425,6 +433,19 @@ public class ChessBoard {
         return isArrangeValid();
     }
 
+    private boolean isArrangeEquals(ChessBoard board) {
+    	if((pieces.size() != board.pieces.size()) || (points.size() != board.points.size()))
+    		return false;
+    	for (Iterator<Point> iterator = points.iterator(); iterator.hasNext();) {
+			Point myPoint = (Point) iterator.next();
+			Point hisPoint = board.getPoint(myPoint.getX(), myPoint.getY());
+			Piece myPiece = getPieceAtPoint(myPoint);
+			Piece hisPiece = board.getPieceAtPoint(hisPoint);
+			if(!Piece.isPiecesSameKind(myPiece, hisPiece))
+				return false;
+		}
+    	return true;
+    }
     	
     @Override
     public boolean equals(Object obj) {
@@ -434,15 +455,17 @@ public class ChessBoard {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ChessBoard c = (ChessBoard) obj;
-        if (xSize != c.getxSize())
+        ChessBoard b = (ChessBoard) obj;
+        if (xSize != b.getxSize())
             return false;
-        if (ySize != c.getySize())
+        if (ySize != b.getySize())
             return false;
-        if (!pieces.equals(obj))
+        if (pieces.size() != b.pieces.size())
             return false;
-        if (!points.equals(obj))
+        if (points.size() != b.points.size())
             return false;
+        if (!isArrangeEquals(b))
+        	return false;
         return true;        
     }
 
@@ -452,8 +475,8 @@ public class ChessBoard {
         int result = 1;
         result = prime * result + xSize;
         result = prime * result + ySize;
-        result = prime * result + pieces.hashCode();
-        result = prime * result + points.hashCode();
+        result = prime * result + pieces.size();
+        result = prime * result + points.size();
         return result;
     }
 }

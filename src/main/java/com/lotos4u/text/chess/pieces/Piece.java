@@ -21,6 +21,10 @@ abstract public class Piece implements Comparable<Piece> {
 	public Point getPosition() {
         return position;
     }
+
+	public void setPosition(int x, int y) {
+        position = new Point(x, y);
+    }
     
     public void setPosition(Point p) {
         position = p;
@@ -42,6 +46,22 @@ abstract public class Piece implements Comparable<Piece> {
         return (position != null);
     }
 
+    public static boolean isPiecesSameKind(Piece piece1, Piece piece2) {
+    	if(piece1 == null) {
+    		if(piece2 == null)
+    			return true;
+    		else
+    			return false;
+    	}
+    	else { //piece1 != null
+    		if(piece2 == null)
+    			return false;
+    		else {
+    			return piece1.isSameKind(piece2);
+    		}
+    	}
+    }
+    
     @Override
     public String toString() {
         String pos = (position != null) ? (" " + position.toString()) : "";

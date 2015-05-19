@@ -1,22 +1,24 @@
-package com.lotos4u.text.chess.general;
+package com.lotos4u.tests.chess.general;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.lotos4u.text.chess.boards.ChessBoard;
+import com.lotos4u.text.chess.boards.Point;
+import com.lotos4u.text.chess.general.Log;
 import com.lotos4u.text.chess.pieces.Bishop;
 import com.lotos4u.text.chess.pieces.King;
 import com.lotos4u.text.chess.pieces.Knight;
-import com.lotos4u.text.chess.pieces.Piece;
 import com.lotos4u.text.chess.pieces.Queen;
 import com.lotos4u.text.chess.pieces.Rook;
 
 public class MainTest {
 	
+		
 	@Test @Ignore
 	public void testPieceSameKind() {
         Log.out("\n\n********************** Test testPieceSameKind **********************\n");
@@ -34,51 +36,62 @@ public class MainTest {
     /**
      * 2 Kings, 2 Queens, 2 Bishops and 1 Knight on 7×7 board
      */
-	@Test @Ignore
+	@Test
 	public void testKKQQBBNon7x7(){
         Log.out("\n\n********************** Test testKKQQBBNon7x7 **********************\n");
-        King king1 = new King();
-        King king2 = new King();
-        Queen queen1 = new Queen();
-        Queen queen2 = new Queen();
-        Bishop bishop1 = new Bishop();
-        Bishop bishop2 = new Bishop();
-        Knight knight = new Knight();
         ChessBoard board = new ChessBoard(7, 7);
-        List<Piece> pieces = new ArrayList<Piece>();
+        board.addPiece(new King());
+        board.addPiece(new King());
+        board.addPiece(new Queen());
+        board.addPiece(new Queen());
+        board.addPiece(new Bishop());
+        board.addPiece(new Bishop());
+        board.addPiece(new Knight());
         
-        pieces.add(king1);
-        pieces.add(king2);
-        pieces.add(queen1);
-        pieces.add(queen2);
-        pieces.add(bishop1);
-        pieces.add(bishop2);
-        pieces.add(knight);
-
-        board.setPieces(pieces);
         int boards = board.arrangeRecursivelyVariants();
         
         Assert.assertTrue(boards > 0);
     }
 
+	@Test @Ignore
+	public void testSameArrange() {
+		Log.out("\n\n********************** Test testSameArrange **********************\n");
+		ChessBoard board1 = new ChessBoard(3, 3);
+		board1.addPiece(new Rook());
+		board1.addPiece(new Rook());
+		board1.getPiece(1).setPosition(new Point(1, 1));
+		board1.getPiece(0).setPosition(new Point(1, 2));
+		Log.out(board1);
+		
+		ChessBoard board2 = new ChessBoard(3, 3);
+		board2.addPiece(new Rook());
+		board2.addPiece(new Rook());
+		board2.getPiece(0).setPosition(new Point(1, 1));
+		board2.getPiece(1).setPosition(new Point(1, 2));
+		Log.out(board2);
+		
+		Log.out(board1.equals(board2));
+		Log.out("H1=" + board1.hashCode() + ", H2=" + board2.hashCode());
+		
+		Set<ChessBoard> boards = new HashSet<ChessBoard>();
+		boards.add(board1);
+		boards.add(board2);
+		Log.out(boards.size());
+	}
     /**
      * 1 Rook and 2 Kings on 3x3 Board
      */
-    @Test @Ignore
+    @Test
     public void testRKKon3x3(){
     	Log.out("\n\n********************** Test testRKKon3x3 **********************\n");
-        Rook rook1 = new Rook();
-        King king1 = new King();
-        King king2 = new King();
-        ChessBoard board = new ChessBoard(3, 3);
-        List<Piece> pieces = new ArrayList<Piece>();
-        pieces.add(rook1);
-        pieces.add(king1);
-        pieces.add(king2);
-        board.setPieces(pieces);
+    	ChessBoard board = new ChessBoard(3, 3);
+    	board.addPiece(new Rook());
+    	board.addPiece(new King());
+    	board.addPiece(new King());
+        
         int res = board.arrangeRecursivelyVariants();
         
-        Assert.assertEquals(8, res);
+        Assert.assertEquals(4, res);
     }
 
     
@@ -88,21 +101,13 @@ public class MainTest {
     @Test
     public void testRRNNNNon4x4(){
     	Log.out("\n\n********************** Test testRRNNNNon4x4 **********************\n");
-        Rook rook1 = new Rook();
-        Rook rook2 = new Rook();
-        Knight knight1 = new Knight();
-        Knight knight2 = new Knight();
-        Knight knight3 = new Knight();
-        Knight knight4 = new Knight();
-        ChessBoard board = new ChessBoard(4, 4);
-        List<Piece> pieces = new ArrayList<Piece>();
-        pieces.add(rook1);
-        pieces.add(rook2);
-        pieces.add(knight1);
-        pieces.add(knight2);
-        pieces.add(knight3);
-        pieces.add(knight4);
-        board.setPieces(pieces);
+    	ChessBoard board = new ChessBoard(4, 4);
+    	board.addPiece(new Rook());
+    	board.addPiece(new Rook());
+    	board.addPiece(new Knight());
+    	board.addPiece(new Knight());
+    	board.addPiece(new Knight());
+    	board.addPiece(new Knight());
         
         int res = board.arrangeRecursivelyVariants();
         
