@@ -1,4 +1,4 @@
-package com.lotos4u.text.chess.boards;
+package com.lotos4u.tests.chess.boards;
 
 
 

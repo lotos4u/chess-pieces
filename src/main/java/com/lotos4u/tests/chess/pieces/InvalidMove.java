@@ -1,4 +1,4 @@
-package com.lotos4u.text.chess.pieces;
+package com.lotos4u.tests.chess.pieces;
 
 public class InvalidMove extends Exception {
 

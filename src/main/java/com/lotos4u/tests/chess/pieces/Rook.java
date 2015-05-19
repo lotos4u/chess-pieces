@@ -1,9 +1,9 @@
-package com.lotos4u.text.chess.pieces;
+package com.lotos4u.tests.chess.pieces;
 
 import java.util.List;
 
-import com.lotos4u.text.chess.boards.ChessBoard;
-import com.lotos4u.text.chess.boards.Point;
+import com.lotos4u.tests.chess.boards.ChessBoard;
+import com.lotos4u.tests.chess.boards.Point;
 
 public class Rook extends Piece {
 

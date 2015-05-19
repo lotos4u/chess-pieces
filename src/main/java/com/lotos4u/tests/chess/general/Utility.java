@@ -1,4 +1,4 @@
-package com.lotos4u.text.chess.general;
+package com.lotos4u.tests.chess.general;
 
 public class Utility {
     

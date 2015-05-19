@@ -1,4 +1,4 @@
-package com.lotos4u.text.chess.boards;
+package com.lotos4u.tests.chess.boards;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,14 +7,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.lotos4u.text.chess.general.Log;
-import com.lotos4u.text.chess.general.Utility;
-import com.lotos4u.text.chess.pieces.Bishop;
-import com.lotos4u.text.chess.pieces.King;
-import com.lotos4u.text.chess.pieces.Knight;
-import com.lotos4u.text.chess.pieces.Piece;
-import com.lotos4u.text.chess.pieces.Queen;
-import com.lotos4u.text.chess.pieces.Rook;
+import com.lotos4u.tests.chess.general.Log;
+import com.lotos4u.tests.chess.general.Utility;
+import com.lotos4u.tests.chess.pieces.Bishop;
+import com.lotos4u.tests.chess.pieces.King;
+import com.lotos4u.tests.chess.pieces.Knight;
+import com.lotos4u.tests.chess.pieces.Piece;
+import com.lotos4u.tests.chess.pieces.Queen;
+import com.lotos4u.tests.chess.pieces.Rook;
 
 public class ChessBoard {
 	/**

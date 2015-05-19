@@ -7,14 +7,14 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.lotos4u.text.chess.boards.ChessBoard;
-import com.lotos4u.text.chess.boards.Point;
-import com.lotos4u.text.chess.general.Log;
-import com.lotos4u.text.chess.pieces.Bishop;
-import com.lotos4u.text.chess.pieces.King;
-import com.lotos4u.text.chess.pieces.Knight;
-import com.lotos4u.text.chess.pieces.Queen;
-import com.lotos4u.text.chess.pieces.Rook;
+import com.lotos4u.tests.chess.boards.ChessBoard;
+import com.lotos4u.tests.chess.boards.Point;
+import com.lotos4u.tests.chess.general.Log;
+import com.lotos4u.tests.chess.pieces.Bishop;
+import com.lotos4u.tests.chess.pieces.King;
+import com.lotos4u.tests.chess.pieces.Knight;
+import com.lotos4u.tests.chess.pieces.Queen;
+import com.lotos4u.tests.chess.pieces.Rook;
 
 public class MainTest {
 	
