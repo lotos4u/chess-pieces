@@ -9,6 +9,7 @@ import com.lotos4u.tests.chess.boards.Point;
 abstract public class Piece implements Comparable<Piece> {
 	private static int pCounter;
     private String name;
+    private String shortName;
 	protected Point position;
 
     
@@ -16,6 +17,11 @@ abstract public class Piece implements Comparable<Piece> {
 	public Piece(String newName) {
 		super();
 		name = newName + pCounter++;
+		shortName = name.substring(0, 1);
+		if (this instanceof Knight) {
+			shortName = "N";
+			
+		}
 	}
 
 	public Point getPosition() {
@@ -23,7 +29,7 @@ abstract public class Piece implements Comparable<Piece> {
     }
 
 	public void setPosition(int x, int y) {
-        position = new Point(x, y);
+        setPosition(new Point(x, y));
     }
     
     public void setPosition(Point p) {
@@ -38,8 +44,7 @@ abstract public class Piece implements Comparable<Piece> {
     }
 
     public boolean isTakePoint(ChessBoard board, Point p){
-        List<Point> takePoints = getPointsTakeble(board);
-        return takePoints.contains(p);
+        return getPointsTakeble(board).contains(p);
     }
 
     public boolean isPositioned(){
@@ -79,28 +84,26 @@ abstract public class Piece implements Comparable<Piece> {
         List<Point> res = new ArrayList<Point>();
         if(position == null)
             return res;
-        float X = board.getxSize();
-        float Y = board.getySize();
-        int L = Math.round(Math.min(X,  Y));// (int)Math.round(Math.sqrt(X*X + Y*Y));
         int x = position.getX();
         int y = position.getY();
-        Point point;
-        for (int i = 1; i <= L; i++) {
-            point = board.getPoint(x + i, y + i);
-            if(point != null)
-                res.add(point);
-            
-            point = board.getPoint(x - i, y - i);
-            if(point != null)
-                res.add(point);
-            
-            point = board.getPoint(x + i, y - i);
-            if(point != null)
-                res.add(point);
-            
-            point = board.getPoint(x - i, y + i);
-            if(point != null)
-                res.add(point);
+        for (int i = 1; i <= Math.max(board.getxSize(), board.getySize()); i++) {
+        	int newX, newY;
+        	newX = x + i;
+        	newY = y + i;
+        	if (board.isPointOnBoard(newX, newY))
+        		res.add(new Point(newX, newY));
+        	newX = x - i;
+        	newY = y - i;
+        	if (board.isPointOnBoard(newX, newY))
+        		res.add(new Point(newX, newY));
+        	newX = x + i;
+        	newY = y - i;
+        	if (board.isPointOnBoard(newX, newY))
+        		res.add(new Point(newX, newY));
+        	newX = x - i;
+        	newY = y + i;
+        	if (board.isPointOnBoard(newX, newY))
+        		res.add(new Point(newX, newY));
         }
         return res;
     }
@@ -109,19 +112,25 @@ abstract public class Piece implements Comparable<Piece> {
         List<Point> res = new ArrayList<Point>();
         if(position == null)
             return res;
+        int X = position.getX();
+        int Y = position.getY();
         for (int x = 1; x <= board.getxSize(); x++) {
-            if(x != position.getX())
-                res.add(board.getPoint(x, position.getY()));
+            if(x != X)
+                res.add(new Point(x, Y));
         }
         for (int y = 1; y <= board.getySize(); y++) {
-            if(y != position.getY())
-                res.add(board.getPoint(position.getX(), y));
+            if(y != Y)
+                res.add(new Point(X, y));
         }
         return res;
     }
     
     public String getName() {
 		return name;
+	}
+
+    public String getShortName() {
+		return shortName;
 	}
 
 	public boolean isSameKind(Piece p) {

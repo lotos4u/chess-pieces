@@ -16,23 +16,35 @@ public class King extends Piece {
 	@Override
 	public List<Point> getPointsTakeble(ChessBoard board) {
         List<Point> res = new ArrayList<Point>();
-        if(position == null)return res;        
-        Point[] takePoints = new Point[]{
-                board.getPoint(position.getX(), position.getY() + 1),
-                board.getPoint(position.getX(), position.getY() - 1),
-                board.getPoint(position.getX() + 1, position.getY()),
-                board.getPoint(position.getX() + 1, position.getY() + 1),
-                board.getPoint(position.getX() + 1, position.getY() - 1),
-                board.getPoint(position.getX() - 1, position.getY()),
-                board.getPoint(position.getX() - 1, position.getY() + 1),
-                board.getPoint(position.getX() - 1, position.getY() - 1)
-        };
+        if(position == null)return res;   
+        int X = position.getX();
+        int Y = position.getY();
+        int x, y;
         
-        for (int i = 0; i < takePoints.length; i++) {
-            if(takePoints[i] != null){
-                res.add(takePoints[i]);
-            }
-        }
+    	x = X; y = Y + 1;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));   
+    	x = X; y = Y - 1;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));   
+    	x = X + 1; y = Y;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));   
+    	x = X + 1; y = Y + 1;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));   
+    	x = X + 1; y = Y - 1;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));   
+    	x = X - 1; y = Y;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));   
+    	x = X - 1; y = Y + 1;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));   
+    	x = X - 1; y = Y - 1;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));   
         return res;
 	}
 
@@ -40,6 +52,5 @@ public class King extends Piece {
     public int getTakebility() {
         return 10;
     }
-
 
 }

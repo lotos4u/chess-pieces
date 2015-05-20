@@ -69,43 +69,4 @@ public class Point {
 	public String toString() {
 	    return "(" + x + ", " + y + ")";
 	}
-/*
-	public List<Point> getPossibleNeighbors(){
-	    List<Point> res = new ArrayList<Point>();
-	    if((x + y) < 2)
-	        return res;
-	    boolean leftable = (x > 1);
-	    boolean uppable = (y > 1);
-	    if(leftable)
-	        res.add(board.getPoint(x-1, y));
-        if(uppable)
-            res.add(board.getPoint(x, y-1));
-        if(leftable && uppable)
-            res.add(board.getPoint(x-1, y-1));
-        
-        boolean rightable = (x < board.getxSize());
-        boolean downable = (y < board.getySize());
-        if(rightable)
-            res.add(board.getPoint(x+1, y));
-        if(downable)
-            res.add(board.getPoint(x, y+1));
-        if(rightable && downable)
-            res.add(board.getPoint(x+1, y+1));
-
-        if(leftable && downable)
-            res.add(board.getPoint(x-1, y+1));
-        if(rightable && uppable)
-            res.add(board.getPoint(x+1, y-1));
-        
-	    return res;
-	}
-	*/
-
-/*    
-    public int compareTo(Point o) {
-        Integer myNeighbors = getNeighbors().size();
-        Integer hisNeighbors = o.getNeighbors().size();
-        return myNeighbors.compareTo(hisNeighbors);
-    }
-    */
 }

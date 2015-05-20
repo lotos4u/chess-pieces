@@ -23,22 +23,36 @@ public class Knight extends Piece {
         List<Point> res = new ArrayList<Point>();
         if(position == null)
             return res;        
-        Point[] takePoints = new Point[]{
-                board.getPoint(position.getX() - 1, position.getY() - 2),
-                board.getPoint(position.getX() + 1, position.getY() - 2),
-                board.getPoint(position.getX() - 2, position.getY() - 1),
-                board.getPoint(position.getX() - 2, position.getY() + 1),
-                board.getPoint(position.getX() - 1, position.getY() + 2),
-                board.getPoint(position.getX() + 1, position.getY() + 2),
-                board.getPoint(position.getX() + 2, position.getY() - 1),
-                board.getPoint(position.getX() + 2, position.getY() + 1)
-        };
         
-        for (int i = 0; i < takePoints.length; i++) {
-            if(takePoints[i] != null){
-                res.add(takePoints[i]);
-            }
-        }
+        int X = position.getX();
+        int Y = position.getY();
+        int x, y;
+        
+    	x = X - 1; y = Y - 2;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));
+    	x = X + 1; y = Y - 2;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));
+    	x = X - 2; y = Y - 1;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));
+    	x = X - 2; y = Y + 1;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));
+    	x = X - 1; y = Y + 2;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));
+    	x = X + 1; y = Y + 2;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));
+    	x = X + 2; y = Y - 1;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));
+    	x = X + 2; y = Y + 1;
+    	if (board.isPointOnBoard(x, y))
+    		res.add(new Point(x, y));
+    	
         return res;
     }
 }

@@ -1,7 +1,6 @@
 package com.lotos4u.tests.chess.boards;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -40,8 +39,7 @@ public class ChessBoard {
 
 	public ChessBoard (ChessBoard board){
 	    this(board.getxSize(), board.getySize());
-	    for (Iterator<Piece> iterator = board.pieces.iterator(); iterator.hasNext();) {
-			Piece p = (Piece) iterator.next();
+	    for (Piece p : board.pieces) {
 	        Piece newPiece = null;
 	        if (p instanceof King) {
                 newPiece = new King();
@@ -61,40 +59,18 @@ public class ChessBoard {
 		}
 	}
 	
-	public ChessBoard(int xSize, int ySize) {
+	public ChessBoard(int newX, int newY) {
 		super();
-		this.xSize = xSize;
-		this.ySize = ySize;
-		for (int x = 1; x <= xSize; x++) {
-            for (int y = 1; y <= ySize; y++) {
+		this.xSize = newX;
+		this.ySize = newY;
+		for (int x = 1; x <= newX; x++) {
+            for (int y = 1; y <= newY; y++) {
                 Point point = new Point(x, y);
                 points.add(point);
             }
         }
 	}
 
-	/**
-	 * Create a ChessBoard with specified size and chess pieces.
-	 * @param xSize - horizontal size
-	 * @param ySize - vertical size
-	 * @param pieces - list with chess pieces (not positioned)
-	 */
-	public ChessBoard(int xSize, int ySize, List<Piece> pieces) {
-		this(xSize, ySize);
-		setPieces(pieces);
-	}
-	/**
-	 * Add chess pieces (instead of existed, if they are). 
-	 * @param pieces
-	 */
-	public void setPieces(List<Piece> pieces){
-		this.pieces.clear();
-		for (Iterator<Piece> i = pieces.iterator(); i.hasNext();) {
-			Piece piece = (Piece) i.next();
-			addPiece(piece);
-		}
-	}
-	
 	public Piece getPiece(int index){
 	    return pieces.get(index);
 	}
@@ -107,20 +83,6 @@ public class ChessBoard {
 		pieces.add(p);
 	}
 	
-	/**
-	 * Get points for specified coordinates
-	 * @param x horizontal coordinate
-	 * @param y vertical coordinate
-	 * @return Point with coordinates (x, y) or null (for invalid coordinates)
-	 */
-	public Point getPoint(int x, int y){
-	    for (Iterator<Point> i = points.iterator(); i.hasNext();) {
-            Point point = (Point) i.next();
-            if((point.getX() == x) && (point.getY() == y))
-                return point;
-        }
-	    return null;
-	}
 	
 	/**
 	 * Remove all pieces arrangement by dropping each of them (set null position)
@@ -131,20 +93,18 @@ public class ChessBoard {
 		}
 	}
 	
+	protected List<Piece> getUnpositioned(List<Piece> input){
+		List<Piece> res = new ArrayList<Piece>();
+		for (Piece piece : input) {
+			if (!piece.isPositioned())res.add(piece);
+		}
+		return res;
+	}	
 	
 	public boolean arrangeRecursively(int startPoint, int startPiece){
 	    return arrangeRecursively(startPoint, startPiece, pieces);
 	}
-	
-	protected List<Piece> getUnpositioned(List<Piece> input){
-		List<Piece> res = new ArrayList<Piece>();
-		for (Iterator<Piece> iterator = input.iterator(); iterator.hasNext();) {
-			Piece piece = iterator.next();
-			if (!piece.isPositioned())res.add(piece);
-		}
-		return res;
-	}
-	
+
 	protected boolean arrangeRecursively(int startPoint, int startPiece, List<Piece> unpositioned){
 		boolean log = false;
 		boolean log_local = false;
@@ -227,24 +187,29 @@ public class ChessBoard {
 	public int arrangeRecursivelyVariants(){
 		long start = System.currentTimeMillis();
 		Log.out("Board (" + xSize + ", " + ySize + "), " + pieces);
-		boolean log = false;
-	    int validCounter = 0;
-	    Set<ChessBoard> res = new HashSet<ChessBoard>();
+		boolean log = true;
+	    int validCounter = 0; //Counter of all possible valid arrangements
+	    int attemptsCounter = 0; 
+	    Set<ChessBoard> res = new HashSet<ChessBoard>(); //Set will filter equal arrangements
         for (int startPoint = 0; startPoint < points.size(); startPoint++) {
             for (int startPiece = 0; startPiece < pieces.size(); startPiece++) {
-                dropPieces();
+                dropPieces(); //Drop current arrangement
                 if(log)Log.out("\n\n*********  Try (point=" + startPoint + " " + points.get(startPoint) + ", piece=" + startPiece + " (" + pieces.get(startPiece) + ")) *********");
-                arrangeRecursively(startPoint, startPiece);
+                arrangeRecursively(startPoint, startPiece); //Perform arrangement for 'startPoint' and 'startPiece'
+                attemptsCounter++;
                 if(isArrangedAndValid()){
-                	if(log)Log.out("Arrange Valid, point=" + startPoint + ", piece=" + startPiece + " (Pieces: " + pieces);
+                	//if(log)Log.out("Arrange Valid, point=" + startPoint + ", piece=" + startPiece + " (Pieces: " + pieces);
+                	if(log) {Log.out("Arrange Valid");draw();}
                     validCounter++;
                     res.add(new ChessBoard(this));
                 }
                 else {
-                	if(log)Log.out("Invalid");
+                	//if(log)Log.out("Invalid");
+                	if(log) {Log.out("Arrange InValid");draw();}
                 }
             }
         }
+        if(log)Log.out("Attempts number = " + attemptsCounter);
         if(log)Log.out("Valid arranges number (before Set-filter) = " + validCounter);
         validCounter = res.size();
         Log.out("Valid arranges number (after Set-filter) = " + validCounter);
@@ -272,9 +237,7 @@ public class ChessBoard {
 	 * @return - true, if point located on the board
 	 */
 	public boolean isPointOnBoard(Point point){
-		return 
-				(point.getX() >= 1) && (point.getX() <= xSize) &&
-				(point.getY() >= 1) && (point.getY() <= ySize);
+		return isPointOnBoard(point.getX(), point.getY());
 	}
 	
 	/**
@@ -297,17 +260,6 @@ public class ChessBoard {
 		return ySize;
 	}
 	
-	public List<Piece> getPieces() {
-        return Collections.unmodifiableList(pieces);
-    }
-
-    /**
-	 * @return list with all points, located on this board
-	 */
-	public List<Point> getPointsAll(){
-		return Collections.unmodifiableList(points);
-	}
-	
 	public int getPointsNumber(){
 	    return xSize*ySize;
 	}
@@ -320,17 +272,15 @@ public class ChessBoard {
 	 * @return list with point on this board, which are takeble due to positioned pieces
 	 */
 	public List<Point> getPointsTakeble(){
-		List<Point> res = new ArrayList<Point>();
-        for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
-            Piece piece = (Piece) iterator.next();
+		Set<Point> res = new HashSet<Point>();
+        for (Piece piece : pieces) {
             if(piece.isPositioned()){
-                List<Point> takeble = piece.getPointsTakeble(this);
-                for (int i = 0; i < takeble.size(); i++) {
-                    if(!res.contains(takeble.get(i)))res.add(takeble.get(i));
+                for(Point p : piece.getPointsTakeble(this)) {
+                	res.add(p);
                 }
             }
         }
-		return res;
+		return new ArrayList<Point>(res);
 	}
 	
 	/**
@@ -354,8 +304,7 @@ public class ChessBoard {
 	public List<Point> getPointsFree() {
 		List<Point> res = new ArrayList<Point>();
 		List<Point> takeble = getPointsTakeble();
-		for (int i = 0; i < points.size(); i++) {
-			Point p = points.get(i);
+		for(Point p : points) {
             if(isPointFree(p) && !takeble.contains(p))
                 res.add(p);
         }
@@ -371,19 +320,22 @@ public class ChessBoard {
 	}
 
 	public boolean isPointTakeble(Point point){
-	    for (int i = 0; i < pieces.size(); i++) {
-            if(pieces.get(i).isTakePoint(this, point))
+	    for(Piece p : pieces) {
+            if(p.isTakePoint(this, point))
                 return true;
         }
         return false;        
 	}
 	
+	public Piece getPieceAtPoint(int x, int y){
+		return getPieceAtPoint(new Point(x, y));
+	}
+	
 	public Piece getPieceAtPoint(Point point){
 		if(isPointOnBoard(point)){
-			for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
-				Piece piece = (Piece) iterator.next();
-				if(piece.isPositioned() && piece.getPosition().equals(point))
-					return piece;
+			for(Piece p : pieces) {
+				if(p.isPositioned() && p.getPosition().equals(point))
+					return p;
 			}
 		}
 		return null;
@@ -391,7 +343,6 @@ public class ChessBoard {
 	
 	@Override
 	public String toString() {
-		List<Point> points = getPointsAll();
 		String piecesNumber = "No pieces on the board";
 		if(pieces.size() > 0)
 		    piecesNumber = pieces.size() + " piece(s) on the board";
@@ -399,8 +350,7 @@ public class ChessBoard {
 		if(isArrangedAndValid())
 		    status = "Arrangement is valid";
 		String res = piecesNumber + "\n" + status + "\n";
-		for (Iterator<Point> iterator = points.iterator(); iterator.hasNext();) {
-			Point point = (Point) iterator.next();
+		for(Point point : points) {
 			Piece piece = getPieceAtPoint(point);
 			String p = piece != null ? piece.toString() : "-";
 			res += point + ": " + p + "\n";
@@ -414,10 +364,9 @@ public class ChessBoard {
      * @return true, if there is no piece, which can take any other
      */
     public boolean isArrangeValid(){
-        for (int i = 0; i < pieces.size(); i++) {
-            Piece piece = pieces.get(i);
-            if(piece.isPositioned() && isPointTakeble(piece.getPosition())){
-                return false;}
+        for(Piece p : pieces) {
+            if(p.isPositioned() && isPointTakeble(p.getPosition()))
+                return false;
         }
         return true;
     }
@@ -436,11 +385,9 @@ public class ChessBoard {
     private boolean isArrangeEquals(ChessBoard board) {
     	if((pieces.size() != board.pieces.size()) || (points.size() != board.points.size()))
     		return false;
-    	for (Iterator<Point> iterator = points.iterator(); iterator.hasNext();) {
-			Point myPoint = (Point) iterator.next();
-			Point hisPoint = board.getPoint(myPoint.getX(), myPoint.getY());
+    	for (Point myPoint : points) {
 			Piece myPiece = getPieceAtPoint(myPoint);
-			Piece hisPiece = board.getPieceAtPoint(hisPoint);
+			Piece hisPiece = board.getPieceAtPoint(myPoint.getX(), myPoint.getY());
 			if(!Piece.isPiecesSameKind(myPiece, hisPiece))
 				return false;
 		}
@@ -478,5 +425,28 @@ public class ChessBoard {
         result = prime * result + pieces.size();
         result = prime * result + points.size();
         return result;
+    }
+    
+    /**
+     * Draw a board into System.out
+     */
+    public void draw() {
+    	System.out.print("  ");
+    	for (int y = 1; y <= ySize; y++) {
+    		System.out.print(" " + y + " ");
+    	}
+    	System.out.println("");
+    	for (int x = 1; x <= xSize; x++) {
+    		String num = "" + x;
+    		num = (x < 10) ? " " + num : num;
+    		System.out.print(num);
+    		for (int y = 1; y <= ySize; y++) {
+    		  	Piece p = getPieceAtPoint(x, y);
+    			String name = (p != null) ? p.getShortName() : " ";
+    			System.out.print("[" + name + "]");
+    		}
+    		System.out.println("");
+    	}
+    	
     }
 }
