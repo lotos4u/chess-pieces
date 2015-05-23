@@ -2,12 +2,10 @@ package com.lotos4u.tests.chess.boards;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import com.lotos4u.tests.chess.general.Log;
-import com.lotos4u.tests.chess.general.Utility;
 import com.lotos4u.tests.chess.pieces.Bishop;
 import com.lotos4u.tests.chess.pieces.King;
 import com.lotos4u.tests.chess.pieces.Knight;
@@ -16,10 +14,12 @@ import com.lotos4u.tests.chess.pieces.Queen;
 import com.lotos4u.tests.chess.pieces.Rook;
 
 public class ChessBoard {
+	private Set<ChessBoard> variants = new HashSet<ChessBoard>();
 	/**
 	 * Recursion counter
 	 */
 	private int rc = 0;
+	private int callCounter = 0;
 	/**
 	 * Horizontal board size
 	 */
@@ -32,10 +32,15 @@ public class ChessBoard {
 	 * Chess pieces of this board
 	 */
 	protected List<Piece> pieces = new ArrayList<Piece>();
+	
     /**
      * All points on the board, from which the board is consists
      */
 	protected List<Point> points = new ArrayList<Point>();
+	
+	protected List<Point> pointsFree = new ArrayList<Point>();
+	protected List<Point> pointsOccupied = new ArrayList<Point>();
+	protected List<Point> pointsTakeble = new ArrayList<Point>();
 
 	public ChessBoard (ChessBoard board){
 	    this(board.getxSize(), board.getySize());
@@ -54,7 +59,7 @@ public class ChessBoard {
             }
 	        Point point = p.getPosition();
 	        if(point != null)
-	        	newPiece.setPosition(point.getX(), point.getY());
+	        	newPiece.setPosition(point.getX(), point.getY(), this);
 	        pieces.add(newPiece);
 		}
 	}
@@ -83,153 +88,90 @@ public class ChessBoard {
 		pieces.add(p);
 	}
 	
-	
 	/**
 	 * Remove all pieces arrangement by dropping each of them (set null position)
 	 */
 	public void dropPieces(){
-		for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
-			iterator.next().drop();
+		for (Piece piece : pieces) {
+			piece.drop();
 		}
 	}
 	
-	protected List<Piece> getUnpositioned(List<Piece> input){
-		List<Piece> res = new ArrayList<Piece>();
-		for (Piece piece : input) {
-			if (!piece.isPositioned())res.add(piece);
+	protected List<Piece> getWithoutFist(List<Piece> input){
+		List<Piece> res = new ArrayList<Piece>(input);
+		res.remove(0);
+		return res;
+	}
+		
+	
+	public boolean tryToPut(Piece piece, Point p) {
+		boolean res = false;
+		piece.setPosition(p, this);
+		res = isArrangeValid();
+		if (!res) {
+			//Log.out("[" + rc + "] Not Putted " + piece);
+			piece.drop();
+		} else {
+			//Log.out("[" + rc + "] Putted " + piece);
 		}
 		return res;
-	}	
-	
-	public boolean arrangeRecursively(int startPoint, int startPiece){
-	    return arrangeRecursively(startPoint, startPiece, pieces);
-	}
-
-	protected boolean arrangeRecursively(int startPoint, int startPiece, List<Piece> unpositioned){
-		boolean log = false;
-		boolean log_local = false;
-		boolean pauses = false;
-		boolean retVal = false;
-		boolean recursionResult = false;
-		List<Point> possible = new ArrayList<Point>(points);
-        rc++; //Recursion counter
-        if(log)Log.out("[" + rc + "] " + "Pieces:" + unpositioned);
-        int pieceIndex = startPiece;
-        int pieceCounter = 0;
-        pieceIndex = Utility.putValueInRange(pieceIndex, 0, unpositioned.size()-1);
-        Piece piece = unpositioned.get(pieceIndex);
-        Piece prev = null;
-        while(!piece.isPositioned() && (pieceCounter++ < unpositioned.size())) {
-            if(log)Log.out("[" + rc + "] " + "Try to put " + piece + ", possible:" + possible);
-            retVal = tryToPut(piece, possible, startPoint, log_local);
-            if(pauses)Log.pause();
-            if (retVal) {
-            	if(log)Log.out("[" + rc + "] " + "Success! " + piece);
-            	if(unpositioned.size() > 1) {
-            		recursionResult = arrangeRecursively(startPoint, startPiece, getUnpositioned(unpositioned));
-                    if(log)Log.out("[" + rc + "] " + "Recursive call returned..." + recursionResult);
-                    if(!recursionResult) {
-                    	if(log)Log.out("[" + rc + "] " + "Drop last piece..." + piece);
-                    	possible.remove(piece.getPosition());
-                    	piece.drop();
-                    }
-            	}
-            	else {
-                    if(log)Log.out("[" + rc + "] " + "Arrangment complete!\n");
-            	}                	
-            }
-            else
-            {
-        		if(log)Log.out("[" + rc + "] " + "Fail with " + piece + "...");
-        		prev = piece;
-        		int selectCounter = 0;
-        		while(!piece.isSameKind(prev) && (selectCounter < unpositioned.size())) {
-        			pieceIndex = Utility.cycledInc(pieceIndex, 0, unpositioned.size()-1);
-        			piece = unpositioned.get(pieceIndex);
-        		}
-        		if(piece.isSameKind(prev))pieceCounter =  unpositioned.size();
-        		if(log)Log.out("[" + rc + "] " + "Nothing to choose more... exiting...");
-            }
-        }
-        if(!piece.isPositioned()){
-        	if(log)Log.out("[" + rc + "] " + "Arrangement is impossible: start point=" + startPoint + ", start piece=" + startPiece + " (Pieces: " + pieces + "\n");
-        }
-        rc--;
-        return retVal;
-	}
-
-	protected boolean tryToPut(Piece piece, List<Point> possible, int startIndex, boolean log) {
-		int i = 0;
-		boolean pauses = false;
-		int pointIndex = Utility.putValueInRange(startIndex, 0, possible.size()-1);
-		List<Point> pts = new ArrayList<Point>(possible); 
-        while((pts.size() > 0) && !piece.isPositioned() && (i++ < pts.size())) {
-            Point point = pts.get(pointIndex);
-            boolean isFree = isPointFree(point);
-            boolean isTakeble = isPointTakeble(point);
-            if(isFree && !isTakeble){
-            	if(log)Log.out("[" + rc + "] " + "try point index=" + pointIndex + ", " + point);
-                piece.setPosition(point);
-                if(isArrangeValid()){
-                    if(log)Log.out("[" + rc + "] " + "Piece positioned correctly: " + piece);
-                }
-                else{
-                	if(log)Log.out("[" + rc + "] " + "Invalid arrangement! Have to drop...");
-                    piece.drop();
-                }
-            }
-            pointIndex = Utility.cycledInc(pointIndex, 0, possible.size()-1);
-            if(pauses)Log.pause();
-        }
-        return (piece.isPositioned());
 	}
 	
-	public int arrangeRecursivelyVariants(){
-		long start = System.currentTimeMillis();
-		Log.out("Board (" + xSize + ", " + ySize + "), " + pieces);
+	public boolean arrangeRecursively(){
+		return arrangeRecursively(pieces);
+	}
+	
+	public boolean arrangeRecursively(List<Piece> unpositioned){
+		callCounter++;
+		rc++;
+		boolean res = false;
+		boolean putted = false;
 		boolean log = true;
-	    int validCounter = 0; //Counter of all possible valid arrangements
-	    int attemptsCounter = 0; 
-	    Set<ChessBoard> res = new HashSet<ChessBoard>(); //Set will filter equal arrangements
-        for (int startPoint = 0; startPoint < points.size(); startPoint++) {
-            for (int startPiece = 0; startPiece < pieces.size(); startPiece++) {
-                dropPieces(); //Drop current arrangement
-                if(log)Log.out("\n\n*********  Try (point=" + startPoint + " " + points.get(startPoint) + ", piece=" + startPiece + " (" + pieces.get(startPiece) + ")) *********");
-                arrangeRecursively(startPoint, startPiece); //Perform arrangement for 'startPoint' and 'startPiece'
-                attemptsCounter++;
-                if(isArrangedAndValid()){
-                	//if(log)Log.out("Arrange Valid, point=" + startPoint + ", piece=" + startPiece + " (Pieces: " + pieces);
-                	if(log) {Log.out("Arrange Valid");draw();}
-                    validCounter++;
-                    res.add(new ChessBoard(this));
-                }
-                else {
-                	//if(log)Log.out("Invalid");
-                	if(log) {Log.out("Arrange InValid");draw();}
-                }
-            }
-        }
-        if(log)Log.out("Attempts number = " + attemptsCounter);
-        if(log)Log.out("Valid arranges number (before Set-filter) = " + validCounter);
-        validCounter = res.size();
-        Log.out("Valid arranges number (after Set-filter) = " + validCounter);
-        long end = System.currentTimeMillis();
-        Log.out("Arrangement performed in " + (end - start) + " ms");
-        return validCounter;
+		if (log) Log.out("N = " + variants.size() + ", counter = " + callCounter);
+		if (unpositioned.size() < 1) {
+			rc--;
+			return true;
+		}
+		Piece piece = unpositioned.get(0);
+		List<Point> free = getPointsFree();
+		if (free.size() < 1) {
+			//Log.out("[" + rc + "] No free points!");
+			rc--;
+			return false;
+		}
+		//Log. out("[" + rc + "] We have " + free.size() + " points for " + piece);
+		
+		for (Point point : free) {
+			res = false;
+			//Log. out("[" + rc + "] Try " + piece + " at " + point);
+			putted = tryToPut(piece, point);
+			if (putted) {
+				res = arrangeRecursively(getWithoutFist(unpositioned));
+				if (res) {
+					if (isArrangedAndValid()) {
+						variants.add(new ChessBoard(this));
+					}
+				} else {
+					
+				}
+			}
+			piece.drop();
+		}
+		
+		rc--;
+		return res;		
+	}
+	public int arrangeRecursivelyVariants(){
+		arrangeRecursively();
+		Log.out("Number of variants = " + variants.size());
+		return variants.size();
+	}
+	
+	public Set<ChessBoard> getVariants(){
+		return variants;
 	}
 	
 
-	/**
-	 * Check all pieces having not null position.
-	 * @return true, if all pieces are positioned
-	 */
-	public boolean isArranged(){
-	    for (int i = 0; i < pieces.size(); i++) {
-            if(!pieces.get(i).isPositioned())
-                return false;
-        }
-		return true;
-	}
 	
 	/**
 	 * Test, weather the point located on this board.
@@ -267,6 +209,14 @@ public class ChessBoard {
 	public int getPiecesNumber(){
         return pieces.size();
     }
+	public List<Piece> getPiecesUnPositioned(){
+		List<Piece> res = new ArrayList<Piece>();
+		for (Piece p : pieces) {
+			if (!p.isPositioned())
+				res.add(p);
+		}
+		return res;
+	}
 	/**
 	 * 
 	 * @return list with point on this board, which are takeble due to positioned pieces
@@ -274,50 +224,68 @@ public class ChessBoard {
 	public List<Point> getPointsTakeble(){
 		Set<Point> res = new HashSet<Point>();
         for (Piece piece : pieces) {
-            if(piece.isPositioned()){
-                for(Point p : piece.getPointsTakeble(this)) {
-                	res.add(p);
-                }
+            if (piece.isPositioned()) {
+            	res.addAll(piece.getPointsTakeble());
             }
         }
 		return new ArrayList<Point>(res);
 	}
 	
-	/**
-	 * 
-	 * @return list with board points on what peaces are already positioned
-	 */
-	public List<Point> getPointsPositioned() {
-		List<Point> res = new ArrayList<Point>();
-		for (Iterator<Piece> i = pieces.iterator(); i.hasNext();) {
-			Point p = i.next().getPosition();
-            if(p != null)
-                res.add(p);
-        }
-		return res;
+	public boolean isPointFree(Point p) {
+		int x = p.getX();
+		int y = p.getY();
+		for (Piece piece : pieces) {
+			Point point = piece.getPosition();
+			if (point != null) {
+				if ((point.getX() == x) && (point.getY() == y))
+					return false;
+			} 
+		}
+		return true;
 	}
-	
 	/**
 	 * 
 	 * @return points, which are without pieces and not takeble
 	 */
 	public List<Point> getPointsFree() {
+		//updatePointsLists();
+		//return pointsFree;
+		
+		//List<Point> res = new ArrayList<Point>(points);
 		List<Point> res = new ArrayList<Point>();
 		List<Point> takeble = getPointsTakeble();
 		for(Point p : points) {
             if(isPointFree(p) && !takeble.contains(p))
+			//if(!pointsOccupied.contains(p) && !takeble.contains(p))
                 res.add(p);
         }
 		return res;
+		/**/
 	}
+
 	
-	public boolean isPointFree(Point point){
-	    for (int i = 0; i < pieces.size(); i++) {
-	    	Point p = pieces.get(i).getPosition();
-	    	if((p != null) && p.isPointEquals(point))return false;
-        }
-        return true;        
-	}
+    private void updatePointsLists() {
+    	pointsFree.clear();
+    	pointsTakeble.clear();
+    	pointsOccupied.clear();
+    	pointsFree.addAll(points);
+    	for (Piece piece : pieces) {
+    		Point location = piece.getPosition();
+    		if (location != null) {
+    			pointsOccupied.add(location);
+    			pointsTakeble.addAll(piece.getPointsTakeble());
+    		}
+    	}
+    	for (Piece piece : pieces) {
+    		Point location = piece.getPosition();
+    		if (location != null) {
+    			
+    		}
+    	}
+    	pointsFree.removeAll(pointsTakeble);
+    	pointsFree.removeAll(pointsOccupied);
+    	return;
+    }	
 
 	public boolean isPointTakeble(Point point){
 	    for(Piece p : pieces) {
@@ -382,6 +350,18 @@ public class ChessBoard {
         return isArrangeValid();
     }
 
+	/**
+	 * Check all pieces having not null position.
+	 * @return true, if all pieces are positioned
+	 */
+	public boolean isArranged(){
+		for (Piece p : pieces) {
+			if(!p.isPositioned())
+				return false;
+		}
+		return true;
+	}
+	
     private boolean isArrangeEquals(ChessBoard board) {
     	if((pieces.size() != board.pieces.size()) || (points.size() != board.points.size()))
     		return false;
@@ -449,4 +429,5 @@ public class ChessBoard {
     	}
     	
     }
+
 }

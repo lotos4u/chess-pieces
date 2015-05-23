@@ -57,12 +57,12 @@ public class MainTest {
         Log.out("\n\n********************** Test testKing **********************\n");
         ChessBoard board = new ChessBoard(5,5);
         board.addPiece(new King());
-        board.getPiece(0).setPosition(3, 3);
-        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble(board));
-        board.getPiece(0).setPosition(1, 1);
-        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble(board));
-        board.getPiece(0).setPosition(3, 1);
-        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble(board));
+        board.getPiece(0).setPosition(3, 3, board);
+        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble());
+        board.getPiece(0).setPosition(1, 1, board);
+        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble());
+        board.getPiece(0).setPosition(3, 1, board);
+        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble());
 	}
 	
 	@Test @Ignore
@@ -70,8 +70,8 @@ public class MainTest {
         Log.out("\n\n********************** Test testKnight **********************\n");
         ChessBoard board = new ChessBoard(5,5);
         board.addPiece(new Knight());
-        board.getPiece(0).setPosition(3, 3);
-        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble(board));
+        board.getPiece(0).setPosition(3, 3, board);
+        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble());
 	}
 
 	@Test @Ignore
@@ -79,8 +79,8 @@ public class MainTest {
         Log.out("\n\n********************** Test testBishop **********************\n");
         ChessBoard board = new ChessBoard(5,5);
         board.addPiece(new Bishop());
-        board.getPiece(0).setPosition(2, 1);
-        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble(board));
+        board.getPiece(0).setPosition(2, 1, board);
+        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble());
 	}
 	
 	@Test @Ignore
@@ -88,8 +88,8 @@ public class MainTest {
         Log.out("\n\n********************** Test testRook **********************\n");
         ChessBoard board = new ChessBoard(5,5);
         board.addPiece(new Rook());
-        board.getPiece(0).setPosition(2, 2);
-        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble(board));
+        board.getPiece(0).setPosition(2, 2, board);
+        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble());
 	}
 
 	@Test @Ignore
@@ -97,8 +97,8 @@ public class MainTest {
         Log.out("\n\n********************** Test testQueen **********************\n");
         ChessBoard board = new ChessBoard(5,5);
         board.addPiece(new Queen());
-        board.getPiece(0).setPosition(1, 1);
-        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble(board));
+        board.getPiece(0).setPosition(1, 1, board);
+        Log.out(board.getPiece(0) + " " + board.getPiece(0).getPointsTakeble());
 	}
     /**
      * ?? Queens on 7×7 board
@@ -140,7 +140,7 @@ public class MainTest {
         board.addPiece(new Bishop());
         board.addPiece(new Knight());
         
-        board.arrangeRecursively(0, 0);
+        board.arrangeRecursively();
         
         //Log.out(board);
         board.draw();
@@ -148,41 +148,21 @@ public class MainTest {
         //Assert.assertTrue(boards > 0);
     }
 	
-	/**
-     * 2 Kings, 2 Queens, 2 Bishops and 1 Knight on 7×7 board
-     */
-	@Test
-	public void testKKQQBBNon7x7(){
-        Log.out("\n\n********************** Test testKKQQBBNon7x7 **********************\n");
-        ChessBoard board = new ChessBoard(7, 7);
-        board.addPiece(new King());
-        board.addPiece(new King());
-        board.addPiece(new Queen());
-        board.addPiece(new Queen());
-        board.addPiece(new Bishop());
-        board.addPiece(new Bishop());
-        board.addPiece(new Knight());
-        
-        int boards = board.arrangeRecursivelyVariants();
-        
-        Assert.assertTrue(boards > 0);
-    }
-
 	@Test @Ignore
 	public void testSameArrange() {
 		Log.out("\n\n********************** Test testSameArrange **********************\n");
 		ChessBoard board1 = new ChessBoard(3, 3);
 		board1.addPiece(new Rook());
 		board1.addPiece(new Rook());
-		board1.getPiece(1).setPosition(new Point(1, 1));
-		board1.getPiece(0).setPosition(new Point(1, 2));
+		board1.getPiece(1).setPosition(new Point(1, 1), board1);
+		board1.getPiece(0).setPosition(new Point(1, 2), board1);
 		Log.out(board1);
 		
 		ChessBoard board2 = new ChessBoard(3, 3);
 		board2.addPiece(new Rook());
 		board2.addPiece(new Rook());
-		board2.getPiece(0).setPosition(new Point(1, 1));
-		board2.getPiece(1).setPosition(new Point(1, 2));
+		board2.getPiece(0).setPosition(new Point(1, 1), board2);
+		board2.getPiece(1).setPosition(new Point(1, 2), board2);
 		Log.out(board2);
 		
 		Log.out(board1.equals(board2));
@@ -213,7 +193,7 @@ public class MainTest {
     /**
      * 2 Rooks and 4 Knights on 4x4 Board
      */
-    @Test @Ignore
+    @Test
     public void testRRNNNNon4x4(){
     	Log.out("\n\n********************** Test testRRNNNNon4x4 **********************\n");
     	ChessBoard board = new ChessBoard(4, 4);
@@ -223,10 +203,47 @@ public class MainTest {
     	board.addPiece(new Knight());
     	board.addPiece(new Knight());
     	board.addPiece(new Knight());
-        
+    	long start = System.currentTimeMillis();
         int res = board.arrangeRecursivelyVariants();
+        long end = System.currentTimeMillis();
+        Log.out("Arrangement performed in " + (end - start) + " ms");
+
+        int counter = 0;
+        for (ChessBoard b : board.getVariants()) {
+        	System.out.println("Variant " + (counter++));
+        	b.draw();
+        }
         
         Assert.assertEquals(8, res);
     }
 
+	/**
+     * 2 Kings, 2 Queens, 2 Bishops and 1 Knight on 7×7 board
+     */
+	@Test
+	public void testKKQQBBNon7x7(){
+        Log.out("\n\n********************** Test testKKQQBBNon7x7 **********************\n");
+        ChessBoard board = new ChessBoard(7, 7);
+        board.addPiece(new King());
+        board.addPiece(new King());
+        board.addPiece(new Queen());
+        board.addPiece(new Queen());
+        board.addPiece(new Bishop());
+        board.addPiece(new Bishop());
+        board.addPiece(new Knight());
+        long start = System.currentTimeMillis();
+        int boards = board.arrangeRecursivelyVariants();
+        long end = System.currentTimeMillis();
+        Log.out("Arrangement performed in " + (end - start) + " ms");
+        
+        int counter = 1;
+        for (ChessBoard b : board.getVariants()) {
+        	System.out.println("Variant " + (counter++));
+        	b.draw();
+        }
+        
+        Assert.assertTrue(boards > 0);
+    }
+
+    
 }

@@ -4,6 +4,8 @@ public class Utility {
     
     public static int putValueInRange(int input, int min, int max){
         int ret = input;
+        //while (ret > max) ret--;
+        //while (ret < min) ret++;
         ret = (ret < min) ? min : ret;
         ret = (ret > max) ? max : ret;
         return ret;

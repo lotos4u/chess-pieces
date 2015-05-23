@@ -11,7 +11,7 @@ abstract public class Piece implements Comparable<Piece> {
     private String name;
     private String shortName;
 	protected Point position;
-
+	protected List<Point> pointsTakeble = new ArrayList<Point>();
     
     
 	public Piece(String newName) {
@@ -20,7 +20,6 @@ abstract public class Piece implements Comparable<Piece> {
 		shortName = name.substring(0, 1);
 		if (this instanceof Knight) {
 			shortName = "N";
-			
 		}
 	}
 
@@ -28,19 +27,20 @@ abstract public class Piece implements Comparable<Piece> {
         return position;
     }
 
-	public void setPosition(int x, int y) {
-        setPosition(new Point(x, y));
+	public void setPosition(int x, int y, ChessBoard board) {
+        setPosition(new Point(x, y), board);
     }
     
-    public void setPosition(Point p) {
+    public void setPosition(Point p, ChessBoard board) {
         position = p;
+        pointsTakeble = getPointsTakeble(board);
     }
 
 	/**
      * Set position to zeros (make not positioned)
      */
     public void drop() {
-        setPosition(null);
+        setPosition(null, null);
     }
 
     public boolean isTakePoint(ChessBoard board, Point p){
@@ -82,7 +82,7 @@ abstract public class Piece implements Comparable<Piece> {
 
     protected List<Point> getBishopTakeble(ChessBoard board){
         List<Point> res = new ArrayList<Point>();
-        if(position == null)
+        if((position == null) || (board == null))
             return res;
         int x = position.getX();
         int y = position.getY();
@@ -110,7 +110,7 @@ abstract public class Piece implements Comparable<Piece> {
     
     protected List<Point> getRookTakeble(ChessBoard board){
         List<Point> res = new ArrayList<Point>();
-        if(position == null)
+        if((position == null) || (board == null))
             return res;
         int X = position.getX();
         int Y = position.getY();
@@ -135,9 +135,22 @@ abstract public class Piece implements Comparable<Piece> {
 
 	public boolean isSameKind(Piece p) {
 		return this.getClass().equals(p.getClass());
+		/*
+		return 
+				((this instanceof King) && (p instanceof King)) ||
+				((this instanceof Knight) && (p instanceof Knight)) ||
+				((this instanceof Bishop) && (p instanceof Bishop)) ||
+				((this instanceof Queen) && (p instanceof Queen)) ||
+				((this instanceof Rook) && (p instanceof Rook))
+				;
+			*/
+		
 	}
-    
-	public abstract List<Point> getPointsTakeble(ChessBoard board);
+	public List<Point> getPointsTakeble() {
+		return pointsTakeble;
+	}
+	
+	protected abstract List<Point> getPointsTakeble(ChessBoard board);
     
     public abstract int getTakebility();
 }

@@ -10,13 +10,16 @@ import java.io.OutputStream;
 public class Log {
 	private static BufferedReader pauseReader = new BufferedReader(new InputStreamReader(System.in));
 	private static OutputStream fileWriter;
-	private static String filename = "e:/SVN/Programs/git/chess-pieces/log_output.txt";
+	private static String filename = "e:/log_output.txt";
 	private static boolean fileLog = false;
+	private static boolean consoleLog = true;
 	
     public static void out(Object o){
-        System.out.println(o);
-        if(!fileLog)return;
-        if(fileWriter == null) {
+        if (consoleLog)
+        	System.out.println(o);
+        if (!fileLog)
+        	return;
+        if (fileWriter == null) {
         	try {
         		fileWriter = new FileOutputStream(filename);
 			} catch (FileNotFoundException e) {
