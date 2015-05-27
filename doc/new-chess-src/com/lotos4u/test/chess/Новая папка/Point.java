@@ -12,32 +12,12 @@ public class Point {
 	 * Vertical coordinate of point
 	 */
 	private int y;
-	
-	private int kind;
+
 
 	public Point(int x, int y) {
 		super();
 		this.x = x;
 		this.y = y;
-	}
-
-	public void setWhite() {
-		kind = 0;
-	}
-	public void setBlack() {
-		kind = 1;
-	}
-	public void setGray() {
-		kind = 2;
-	}
-	public boolean isWhite() {
-		return kind == 0;
-	}
-	public boolean isBlack() {
-		return kind == 1;
-	}
-	public boolean isGray() {
-		return kind == 2;
 	}
 
 	public int getX() {

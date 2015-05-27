@@ -1,8 +1,6 @@
 package com.lotos4u.tests.chess.boards;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +17,6 @@ public class ChessBoard {
 	private Set<MicroBoard> variants = new HashSet<MicroBoard>();
 	private MicroBoard microBoard;
 	private int totalCounter = 0;
-	private long miliStart = 0;
 	/**
 	 * Recursion counter
 	 */
@@ -51,13 +48,10 @@ public class ChessBoard {
 	private void setPosition(int pieceIndex, Point position) {
 		Piece p = pieces.get(pieceIndex);
 		Point oldPosition = p.getPosition();
-		if ((oldPosition == null) && (position != null)) {
+		if ((oldPosition == null) && (position != null))
 			puttedCounter++;
-			//position.setBlack();
-		}
-		if ((oldPosition != null) && (position == null)) {
+		if ((oldPosition != null) && (position == null))
 			puttedCounter--;
-		}
 		p.setPosition(position, this);
 		
 	}
@@ -93,20 +87,20 @@ public class ChessBoard {
 		return res;
 	}
 		
-	public boolean tryToPut(int pieceIndex, Point p, boolean log) {
+	public boolean tryToPut(int pieceIndex, Point p) {
 		boolean res = false;
 		setPosition(pieceIndex, p);
 		res = isArrangeValid();
 		if (!res) {
-			if(log)Log.out("[" + rc + "] Not Putted #" + pieceIndex);
+			//Log.out("[" + rc + "] Not Putted " + piece);
 			dropPiece(pieceIndex);
 		} else {
-			if(log)Log.out("[" + rc + "] Putted #" + pieceIndex);
+			//Log.out("[" + rc + "] Putted " + piece);
 		}
 		return res;
 	}
 
-	/*
+	
 	public boolean tryToPut(Piece piece, Point p) {
 		boolean res = false;
 		piece.setPosition(p, this);
@@ -119,7 +113,6 @@ public class ChessBoard {
 		}
 		return res;
 	}
-	*/
 	
 	protected boolean isPieceTakesPoint(Piece piece, Point point) {
 		Point location = piece.getPosition();
@@ -137,23 +130,18 @@ public class ChessBoard {
 	}
 	
 	public List<Point> getPointsFree() {
-		List<Point> prom = new ArrayList<Point>();
-		boolean isWhite;
-		for (Point point : points) {
-			isWhite = true;
+		List<Point> res = new ArrayList<Point>(points);
+		for (int i = 0; i < points.size(); i++) {
+			Point point = points.get(i);
 			for (Piece piece : pieces) {
 				Point location = piece.getPosition();
 				if (location != null) {
-					if (location.isSamePoint(point) || isPieceTakesPoint(piece, point)) {
-						isWhite = false;
-						break;
-					}
+					if (point.isSamePoint(location) || isPieceTakesPoint(piece, point))
+						res.remove(point);
 				}
 			}
-			if (isWhite)
-				prom.add(point);
 		}
-		return new ArrayList<Point>(prom);
+		return res;
 	}
 	public Point getFirstFreePoint() {
 		return getNthFreePoint(0);
@@ -177,12 +165,7 @@ public class ChessBoard {
 		boolean res = false;
 		boolean putted = false;
 		boolean log = false;
-		boolean logInner = false;
-		boolean logExtra = true;
-		if (logExtra) Log.out("N = " + variants.size() + ", counter = " + callCounter + ", " + getSecondsFromStart() + " sec");
-		//if (logExtra)Log.out("Counter = " + callCounter + ", " + getSecondsFromStart() + " sec");
-		//if (logExtra)Log.out("Counter = " + callCounter);
-		//if (logExtra)Log.out(getSecondsFromStart() + " sec");
+		if (true) Log.out("N = " + variants.size() + ", counter = " + callCounter);
 		if (isArranged()) {
 			rc--;
 			return true;
@@ -206,8 +189,6 @@ public class ChessBoard {
 			return false;
 		}
 		if (log) Log. out("[" + rc + "] We have " + free.size() + " points for " + piece);
-		if (log) Log. out("[" + rc + "] Pieces:" + pieces);
-		if (log) Log. out("[" + rc + "] Free:" + free);
 		//if (log) Log. out("[" + rc + "] We have first free point at " + point + " for " + piece);
 		
 		int freeCounter = 0;
@@ -215,7 +196,7 @@ public class ChessBoard {
 		//while (point != null) {
 			res = false;
 			if (log) Log. out("[" + rc + "] Try " + piece + " at " + point);
-			putted = tryToPut(pieceIndex, point, logInner);
+			putted = tryToPut(pieceIndex, point);
 			if (putted) {
 				res = isArranged() || arrangeRecursively();
 				if (res) { //Arrangement successful
@@ -229,7 +210,6 @@ public class ChessBoard {
 			//point = getFirstFreePoint();
 			dropPiece(pieceIndex);
 		}
-		
 		rc--;
 		res = isArranged(); 
 		return res;		
@@ -240,21 +220,10 @@ public class ChessBoard {
 		return microBoard;
 	}
 	public int arrangeRecursivelyVariants(){
-		miliStart = System.currentTimeMillis();
-		Collections.sort(pieces);
 		arrangeRecursively();
 		Log.out("Number of variants = " + variants.size());
 		Log.out("Total counter = " + totalCounter);
 		return variants.size();
-	}
-	
-	private String getSecondsFromStart() {
-		long sec = (System.currentTimeMillis() - miliStart)/1000;
-		//long end = System.currentTimeMillis();
-		//Date d1 = new Date(miliStart);
-		//Date d2 = new Date(end);
-		//Date d3 = new Date(end - miliStart);
-		return "" + sec;
 	}
 	
 	public Set<MicroBoard> getVariants(){
