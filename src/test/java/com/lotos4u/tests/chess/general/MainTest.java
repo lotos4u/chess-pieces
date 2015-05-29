@@ -219,22 +219,136 @@ public class MainTest {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+	@Test @Ignore
+	public void testBoardLightEquals() {
+		Log.out("\n\n********************** Test testBoardLightEquals **********************\n");
+		char[] pcs1 = new char[]{ChessBoardLight.KING, ChessBoardLight.KING, ChessBoardLight.ROOK};
+		ChessBoardLight board1 = new ChessBoardLight(3, 3, pcs1);
+		board1.setPiecePosition(0, 0, 0);
+		board1.setPiecePosition(1, 0, 2);
+		board1.setPiecePosition(2, 2, 1);
+		board1.drawBoardViewAndTakeble();
+
+		char[] pcs2 = new char[]{ChessBoardLight.KING, ChessBoardLight.KING, ChessBoardLight.ROOK};
+		ChessBoardLight board2 = new ChessBoardLight(3, 3, pcs2);
+		board2.setPiecePosition(0, 0, 0);
+		board2.setPiecePosition(1, 0, 2);
+		board2.setPiecePosition(2, 2, 1);
+		board2.drawBoardViewAndTakeble();
+		
+		System.out.println("Equals=" + board1.equals(board2));
+
+	}
+	@Test @Ignore
+	public void testBoardLightGeneral() {
+		Log.out("\n\n********************** Test testBoardLightGeneral **********************\n");
+		char[] pcs1 = new char[]{ChessBoardLight.BISHOP, ChessBoardLight.KING, ChessBoardLight.KING, ChessBoardLight.ROOK, ChessBoardLight.KNIGHT, ChessBoardLight.QUEEN};
+		ChessBoardLight board1 = new ChessBoardLight(3, 3, pcs1);
+//		board1.draw();
+		//board1.setPiecePosition(0, 0, 0);
+		//board1.setPiecePosition(1, 1, 1);
+		//board1.setPiecePosition(2, 2, 2);
+		//board1.setPiecePosition(3, 3, 3);
+		//board1.setPiecePosition(4, 4, 4);
+		//board1.draw();
+		
+		board1.dropPieces();
+		
+		board1.setPiecePosition(1, 0, 0);
+		board1.drawBoardViewAndTakeble();
+		board1.setPiecePosition(2, 0, 2);
+		board1.drawBoardViewAndTakeble();
+		//board1.dropPiece(1);
+		board1.setPiecePosition(3, 2, 0);
+		board1.drawBoardViewAndTakeble();
+		board1.dropPiece(3);
+		board1.setPiecePosition(3, 2, 1);
+		board1.drawBoardViewAndTakeble();
+		//board1.setPiecePosition(3, 1, 0);
+		//board1.drawBoardAndTakeble();
+		
+		/*
+		char[] pcs2 = new char[]{ChessBoardLight.KING, ChessBoardLight.KING, ChessBoardLight.ROOK};
+		ChessBoardLight board2 = new ChessBoardLight(3, 3, pcs2);
+		board2.setPiecePosition(0, 0, 0);
+		board2.setPiecePosition(1, 0, 2);
+		board2.setPiecePosition(2, 2, 1);
+		board2.draw();
+		System.out.println(board2.getPiecesAsString());
+		System.out.println(board2.isArranged());
+		System.out.println(board2.isValid());
+		*/
+		/*
+		board2.dropPieces();
+		board2.draw();
+		System.out.println(board2.getPiecesAsString());
+		
+		System.out.println("Board arranged equals = " + board1.isArrangeEquals(board2));
+		System.out.println(board2.isArraged());
+		*/
+	}	
+
+	@Test @Ignore
+	public void testBoardLightRecursion3x3Multi() {
+		Log.out("\n\n********************** Test testBoardLightRecursion3x3Multi **********************\n");
+		char[] pcs1 = new char[]{ChessBoardLight.KING, ChessBoardLight.KING, ChessBoardLight.ROOK};
+		ChessBoardLight board1 = new ChessBoardLight(3, 3, pcs1);
+		int counter = 0;
+		long time = 0;
+		while (counter++ < 10) {
+			long start = System.currentTimeMillis();
+			board1.getArrangementVariants(false, false, false, false);
+			long end = System.currentTimeMillis();
+			time += (end - start);
+			System.out.println("Arrangement #" + counter + ": " + (end - start) + " ms");
+		}
+		System.out.println("One Arragements takes " + (time/counter) + " ms");
+	}
 	
+	@Test @Ignore
+	public void testBoardLightRecursion3x3() {
+		Log.out("\n\n********************** Test testBoardLightRecursion3x3 **********************\n");
+		char[] pcs1 = new char[]{ChessBoardLight.KING, ChessBoardLight.KING, ChessBoardLight.ROOK};
+		ChessBoardLight board1 = new ChessBoardLight(3, 3, pcs1);
+		board1.getArrangementVariants(false, false, true, false);
+
+		int counter = 0;
+        for (ChessBoardLight b : board1.getUniqueVariants()) {
+        	System.out.println("Variant " + (++counter));
+        	b.drawBoard();
+        }		
+	}
+	@Test @Ignore
+	public void testBoardLightRecursion4x4Multi() {
+		Log.out("\n\n********************** Test testBoardLightRecursion4x4Multi **********************\n");
+		char[] pcs1 = new char[]{ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.ROOK, ChessBoardLight.ROOK};
+		ChessBoardLight board1 = new ChessBoardLight(4, 4, pcs1);
+		int counter = 0;
+		long time = 0;
+		while (counter++ < 10) {
+			long start = System.currentTimeMillis();
+			board1.getArrangementVariants(false, false, false, false);	
+			long end = System.currentTimeMillis();
+			time += (end - start);
+			System.out.println("Arrangement #" + counter + ": " + (end - start) + " ms");
+		}	
+		System.out.println("One Arragements takes " + (time/counter) + " ms");
+	}	
 	@Test 
 	public void testBoardLightRecursion4x4() {
 		Log.out("\n\n********************** Test testBoardLightRecursion4x4 **********************\n");
 		char[] pcs1 = new char[]{ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.ROOK, ChessBoardLight.ROOK};
 		ChessBoardLight board1 = new ChessBoardLight(4, 4, pcs1);
-		board1.getArrangementVariants();
+		board1.getArrangementVariants(false, false, true, false);
 
 		int counter = 0;
-        for (ChessBoardLight b : board1.getVariants()) {
+        for (ChessBoardLight b : board1.getUniqueVariants()) {
         	System.out.println("Variant " + (++counter));
-        	b.draw();
+        	b.drawBoard();
         }		
 	}
 
-	@Test
+	@Test @Ignore
 	public void testBoardLightRecursion7x7() {
 		Log.out("\n\n********************** Test testBoardLightRecursion7x7 **********************\n");
 		char[] pcs1 = new char[]{
@@ -247,62 +361,11 @@ public class MainTest {
 				ChessBoardLight.KNIGHT 
 			};
 		ChessBoardLight board1 = new ChessBoardLight(7, 7, pcs1);
-		board1.getArrangementVariants();
+		board1.getArrangementVariants(false, false, true, false);
 
 		int counter = 0;
-        for (ChessBoardLight b : board1.getVariants()) {
+        for (ChessBoardLight b : board1.getUniqueVariants()) {
         	System.out.println("Variant " + (++counter));
-        	b.draw();
+        	b.drawBoard();
         }		
-	}
-
-	
-	@Test 
-	public void testBoardLightRecursion3x3() {
-		Log.out("\n\n********************** Test testBoardLightRecursion3x3 **********************\n");
-		char[] pcs1 = new char[]{ChessBoardLight.KING, ChessBoardLight.KING, ChessBoardLight.ROOK};
-		ChessBoardLight board1 = new ChessBoardLight(3, 3, pcs1);
-		board1.getArrangementVariants();
-
-		int counter = 0;
-        for (ChessBoardLight b : board1.getVariants()) {
-        	System.out.println("Variant " + (++counter));
-        	b.draw();
-        }		
-	}
-	
-	@Test @Ignore
-	public void testBoardLightGeneral() {
-		Log.out("\n\n********************** Test testBoardLightGeneral **********************\n");
-		char[] pcs1 = new char[]{ChessBoardLight.BISHOP, ChessBoardLight.KING, ChessBoardLight.ROOK, ChessBoardLight.KNIGHT, ChessBoardLight.QUEEN};
-		ChessBoardLight board1 = new ChessBoardLight(5, 5, pcs1);
-//		board1.draw();
-		board1.setPiecePosition(0, 0, 0);
-		board1.setPiecePosition(1, 1, 1);
-		board1.setPiecePosition(2, 2, 2);
-		board1.setPiecePosition(3, 3, 3);
-		board1.setPiecePosition(4, 4, 4);
-		board1.draw();
-		
-		char[] pcs2 = new char[]{ChessBoardLight.KING, ChessBoardLight.KING, ChessBoardLight.ROOK};
-		ChessBoardLight board2 = new ChessBoardLight(3, 3, pcs2);
-		board2.setPiecePosition(0, 0, 0);
-		board2.setPiecePosition(1, 0, 2);
-		board2.setPiecePosition(2, 2, 1);
-		board2.draw();
-		System.out.println(board2.getPiecesAsString());
-		System.out.println(board2.isArranged());
-		System.out.println(board2.isValid());
-		
-		/*
-		board2.dropPieces();
-		board2.draw();
-		System.out.println(board2.getPiecesAsString());
-		
-		System.out.println("Board arranged equals = " + board1.isArrangeEquals(board2));
-		System.out.println(board2.isArraged());
-		*/
-
-	}
-    
-}
+	}}
