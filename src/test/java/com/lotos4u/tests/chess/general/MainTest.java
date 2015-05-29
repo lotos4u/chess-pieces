@@ -348,7 +348,7 @@ public class MainTest {
         }		
 	}
 
-	@Test @Ignore
+	@Test
 	public void testBoardLightRecursion7x7() {
 		Log.out("\n\n********************** Test testBoardLightRecursion7x7 **********************\n");
 		char[] pcs1 = new char[]{

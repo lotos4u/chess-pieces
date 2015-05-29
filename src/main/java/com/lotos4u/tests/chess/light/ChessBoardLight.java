@@ -207,8 +207,8 @@ public class ChessBoardLight {
 		rc++;
 		boolean res = false;
 		boolean putted = false;
-		
-		if (logExtra) System.out.println("[" + rc  + "] N full = " + variantsCounter + ", N unique = " + uniqueCounter + ", CallCounter = " + callCounter );
+		long sec = (System.currentTimeMillis() - recursionStart)/1000;
+		if (logExtra) System.out.println("[" + rc  + "] N full = " + variantsCounter + ", N unique = " + uniqueCounter + ", CallCounter = " + callCounter  + ", "  + sec + " sec" );
 		
 		int pieceIndex = getFistUnpositionedIndex();
 		
@@ -254,7 +254,7 @@ public class ChessBoardLight {
 				if (res) {
 					if (log) System.out.println("[" + rc + "] No pieces!");
 					ChessBoardLight b = new ChessBoardLight(this);
-					boolean isUnique = uniqueVariants.add(b);
+					boolean isUnique = false;//uniqueVariants.add(b);
 					variantsCounter++;
 					//if (pauses) System.out.println("Success!!!");
 					if (pauses) drawBoardAndBoardViewAndTakebleAndFree();
