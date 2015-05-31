@@ -2,29 +2,18 @@ package com.lotos4u.tests.chess.boards;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.lotos4u.tests.chess.general.Log;
-import com.lotos4u.tests.chess.pieces.Bishop;
-import com.lotos4u.tests.chess.pieces.King;
-import com.lotos4u.tests.chess.pieces.Knight;
 import com.lotos4u.tests.chess.pieces.Piece;
-import com.lotos4u.tests.chess.pieces.Queen;
-import com.lotos4u.tests.chess.pieces.Rook;
 
 public class ChessBoard {
-	private Set<MicroBoard> variants = new HashSet<MicroBoard>();
-	private MicroBoard microBoard;
-	private int totalCounter = 0;
-	private long miliStart = 0;
-	/**
-	 * Recursion counter
-	 */
-	private int rc = 0;
-	private int callCounter = 0;
+	//private Set<MicroBoard> uniqueVariants = new HashSet<MicroBoard>();
+	private Set<MicroBoard> uniqueVariants = new HashSet<MicroBoard>();
+	private List<MicroBoard> allVariants = new ArrayList<MicroBoard>();
+		
 	/**
 	 * Horizontal board size
 	 */
@@ -37,8 +26,22 @@ public class ChessBoard {
 	 * Chess pieces of this board
 	 */
 	protected List<Piece> pieces = new ArrayList<Piece>();
+	private char[] boardView;
 	
-	protected int puttedCounter = 0;
+	protected int putCounter = 0;
+	protected int tryToPutCounter = 0;
+	private int recursionDepth = 0;
+	private int recursiveCallCounter = 0;
+	private int allVariantsCounter = 0;
+	private int uniqueVariantsCounter = 0;
+	
+	private long recursionStart = 0;
+	private long recursionFinish = 0;
+	private long sortStart = 0;
+	private long sortFinish = 0;
+
+
+	private boolean sortAfter = true;
 	
     /**
      * All points on the board, from which the board is consists
@@ -52,21 +55,22 @@ public class ChessBoard {
 		Piece p = pieces.get(pieceIndex);
 		Point oldPosition = p.getPosition();
 		if ((oldPosition == null) && (position != null)) {
-			puttedCounter++;
-			//position.setBlack();
+			putCounter++;
 		}
 		if ((oldPosition != null) && (position == null)) {
-			puttedCounter--;
+			putCounter--;
+			boardView[getIndexForPoint(oldPosition.getX()-1, oldPosition.getY()-1)] = ' ';
 		}
+		if (position != null)
+			boardView[getIndexForPoint(position.getX()-1, position.getY()-1)] = p.getShortName();
 		p.setPosition(position, this);
-		
 	}
 	
 	public ChessBoard(int newX, int newY) {
 		super();
 		xSize = newX;
 		ySize = newY;
-		microBoard = new MicroBoard(xSize, ySize);
+		boardView = new char[xSize*ySize];
 		for (int x = 1; x <= newX; x++) {
             for (int y = 1; y <= newY; y++) {
                 Point point = new Point(x, y);
@@ -74,7 +78,7 @@ public class ChessBoard {
             }
         }
 	}
-
+	
 	public Piece getPiece(int index){
 	    return pieces.get(index);
 	}
@@ -94,33 +98,19 @@ public class ChessBoard {
 	}
 		
 	public boolean tryToPut(int pieceIndex, Point p, boolean log) {
+		tryToPutCounter++;
 		boolean res = false;
 		setPosition(pieceIndex, p);
 		res = isArrangeValid();
 		if (!res) {
-			if(log)Log.out("[" + rc + "] Not Putted #" + pieceIndex);
+			if(log)Log.out("[" + recursionDepth + "] Not Putted #" + pieceIndex);
 			dropPiece(pieceIndex);
 		} else {
-			if(log)Log.out("[" + rc + "] Putted #" + pieceIndex);
+			if(log)Log.out("[" + recursionDepth + "] Putted #" + pieceIndex);
 		}
 		return res;
 	}
 
-	/*
-	public boolean tryToPut(Piece piece, Point p) {
-		boolean res = false;
-		piece.setPosition(p, this);
-		res = isArrangeValid();
-		if (!res) {
-			//Log.out("[" + rc + "] Not Putted " + piece);
-			piece.drop();
-		} else {
-			//Log.out("[" + rc + "] Putted " + piece);
-		}
-		return res;
-	}
-	*/
-	
 	protected boolean isPieceTakesPoint(Piece piece, Point point) {
 		Point location = piece.getPosition();
 		//if (!isPointOnBoard(point) || (location == null) || location.isSamePoint(point)) 
@@ -172,19 +162,21 @@ public class ChessBoard {
 	}
 	
 	public boolean arrangeRecursively(){
-		callCounter++;
-		rc++;
+		recursiveCallCounter++;
+		recursionDepth++;
 		boolean res = false;
 		boolean putted = false;
 		boolean log = false;
 		boolean logInner = false;
-		boolean logExtra = true;
-		if (logExtra) Log.out("N = " + variants.size() + ", counter = " + callCounter + ", " + getSecondsFromStart() + " sec");
-		//if (logExtra)Log.out("Counter = " + callCounter + ", " + getSecondsFromStart() + " sec");
-		//if (logExtra)Log.out("Counter = " + callCounter);
-		//if (logExtra)Log.out(getSecondsFromStart() + " sec");
+		boolean logExtra = false;
+		
+		if (logExtra) Log.out("N = " + uniqueVariants.size() + ", counter = " + recursiveCallCounter + ", " + getSecondsFromStart() + " sec");
+		if (logExtra)Log.out("Counter = " + recursiveCallCounter + ", " + getSecondsFromStart() + " sec");
+		if (logExtra)Log.out("Counter = " + recursiveCallCounter);
+		if (logExtra)Log.out(getSecondsFromStart() + " sec");
+		
 		if (isArranged()) {
-			rc--;
+			recursionDepth--;
 			return true;
 		}
 		Piece piece = null;
@@ -198,58 +190,83 @@ public class ChessBoard {
 		}
 		
 		List<Point> free = getPointsFree();
-		//Point point = getFirstFreePoint();
 		if (free.size() < 1) {
-		//if (point == null) {
-			if (log) Log.out("[" + rc + "] No free points!");
-			rc--;
+			if (log) Log.out("[" + recursionDepth + "] No free points!");
+			recursionDepth--;
 			return false;
 		}
-		if (log) Log. out("[" + rc + "] We have " + free.size() + " points for " + piece);
-		if (log) Log. out("[" + rc + "] Pieces:" + pieces);
-		if (log) Log. out("[" + rc + "] Free:" + free);
-		//if (log) Log. out("[" + rc + "] We have first free point at " + point + " for " + piece);
+		if (log) Log. out("[" + recursionDepth + "] We have " + free.size() + " points for " + piece);
+		if (log) Log. out("[" + recursionDepth + "] Pieces:" + pieces);
+		if (log) Log. out("[" + recursionDepth + "] Free:" + free);
 		
-		int freeCounter = 0;
 		for (Point point : free) {
-		//while (point != null) {
 			res = false;
-			if (log) Log. out("[" + rc + "] Try " + piece + " at " + point);
+			if (log) Log. out("[" + recursionDepth + "] Try " + piece + " at " + point);
 			putted = tryToPut(pieceIndex, point, logInner);
 			if (putted) {
 				res = isArranged() || arrangeRecursively();
 				if (res) { //Arrangement successful
-					//variants.add(getMicroBoard());
-					variants.add(new MicroBoard(this));
-					totalCounter++;
+					MicroBoard m = new MicroBoard(this);
+					allVariantsCounter++;
+					if (sortAfter) {
+						allVariants.add(m);
+					} else {
+						boolean isUnique = uniqueVariants.add(m);	
+						if (isUnique)
+							uniqueVariantsCounter++;
+					}
 				} else { //Arrangement unsuccessful
 					
 				}
 			}
-			//point = getFirstFreePoint();
 			dropPiece(pieceIndex);
 		}
 		
-		rc--;
+		recursionDepth--;
 		res = isArranged(); 
 		return res;		
 	}
 	
-	public MicroBoard getMicroBoard() {
-		microBoard.updateBoard(getArrayView());
-		return microBoard;
-	}
-	public int arrangeRecursivelyVariants(){
-		miliStart = System.currentTimeMillis();
+	public int arrangeVariants(){
+		recursionStart = System.currentTimeMillis();
+		recursiveCallCounter = 0;
+		allVariantsCounter = 0;
+		uniqueVariantsCounter = 0;
+		putCounter = 0;
+		tryToPutCounter = 0;
+		MicroBoard.equalsCounter = 0;
+		MicroBoard.hashCounter = 0;
 		Collections.sort(pieces);
 		arrangeRecursively();
-		Log.out("Number of variants = " + variants.size());
-		Log.out("Total counter = " + totalCounter);
-		return variants.size();
+		recursionFinish = System.currentTimeMillis();
+		long recTime = recursionFinish - recursionStart;
+		long sortTime = 0;
+		Log.out("Chess complexity is = " + xSize*ySize*(pieces.size()));
+		if (sortAfter) {
+			sortStart = System.currentTimeMillis();	
+			uniqueVariants.addAll(allVariants);
+			sortFinish = System.currentTimeMillis();
+			sortTime = sortFinish - sortStart;
+		}
+		int res = uniqueVariants.size();
+		Log.out("Number of all variants = " + allVariantsCounter);
+		Log.out("Number of unique variants = " + res);
+		if (sortAfter) {
+			Log.out("Arrangement time = " + recTime + " ms");
+			Log.out("Sort time = " + sortTime + " ms");
+		}
+		Log.out("Full time = " + (recTime + sortTime) + " ms");
+		Log.out("Number of recursive calls = " + recursiveCallCounter);
+		if (recTime > 0) 
+			Log.out("Number of recursive calls per ms = " + (float)(recursiveCallCounter/recTime));
+		Log.out("Number of put tries = " + tryToPutCounter);
+		Log.out("Number of Equals calls = " + MicroBoard.equalsCounter);
+		Log.out("Number of Hashcode calls = " + MicroBoard.hashCounter);
+		return res;
 	}
 	
 	private String getSecondsFromStart() {
-		long sec = (System.currentTimeMillis() - miliStart)/1000;
+		long sec = (System.currentTimeMillis() - recursionStart)/1000;
 		//long end = System.currentTimeMillis();
 		//Date d1 = new Date(miliStart);
 		//Date d2 = new Date(end);
@@ -258,7 +275,7 @@ public class ChessBoard {
 	}
 	
 	public Set<MicroBoard> getVariants(){
-		return variants;
+		return uniqueVariants;
 	}
 	
 
@@ -382,7 +399,7 @@ public class ChessBoard {
 	 * @return true, if all pieces are positioned
 	 */
 	public boolean isArranged(){
-		return puttedCounter == pieces.size();
+		return putCounter == pieces.size();
 		/*
 		for (Piece p : pieces) {
 			if(!p.isPositioned())
@@ -392,27 +409,25 @@ public class ChessBoard {
 		*/
 	}
 	
-	private boolean isArrayVewEquals(ChessBoard board) {
-		char[][] my = getArrayView();
-		char[][] his = board.getArrayView();
-    	for (int i = 0; i < my.length; i++)
-    		for (int j = 0; j < my[i].length; j++)
-    			if (my[i][j] != his[i][j])
-    				return false;
-    	return true;
+
+	public int getIndexForPoint(int x, int y) {
+		return y + ySize*x;//=index
 	}
-	
-	protected char[][] getArrayView() {
-		char[][] res = new char[xSize][ySize];
+	protected char[] getArrayView() {
+		//return boardView;
+		
+		char[] res = new char[xSize*ySize];
 		for (Piece p : pieces) {
 			Point point = p.getPosition();
 			if (point != null) {
 				int x = point.getX() - 1;
 				int y = point.getY() - 1;
-				res[x][y] = p.getShortName().charAt(0);
+				int pointIndex = getIndexForPoint(x, y);
+				res[pointIndex] = p.getShortName();
 			}
 		}
 		return res;
+		
 	}
 	
 	private boolean isBoardLikeThis(ChessBoard board) {
@@ -422,8 +437,8 @@ public class ChessBoard {
     private boolean isArrangeEquals(ChessBoard board) {
     	if(!isBoardLikeThis(board))
     		return false;
-    	return isArrayVewEquals(board);
-    	/*
+    	//return isArrayVewEquals(board);
+    	
     	for (Point myPoint : points) {
 			Piece myPiece = getPieceAtPoint(myPoint);
 			Piece hisPiece = board.getPieceAtPoint(myPoint.getX(), myPoint.getY());
@@ -431,9 +446,28 @@ public class ChessBoard {
 				return false;
 		}
     	return true;
-    	*/
     }
+
+    public boolean isDifferentGame(ChessBoard b) {
+    	return (b.xSize != xSize) || 
+    			(b.ySize != ySize) ||
+    			(b.points.size() != points.size());
+    }
+    /*
+    public boolean isArrangeEquals(ChessBoard b) {
+    	if (isDifferentGame(b))
+    		return false;
+    	//return Arrays.equals(boardView, b.boardView);
     	
+    	for (Point p : points) {
+    		int x = p.getX();
+    		int y = p.getY();
+   			if (b.boardView[x][y] != boardView[x][y])
+   				return false;
+    	}
+    	return true;
+    }  
+*/    
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -456,6 +490,7 @@ public class ChessBoard {
         return true;        
     }
 
+    
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -482,7 +517,7 @@ public class ChessBoard {
     		System.out.print(num);
     		for (int y = 1; y <= ySize; y++) {
     		  	Piece p = getPieceAtPoint(x, y);
-    			String name = (p != null) ? p.getShortName() : " ";
+    			String name = (p != null) ? "" + p.getShortName() : " ";
     			System.out.print("[" + name + "]");
     		}
     		System.out.println("");
@@ -494,5 +529,25 @@ public class ChessBoard {
     			System.out.println("Array[" + i + "][" + j + "] = " + arr[i][j]);
     	*/
     }
+/*    
+    public static void main(String arg[]) {
+    	ChessBoard board = new ChessBoard(4, 4);
+    	board.addPiece(new Rook());
+    	board.addPiece(new Rook());
+    	board.addPiece(new Knight());
+    	board.addPiece(new Knight());
+    	board.addPiece(new Knight());
+    	board.addPiece(new Knight());
+    	long start = System.currentTimeMillis();
+        int res = board.arrangeVariants();
+        long end = System.currentTimeMillis();
+        Log.out("Arrangement performed in " + (end - start) + " ms");
 
+        int counter = 0;
+        for (MicroBoard b : board.getVariants()) {
+        	System.out.println("Variant " + (counter++));
+        	System.out.println(b.getBoardViewAsString());;
+        }    	
+    }
+*/
 }

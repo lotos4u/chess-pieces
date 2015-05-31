@@ -9,16 +9,16 @@ import com.lotos4u.tests.chess.boards.Point;
 abstract public class Piece implements Comparable<Piece> {
 	private static int pCounter;
     private String name;
-    private String shortName;
+    private char shortName;
 	protected Point position;
     
     
 	public Piece(String newName) {
 		super();
 		name = newName + pCounter++;
-		shortName = name.substring(0, 1);
+		shortName = name.charAt(0);
 		if (this instanceof Knight) {
-			shortName = "N";
+			shortName = 'N';
 		}
 	}
 
@@ -123,7 +123,7 @@ abstract public class Piece implements Comparable<Piece> {
 		return name;
 	}
 
-    public String getShortName() {
+    public char getShortName() {
 		return shortName;
 	}
 

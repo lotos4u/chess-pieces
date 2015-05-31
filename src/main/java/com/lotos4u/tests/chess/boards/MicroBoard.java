@@ -1,71 +1,99 @@
 package com.lotos4u.tests.chess.boards;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 public class MicroBoard {
-	private char[][] board;
+	private int xSize;
+	private int ySize;
+	private char[] board;
+	public static int equalsCounter = 0;
+	public static int hashCounter = 0;
+	private boolean updateEqualsCounter = true;
+	private boolean updateHashCounter = true;
 
 	public MicroBoard(int x, int y) {
 		super();
-		board = new char[x][y];
+		xSize = x;
+		ySize = y;
+		board = new char[x*y];
 	}
 
-	public MicroBoard(char[][] input) {
-		super();
-		board = new char[input.length][input[0].length];
+	public MicroBoard(char[] input, int x,  int y) {
+		this(x, y);
 		updateBoard(input);
 	}
 	
-	public MicroBoard(ChessBoard chessBoard) {
-		this(chessBoard.getArrayView());
+	public MicroBoard(ChessBoard board) {
+		this(board.getArrayView(),  board.xSize, board.ySize);
 	}
-
-	private boolean isArraysEquals(char[][] b) {
+	public int[] getPointForIndex(int index) {
+		int x = index / ySize;
+		int y = index - x*ySize;
+		return new int[]{x, y};
+	}
+	public int getIndexForPoint(int x, int y) {
+		return y + ySize*x;//=index
+	}
+	public void updateBoard(char[] input) {
     	for (int i = 0; i < board.length; i++)
-    		for (int j = 0; j < board[i].length; j++)
-    			if (board[i][j] != b[i][j])
-    				return false;
-    	return true;
+   			board[i] = input[i];
 	}
-	
-	public void updateBoard(char[][] input) {
-    	for (int i = 0; i < board.length; i++)
-    		for (int j = 0; j < board[i].length; j++)
-    			board[i][j] = input[i][j];
-	}
-    /**
-     * Draw a board into System.out
-     */
-    public String drawToString() {
-    	String res = "  ";
-    	if (board.length > 0)
-    		for (int y = 1; y <= board[0].length; y++) {
-    			res += (" " + y + " ");
-    		}
-    	res += ("\n");
-    	for (int x = 1; x <= board.length; x++) {
+    private String getArrayAsString(char[][] input) {
+    	String res = "";
+    	List<String> pre = getArrayAsStrings(input);
+    	for (Iterator<String> iterator = pre.iterator(); iterator.hasNext();) {
+			 res += (iterator.next() + "\n");
+		}
+    	return res;
+    }
+    private List<String> getArrayAsStrings(char[][] input) {
+    	int xMax = input.length;
+    	int yMax = (xMax > 0) ? input[0].length : 0;
+    	List<String> resList = new ArrayList<String>();
+    	String res1 = "  ";
+    	for (int y = 0; y < yMax; y++) {
+    		res1 += (" " + y + " ");
+    	}
+    	resList.add(res1);
+    	String res2[] = new String[xMax];
+    	for (int x = 0; x < xMax; x++) {
+    		res2[x] = "";
     		String num = "" + x;
     		num = (x < 10) ? " " + num : num;
-    		res += num;
-    		for (int y = 1; y <= board[0].length; y++) {
-    			String name = String.valueOf(board[x-1][y-1]);
-    			res += "[" + name + "]";
+    		res2[x] += num;
+    		for (int y = 0; y < yMax; y++) {
+    			res2[x] += ("[" + input[x][y] + "]");
     		}
-    		res += ("\n");
+    		resList.add(res2[x]);
     	}
-    	return res;
+    	return resList;
     }	
 	
-    @Override
-	public String toString() {
-		return drawToString();
+    public String getBoardViewAsString() {
+    	return getArrayAsString(getBoardView());
+    }
+    
+	public char[][] getBoardView() {
+		char[][] b = new char[xSize][ySize];
+		for (int x = 0; x < xSize; x++)
+			for (int y = 0; y < ySize; y++) {
+				int pointIndex = getIndexForPoint(x, y);
+				b[x][y] = board[pointIndex];
+			}
+		return b;
 	}
-
+    
 	@Override
 	public boolean equals(Object obj) {
+		if (updateEqualsCounter) equalsCounter++;
         if (this == obj)
             return true;
         if (obj == null)
             return false;
-        if (!isArraysEquals(((MicroBoard)obj).board))
+        if (!Arrays.equals(((MicroBoard)obj).board, board))
         	return false;
         return true;		
 	}
@@ -75,7 +103,7 @@ public class MicroBoard {
             return true;
         if (obj == null)
             return false;
-        if (getClass() != obj.getClass())
+        if (!(obj instanceof MicroBoard))
             return false;
         MicroBoard b = (MicroBoard) obj;
         if (board != null && b.board == null)
@@ -84,22 +112,20 @@ public class MicroBoard {
         	return false;
         if (board.length != b.board.length)
             return false;
-        if (board.length > 0)
-        	if (board[0].length != b.board[0].length)
-        		return false;
-        if (!isArraysEquals(b.board))
+        if (!Arrays.equals(b.board, board))
         	return false;
         return true;		
 	}
 	
     @Override
     public int hashCode() {
+    	if (updateHashCounter) hashCounter++;
         final int prime = 31;
         int result = 1;
-        if (board != null) {
-        	result = prime * result + board.length;
-        	if (board.length > 0) result = prime * result + board[0].length;
-        }
+        result = prime * result + xSize;
+        result = prime * result + ySize;
+        for (int i = 0; i < board.length; i++)
+        	result += board[i]*i;
         return result;
     }
 	
