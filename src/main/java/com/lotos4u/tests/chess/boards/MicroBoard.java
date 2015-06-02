@@ -1,46 +1,35 @@
 package com.lotos4u.tests.chess.boards;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
-public class MicroBoard {
-	private int xSize;
-	private int ySize;
-	private char[] board;
-	public static int equalsCounter = 0;
-	public static int hashCounter = 0;
-	private boolean updateEqualsCounter = true;
-	private boolean updateHashCounter = true;
-
-	public MicroBoard(int x, int y) {
-		super();
-		xSize = x;
-		ySize = y;
+public class MicroBoard extends AbstractChessBoard {
+	protected int nPieces;
+	
+	public MicroBoard(int x, int y, int n) {
+		super(x, y);
+		nPieces = n;
 		board = new char[x*y];
 	}
 
-	public MicroBoard(char[] input, int x,  int y) {
-		this(x, y);
+	public MicroBoard(char[] input, int x,  int y, int n) {
+		this(x, y, n);
 		updateBoard(input);
 	}
-	
-	public MicroBoard(ChessBoard board) {
-		this(board.getArrayView(),  board.xSize, board.ySize);
+	public MicroBoard(IChessBoard board) {
+		this(board.getBoardViewAsArray(),  board.getXSize(), board.getYSize(), board.getNPieces());
 	}
-	public int[] getPointForIndex(int index) {
-		int x = index / ySize;
-		int y = index - x*ySize;
-		return new int[]{x, y};
-	}
-	public int getIndexForPoint(int x, int y) {
-		return y + ySize*x;//=index
-	}
+
 	public void updateBoard(char[] input) {
-    	for (int i = 0; i < board.length; i++)
-   			board[i] = input[i];
+		board = Arrays.copyOf(input, input.length);
+    	/*for (int i = 0; i < board.length; i++)
+   			board[i] = input[i];*/
 	}
+	
+	public int getNPieces() {
+		return nPieces;
+	}
+	
+	/*
     private String getArrayAsString(char[][] input) {
     	String res = "";
     	List<String> pre = getArrayAsStrings(input);
@@ -71,20 +60,9 @@ public class MicroBoard {
     	}
     	return resList;
     }	
-	
-    public String getBoardViewAsString() {
-    	return getArrayAsString(getBoardView());
-    }
-    
-	public char[][] getBoardView() {
-		char[][] b = new char[xSize][ySize];
-		for (int x = 0; x < xSize; x++)
-			for (int y = 0; y < ySize; y++) {
-				int pointIndex = getIndexForPoint(x, y);
-				b[x][y] = board[pointIndex];
-			}
-		return b;
-	}
+	*/
+
+
     
 	@Override
 	public boolean equals(Object obj) {
@@ -128,6 +106,6 @@ public class MicroBoard {
         	result += board[i]*i;
         return result;
     }
-	
+
 
 }

@@ -9,23 +9,20 @@ import java.util.Set;
 import com.lotos4u.tests.chess.general.Log;
 import com.lotos4u.tests.chess.pieces.Piece;
 
-public class ChessBoard {
+public class ChessBoard extends AbstractChessBoard {
 	//private Set<MicroBoard> uniqueVariants = new HashSet<MicroBoard>();
 	private Set<MicroBoard> uniqueVariants = new HashSet<MicroBoard>();
 	private List<MicroBoard> allVariants = new ArrayList<MicroBoard>();
 		
 	/**
-	 * Horizontal board size
-	 */
-	protected int xSize;
-	/**
-	 * Vertical board size
-	 */
-	protected int ySize;
-	/**
 	 * Chess pieces of this board
 	 */
 	protected List<Piece> pieces = new ArrayList<Piece>();
+    /**
+     * All points on the board, from which the board is consists
+     */
+	protected List<Point> points = new ArrayList<Point>();
+
 	private char[] boardView;
 	
 	protected int putCounter = 0;
@@ -43,33 +40,9 @@ public class ChessBoard {
 
 	private boolean sortAfter = true;
 	
-    /**
-     * All points on the board, from which the board is consists
-     */
-	protected List<Point> points = new ArrayList<Point>();
-	
-	private void dropPiece(int pieceIndex) {
-		setPosition(pieceIndex, null);
-	}
-	private void setPosition(int pieceIndex, Point position) {
-		Piece p = pieces.get(pieceIndex);
-		Point oldPosition = p.getPosition();
-		if ((oldPosition == null) && (position != null)) {
-			putCounter++;
-		}
-		if ((oldPosition != null) && (position == null)) {
-			putCounter--;
-			boardView[getIndexForPoint(oldPosition.getX()-1, oldPosition.getY()-1)] = ' ';
-		}
-		if (position != null)
-			boardView[getIndexForPoint(position.getX()-1, position.getY()-1)] = p.getShortName();
-		p.setPosition(position, this);
-	}
 	
 	public ChessBoard(int newX, int newY) {
-		super();
-		xSize = newX;
-		ySize = newY;
+		super(newX, newY);
 		boardView = new char[xSize*ySize];
 		for (int x = 1; x <= newX; x++) {
             for (int y = 1; y <= newY; y++) {
@@ -79,6 +52,10 @@ public class ChessBoard {
         }
 	}
 	
+	public int getNPieces() {
+		return pieces.size();
+	}
+
 	public Piece getPiece(int index){
 	    return pieces.get(index);
 	}
@@ -96,7 +73,24 @@ public class ChessBoard {
 		res.remove(0);
 		return res;
 	}
-		
+	private void dropPiece(int pieceIndex) {
+		setPosition(pieceIndex, null);
+	}
+	private void setPosition(int pieceIndex, Point position) {
+		Piece p = pieces.get(pieceIndex);
+		Point oldPosition = p.getPosition();
+		if ((oldPosition == null) && (position != null)) {
+			putCounter++;
+		}
+		if ((oldPosition != null) && (position == null)) {
+			putCounter--;
+			boardView[getIndexForPoint(oldPosition.getX()-1, oldPosition.getY()-1)] = ' ';
+		}
+		if (position != null)
+			boardView[getIndexForPoint(position.getX()-1, position.getY()-1)] = p.getShortName();
+		p.setPosition(position, this);
+	}
+			
 	public boolean tryToPut(int pieceIndex, Point p, boolean log) {
 		tryToPutCounter++;
 		boolean res = false;
@@ -168,12 +162,13 @@ public class ChessBoard {
 		boolean putted = false;
 		boolean log = false;
 		boolean logInner = false;
-		boolean logExtra = false;
+		boolean logExtra = true;
 		
-		if (logExtra) Log.out("N = " + uniqueVariants.size() + ", counter = " + recursiveCallCounter + ", " + getSecondsFromStart() + " sec");
-		if (logExtra)Log.out("Counter = " + recursiveCallCounter + ", " + getSecondsFromStart() + " sec");
-		if (logExtra)Log.out("Counter = " + recursiveCallCounter);
-		if (logExtra)Log.out(getSecondsFromStart() + " sec");
+		//if (logExtra) Log.out("N = " + uniqueVariants.size() + ", counter = " + recursiveCallCounter + ", " + getSecondsFromStart() + " sec");
+		//if (logExtra)Log.out("Counter = " + recursiveCallCounter + ", " + getSecondsFromStart() + " sec");
+		//if (logExtra)Log.out("Counter = " + recursiveCallCounter);
+		//if (logExtra)Log.out(getSecondsFromStart() + " sec");
+		//if (logExtra)Log.out("N variants = " + allVariantsCounter);
 		
 		if (isArranged()) {
 			recursionDepth--;
@@ -227,7 +222,7 @@ public class ChessBoard {
 		return res;		
 	}
 	
-	public int arrangeVariants(){
+	public int arrangeVariants(boolean logSummary){
 		recursionStart = System.currentTimeMillis();
 		recursiveCallCounter = 0;
 		allVariantsCounter = 0;
@@ -241,7 +236,7 @@ public class ChessBoard {
 		recursionFinish = System.currentTimeMillis();
 		long recTime = recursionFinish - recursionStart;
 		long sortTime = 0;
-		Log.out("Chess complexity is = " + xSize*ySize*(pieces.size()));
+		if (logSummary) Log.out("Chess complexity is = " + xSize*ySize*(pieces.size()));
 		if (sortAfter) {
 			sortStart = System.currentTimeMillis();	
 			uniqueVariants.addAll(allVariants);
@@ -249,19 +244,19 @@ public class ChessBoard {
 			sortTime = sortFinish - sortStart;
 		}
 		int res = uniqueVariants.size();
-		Log.out("Number of all variants = " + allVariantsCounter);
-		Log.out("Number of unique variants = " + res);
+		if (logSummary) Log.out("Number of all variants = " + allVariantsCounter);
+		if (logSummary) Log.out("Number of unique variants = " + res);
 		if (sortAfter) {
-			Log.out("Arrangement time = " + recTime + " ms");
-			Log.out("Sort time = " + sortTime + " ms");
+			if (logSummary) Log.out("Arrangement time = " + recTime + " ms");
+			if (logSummary) Log.out("Sort time = " + sortTime + " ms");
 		}
-		Log.out("Full time = " + (recTime + sortTime) + " ms");
-		Log.out("Number of recursive calls = " + recursiveCallCounter);
+		if (logSummary) Log.out("Full time = " + (recTime + sortTime) + " ms");
+		if (logSummary) Log.out("Number of recursive calls = " + recursiveCallCounter);
 		if (recTime > 0) 
-			Log.out("Number of recursive calls per ms = " + (float)(recursiveCallCounter/recTime));
-		Log.out("Number of put tries = " + tryToPutCounter);
-		Log.out("Number of Equals calls = " + MicroBoard.equalsCounter);
-		Log.out("Number of Hashcode calls = " + MicroBoard.hashCounter);
+			if (logSummary) Log.out("Number of recursive calls per ms = " + (float)(recursiveCallCounter/recTime));
+		if (logSummary) Log.out("Number of put tries = " + tryToPutCounter);
+		if (logSummary) Log.out("Number of Equals calls = " + MicroBoard.equalsCounter);
+		if (logSummary) Log.out("Number of Hashcode calls = " + MicroBoard.hashCounter);
 		return res;
 	}
 	
@@ -413,22 +408,6 @@ public class ChessBoard {
 	public int getIndexForPoint(int x, int y) {
 		return y + ySize*x;//=index
 	}
-	protected char[] getArrayView() {
-		//return boardView;
-		
-		char[] res = new char[xSize*ySize];
-		for (Piece p : pieces) {
-			Point point = p.getPosition();
-			if (point != null) {
-				int x = point.getX() - 1;
-				int y = point.getY() - 1;
-				int pointIndex = getIndexForPoint(x, y);
-				res[pointIndex] = p.getShortName();
-			}
-		}
-		return res;
-		
-	}
 	
 	private boolean isBoardLikeThis(ChessBoard board) {
 		return (pieces.size() == board.getPiecesNumber()) && (xSize == board.getxSize()) && (ySize == board.getySize());
@@ -550,4 +529,19 @@ public class ChessBoard {
         }    	
     }
 */
+
+	public char[] getBoardViewAsArray() {
+		//return boardView;
+		char[] res = new char[xSize*ySize];
+		for (Piece p : pieces) {
+			Point point = p.getPosition();
+			if (point != null) {
+				int x = point.getX() - 1;
+				int y = point.getY() - 1;
+				int pointIndex = getIndexForPoint(x, y);
+				res[pointIndex] = p.getShortName();
+			}
+		}
+		return res;
+	}
 }
