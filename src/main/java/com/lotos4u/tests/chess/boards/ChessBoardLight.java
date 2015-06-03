@@ -2,6 +2,7 @@ package com.lotos4u.tests.chess.boards;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -10,78 +11,133 @@ import java.util.Set;
 
 
 public class ChessBoardLight extends AbstractChessBoard {
-	private Set<MicroBoard> uniqueVariants = new HashSet<MicroBoard>();
-	private List<MicroBoard> allVariants = new LinkedList<MicroBoard>();
+	public class ComparablePoint implements Comparable<ComparablePoint> {
+		public int index;
+		public int nNneighbors;
+		public ComparablePoint(int pointIndex) {
+			index = pointIndex;
+			nNneighbors = ChessBoardLight.this.pointsNeighbors[index];
+		}
+		public int compareTo(ComparablePoint o) {
+			return (o.nNneighbors - nNneighbors);
+		}
+		@Override
+		public String toString() {
+			return "" + index;
+		}
+	}	
+
+
+	protected Set<MicroBoard> uniqueVariants = new HashSet<MicroBoard>();
+	protected List<MicroBoard> allVariants = new LinkedList<MicroBoard>();
 	
-	private char[] boardView; //Letters (pieces names) at the points
-	private int[] board; //numbers (pieces indexes) at the points
-	private int[] boardFree; //numbers (pieces indexes) at the points
-	private int[] boardTakeble; //incremental takebility data. If some piece take point value++
-	private boolean[][][] boardsGray;
-	private char[] pieces; //all pieces names
-	private int[] piecesPoints;
-	private int nPieces;
+	protected int[] boardPiecesIndexes; //numbers (pieces indexes) at the points
+	protected int[] boardFree; //numbers (pieces indexes) at the points
+	protected int[] pointsNeighbors; //Number of Neighbors for each point
+	protected int[] boardTakeble; //incremental takebility data. If some piece take point value++
+	protected boolean[][][] boardsGray;
+	protected char[] pieces; //all pieces names
+	protected int[] piecesPoints;
+	protected List<ChessBoardLight.ComparablePoint> sortedComparablePoints;;
 	
-	private int puttedPiecesCounter;
+	protected int puttedPiecesCounter;
 	
-	private long recursionStart;
-	private long recursionFinish;
-	private long sortStart;
-	private long sortFinish;
-	private int variantsCounter;
-	private int uniqueCounter;
-	private int recursiveCallCounter;
-	private int tryToPutCounter;
-	private int rc;
+	protected long recursionStart;
+	protected long recursionFinish;
+	protected long sortStart;
+	protected long sortFinish;
+	protected int variantsCounter;
+	protected int uniqueCounter;
+	protected int recursiveCallCounter;
+	protected int tryToPutCounter;
 	
-	public static boolean updateTakebleUniversal = true;
-	public static boolean updateFreeUniversal = false;
-	public static boolean updateTakeble = true;
-	public static boolean testBeforePut = true;
-	public static boolean sortAfter = false;
+	public static boolean filterVariantsAfter = false;
+	public static boolean sortPoints = true;
 	
-	private boolean log;
-	private boolean logInner;
-	private boolean logExtra;
-	private boolean pauses;
-		
+	private int[] sortedPoints;
+	
+	
 	public ChessBoardLight(int x, int y, char[] inPieces) {
 		super(x, y);
 		nPieces = inPieces.length;
 		nPoints = x*y;
-		boardView = new char[nPoints];
-		board = new int[nPoints];
+		boardPiecesIndexes = new int[nPoints];
+		pointsNeighbors = new int[nPoints];
 		boardFree = new int[nPoints];
 		boardTakeble = new int[nPoints];
+		sortedPoints = new int[nPoints];
 		boardsGray = new boolean[nPieces][nPoints][nPoints];
 		pieces = new char[nPieces];
 		piecesPoints = new int[nPieces];
 		Arrays.fill(piecesPoints, EMPTY);
 		pieces = Arrays.copyOf(inPieces, nPieces);
 		
-		Arrays.fill(boardView, NONAME);
-		Arrays.fill(board, EMPTY);
+		Arrays.fill(boardPiecesIndexes, EMPTY);
 		Arrays.fill(boardFree, EMPTY);
 		Arrays.fill(boardTakeble, EMPTY);
 
+		sortedComparablePoints = new ArrayList<ChessBoardLight.ComparablePoint>();
+		updateNeighborsNumber();
 		for (int point1 = 0; point1 < nPoints; point1++) {
+			sortedComparablePoints.add(new ChessBoardLight.ComparablePoint(point1));
 			for (int p = 0; p < nPieces; p++)
 				Arrays.fill(boardsGray[p][point1], false);
+		}
+		
+		if (sortPoints)
+			Collections.sort(sortedComparablePoints);
+		
+		for (int i = 0; i < nPoints; i++) {
+			sortedPoints[i] = sortedComparablePoints.get(i).index;
 		}
 	}
 	
 	public Set<MicroBoard> getUniqueVariants() {
 		return uniqueVariants;
 	}
-	
+
 	public List<MicroBoard> getAllVariants() {
 		return allVariants;
 	}
 
-	public int getNPieces() {
-		return nPieces;
-	}
 
+	
+	public int getNeighborsNumber(int pointIndex) {
+		int res = 0;
+		int[] point = getPointForIndex(pointIndex);
+		int x, x0 = point[0];
+		int y, y0 = point[1];
+		x = x0 + 1; y = y0;
+		if (isPointInside(x, y))
+			res++;
+		x = x0 - 1; y = y0;
+		if (isPointInside(x, y))
+			res++;
+		x = x0; y = y0 + 1;
+		if (isPointInside(x, y))
+			res++;
+		x = x0; y = y0 - 1;
+		if (isPointInside(x, y))
+			res++;
+		x = x0 + 1; y = y0 + 1;
+		if (isPointInside(x, y))
+			res++;
+		x = x0 + 1; y = y0 - 1;
+		if (isPointInside(x, y))
+			res++;
+		x = x0 - 1; y = y0 + 1;
+		if (isPointInside(x, y))
+			res++;
+		x = x0 - 1; y = y0 - 1;
+		if (isPointInside(x, y))
+			res++;
+		return res;
+	}
+	public void updateNeighborsNumber() {
+		for (int index = 0; index < nPoints; index++) {
+			pointsNeighbors[index] = getNeighborsNumber(index);
+		}
+	}
 
 	private void sortPieces() {
 		int[] power = new int[nPieces];
@@ -93,12 +149,9 @@ public class ChessBoardLight extends AbstractChessBoard {
 	}
 	
 	public int getArrangementVariants(boolean inLog, boolean inLogInner, boolean inLogExtra, boolean logSummary, boolean inPauses) {
-		log = inLog;
-		logInner = inLogInner;
-		logExtra = inLogExtra;
-		pauses = inPauses;
 		if (logSummary) System.out.println("Unsorted Pieces: " + getPiecesAsString());
 		sortPieces();
+		
 		if (logSummary) System.out.println("Sorted Pieces: " + getPiecesAsString());
 		recursionStart = System.currentTimeMillis();
 		recursiveCallCounter = 0;
@@ -121,14 +174,14 @@ public class ChessBoardLight extends AbstractChessBoard {
 		if (logSummary) System.out.println("Number of all variants = " + variantsCounter);
 		if (logSummary) System.out.println("Arrangements time " + recTime + " ms");
 		long sortTime = 0;		
-		if (sortAfter) {
+		if (filterVariantsAfter) {
 			sortStart = System.currentTimeMillis();
 			uniqueVariants.addAll(allVariants);
 			sortFinish = System.currentTimeMillis();
 			sortTime = sortFinish - sortStart;
 		}
 		if (logSummary) System.out.println("Number of unique variants = " + uniqueVariants.size());
-		if (sortAfter) {
+		if (filterVariantsAfter) {
 			if (logSummary) System.out.println("Sorting time = " + sortTime + " ms");
 		} 
 		if (logSummary) System.out.println("Full time = " + (recTime + sortTime) + " ms");
@@ -144,39 +197,20 @@ public class ChessBoardLight extends AbstractChessBoard {
 	}
 
 	private boolean willItTake(int pieceIndex, int newLocation) {
-		boolean takeble[] = Arrays.copyOf(boardsGray[pieceIndex][newLocation], nPoints);
-		for (int testPieceIndex = 0; testPieceIndex < nPieces; testPieceIndex++)
-			if ((piecesPoints[testPieceIndex] != EMPTY) && takeble[piecesPoints[testPieceIndex]])
+		int pointIndex;
+		for (int testPieceIndex = 0; testPieceIndex < nPieces; testPieceIndex++) {
+			pointIndex = piecesPoints[testPieceIndex];
+			if ((pointIndex != EMPTY) && boardsGray[pieceIndex][newLocation][pointIndex])
 				return true;
+		}
 		return false;
 	}
-	public boolean tryToPut(int pieceIndex, int pointIndex, boolean log) {
-		boolean putted = false;
-		tryToPutCounter++;
-		if (testBeforePut) {
-			if (updateTakebleUniversal) {
-				if (willItTake(pieceIndex, pointIndex)) 
-					return false;
-			} else {
-				char piece = pieces[pieceIndex];
-				for (int point = 0; point < nPoints; point++) {
-					if ((board[point] != EMPTY) && canPieceTakePoint(piece, pointIndex, point))
-						return false;
-				}
-			}
-			putted = true;
-			setPiecePosition(pieceIndex, pointIndex);
-		} else {
-			setPiecePosition(pieceIndex, pointIndex);
-			putted = isValidQuick();
+	public boolean tryToPut(int pieceIndex, int pointIndex) {
+		if (willItTake(pieceIndex, pointIndex)) {
+			return false;
 		}
-		if (putted) {
-			if(log)System.out.println("[" + rc + "] Putted " + pieces[pieceIndex]);
-		} else {
-			if(log)System.out.println("[" + rc + "] Not Putted " + pieces[pieceIndex]);
-			dropPiece(pieceIndex);
-		}
-		return putted;
+		setPiecePosition(pieceIndex, pointIndex);
+		return true;
 	}
 	
 	public void updateUniversalTakeble() {
@@ -189,44 +223,26 @@ public class ChessBoardLight extends AbstractChessBoard {
 					}
 			}
 	}
-		
-	public void drawTakebleForPiece(int pieceIndex, int pointIndex) {
-		boolean[] takeble = Arrays.copyOf(boardsGray[pieceIndex][pointIndex], nPoints);
-		int[][] b = getBoardFromLinear(takeble);
-		String res = getArrayAsString(b);
-		System.out.println(res);
-	}
-	public List<Integer> getFreePoints() {
+
+	private List<Integer> getCurrentFreePoints() {
 		List<Integer> res = new ArrayList<Integer>();
-		if (updateFreeUniversal) {
-			for (int index = 0; index < nPoints; index++)
-				if (boardFree[index] == EMPTY)
-					res.add(Integer.valueOf(index));
-		} else {
-			for (int index = 0; index < nPoints; index++)
-				if (isEmpty(index) && !isTakeble(index))
-					res.add(Integer.valueOf(index));
+		int i;
+		for (Integer p : sortedPoints) {
+			i = p.intValue();
+			if (boardFree[i] == EMPTY)
+				res.add(new Integer(i));
 		}
-		
 		return res;
 	}
 	
-	private boolean isTakeble(int pointIndex) {
-		if (updateTakeble)
-			return boardTakeble[pointIndex] != EMPTY;
-		else {
-			for (int p = 0; p < nPieces; p++) {
-				char piece = pieces[p];
-				int point = piecesPoints[p];
-				if (point != EMPTY) {
-					if (canPieceTakePoint(piece, point, pointIndex))
-						return true;
-				}
-			}
-			return false;
-		}
+	public List<ComparablePoint> getFreePoints() {
+		List<ComparablePoint> res = new ArrayList<ComparablePoint>();
+		for (int i = 0; i < nPoints; i++)
+			if (boardFree[sortedPoints[i]] == EMPTY)
+				res.add(new ComparablePoint(sortedPoints[i]));
+		return res;
 	}
-
+	
 	public int getFistUnpositionedIndex() {
 		for (int index = 0; index < nPieces; index++)
 			if (piecesPoints[index] == EMPTY)
@@ -235,82 +251,45 @@ public class ChessBoardLight extends AbstractChessBoard {
 	}
 
 	public boolean arrangeRecursively(){
-		recursiveCallCounter++;
-		rc++;
-		boolean res = false;
-		//long sec = (System.currentTimeMillis() - recursionStart)/1000;
-		//if (logExtra) System.out.println("[" + rc  + "] N full = " + variantsCounter + ", N unique = " + uniqueCounter + ", CallCounter = " + callCounter  + ", "  + sec + " sec" );
-		//if (logExtra) System.out.println("[" + rc  + "] N full = " + variantsCounter + ", N unique = " + uniqueCounter + ", CallCounter = " + recursiveCallCounter  + ", Equals="  + equalsCounter );
-		if (logExtra) System.out.println("[" + rc  + "] N full = " + variantsCounter);
-
 		int pieceIndex = getFistUnpositionedIndex();
 		
 		if (isArranged() || (pieceIndex == EMPTY)) {
-			if (log) System.out.println("[" + rc + "] No pieces! All arranged!");
-			rc--;
 			return true;
 		}
 		
-		if (log) System.out.println("[" + rc + "] We have to put " + pieces[pieceIndex] + "(" + pieceIndex +  ")");
-		
-		List<Integer> free = getFreePoints();
+		List<Integer> free = getCurrentFreePoints();
 		
 		if (free.size() < 1) {
-			if (log) System.out.println("[" + rc + "] No free points for " + pieces[pieceIndex] + "(" + pieceIndex +  ")!");
-			rc--;
 			return false;
 		}
 		
-		if (log) System.out.println("[" + rc + "] We have " + free.size() + " points for " + pieces[pieceIndex]);
-		//if (pauses) drawBoardAndBoardViewAndTakebleAndFree();
-		//if (pauses) Log.pause();
-		//if (log) drawBoardAndTakeble();
-		//if (log) System.out.println("[" + rc + "] Pieces: " + getPiecesAsString());
-		//if (log) System.out.println("[" + rc + "] Free: " + getPointsAsString(free));
-		
 		for (Integer pointI : free) {
 			int pointIndex = pointI.intValue();
-			int[] point = getPointForIndex(pointIndex);
-			if ((boardTakeble[pointIndex] != EMPTY) || (board[pointIndex] != EMPTY))
+			//if ((boardTakeble[pointIndex] != EMPTY) || (boardIndexes[pointIndex] != EMPTY))
+			//	continue;
+			if (boardFree[pointIndex] != EMPTY)
 				continue;
-			res = false;
-			if (log) System.out.println("[" + rc + "] Try " + pieces[pieceIndex] + " at (" + point[0] + ", " + point[1] + ")");
-			boolean putted = tryToPut(pieceIndex, pointIndex, logInner);
+			boolean putted = tryToPut(pieceIndex, pointIndex);
 			if (putted && (isArranged() || arrangeRecursively())) {
 				success();
 			}
 			dropPiece(pieceIndex);
 		}
-		res = isArranged();
-		if (log) System.out.println("[" + rc + "] Tested " + free.size() + " free points for " + pieces[pieceIndex] + "(" + pieceIndex +  "). Result = " + res);
-		rc--;
-		return res;				
+		return isArranged();				
 	}
 	
 	private void success() {
 		variantsCounter++;
 		MicroBoard b = new MicroBoard(this);
-		if (sortAfter) {
+		if (filterVariantsAfter) {
 			allVariants.add(b);	
 		} else {
 			boolean isUnique = uniqueVariants.add(b);
 			if (isUnique) {
 				uniqueCounter++;
-				if ((uniqueCounter % 100000) == 0) System.out.println("N unique = " + uniqueCounter + ", " + (System.currentTimeMillis() - recursionStart) + " ms");
+				if ((uniqueCounter % 100000) == 0) System.out.println("N unique = " + uniqueCounter + " from " + variantsCounter + " variants, " + (System.currentTimeMillis() - recursionStart) + " ms");
 			}
 		}
-	}
-
-	public List<Integer> getTakebleForPiece(char piece, int newPointIndex) {
-		List<Integer> res = new ArrayList<Integer>();
-		for (int index = 0; index < nPoints; index++)
-			if (canPieceTakePoint(piece, newPointIndex, index))
-				res.add(Integer.valueOf(index));
-		return res;
-	}
-
-	public boolean isArrangedAndValid() {
-		return isArranged() && isValid();
 	}
 	
 	public boolean canPieceTakePoint(char piece, int hisPointIndex, int testPointIndex) {
@@ -326,86 +305,27 @@ public class ChessBoardLight extends AbstractChessBoard {
 				   (isRook(piece) && canRookTakePoint(hisX, hisY, testX, testY)) ||
 				   (isQueen(piece) && canQueenTakePoint(hisX, hisY, testX, testY))) {
 					return true;
-					}	
+					}
 		return false;
-	}
-	
-	public boolean isValidQuick() {
-		if (!updateTakeble)
-			return isValid();
-		for (int index = 0; index < nPoints; index++) {
-			if ((board[index] != EMPTY) && (boardTakeble[index] != EMPTY))
-				return false;
-		}
-		return true;
-	}
-	public boolean isValid() {
-		for (int p1 = 0; p1 < nPieces; p1++) {
-			if (piecesPoints[p1] != EMPTY)
-				for (int p2 = 0; p2 < nPieces; p2++) {
-					int point1 = piecesPoints[p1];
-					int point2 = piecesPoints[p2];
-					if (!(piecesPoints[p2] != EMPTY) && canPieceTakePoint(pieces[p1], point1, point2))
-						return false;
-				}
-		}
-		return true;
 	}
 	
 	public boolean isArranged() {
 		return puttedPiecesCounter == nPieces;
 	}
-	private void updateTakebleForPut(char piece, int newPointIndex) {
-		if(!updateTakeble)return;
-		for (int index = 0; index < nPoints; index++)
-			if (canPieceTakePoint(piece, newPointIndex, index))
-				boardTakeble[index]++;
-	}
-	private void updateTakebleForPut(int pieceIndex, int newPointIndex) {
-		if(!updateTakeble)return;
-		for (int index = 0; index < nPoints; index++)
-			if (boardsGray[pieceIndex][newPointIndex][index])
-				boardTakeble[index]++;
-	}
-	private void updateFreeForPut(int pieceIndex, int newPointIndex) {
-		if(!updateFreeUniversal)return;
-		boardFree[newPointIndex]++;
-		for (int index = 0; index < nPoints; index++)
-			if (boardsGray[pieceIndex][newPointIndex][index])
-				boardFree[index]++;
-	}
-	
-	private void updateTakebleForDrop(char piece, int oldPointIndex) {
-		if(!updateTakeble)return;
-		for (int index = 0; index < nPoints; index++)
-			if (canPieceTakePoint(piece, oldPointIndex, index))
-				boardTakeble[index]--;
-	}
-	private void updateTakebleForDrop(int pieceIndex, int oldPointIndex) {
-		if(!updateTakeble)return;
-		for (int index = 0; index < nPoints; index++)
-			if (boardsGray[pieceIndex][oldPointIndex][index])
-				boardTakeble[index]--;
-	}
-	private void updateFreeForDrop(int pieceIndex, int oldPointIndex) {
-		if(!updateFreeUniversal)return;
-		boardFree[oldPointIndex]--;
-		for (int index = 0; index < nPoints; index++)
-			if (boardsGray[pieceIndex][oldPointIndex][index])
-				boardFree[index]--;
-	}
-	
 	private void clearBoardPoint(int pointIndex) {
-		int pieceIndex = board[pointIndex];
+		int pieceIndex = boardPiecesIndexes[pointIndex];
 		if (pieceIndex != EMPTY) {
 			puttedPiecesCounter--;
 			piecesPoints[pieceIndex] = EMPTY;
-			//updateTakebleForDrop(pieces[pieceIndex], pointIndex);
-			updateTakebleForDrop(pieceIndex, pointIndex);
-			updateFreeForDrop(pieceIndex, pointIndex);
+			boardFree[pointIndex]--;
+			for (int index = 0; index < nPoints; index++)
+				if (boardsGray[pieceIndex][pointIndex][index]) {
+					boardFree[index]--;
+					boardTakeble[index]--;
+				}
 		}
-		boardView[pointIndex] = NONAME;
-		board[pointIndex] = EMPTY;
+		boardPiecesNames[pointIndex] = NONAME;
+		boardPiecesIndexes[pointIndex] = EMPTY;
 	}
 	
 	public void dropPieces() {
@@ -424,36 +344,24 @@ public class ChessBoardLight extends AbstractChessBoard {
 		clearBoardPoint(pointIndex);
 		if (piecesPoints[pieceIndex] != EMPTY)
 			clearBoardPoint(piecesPoints[pieceIndex]);
-		boardView[pointIndex] = pieces[pieceIndex];
-		board[pointIndex] = pieceIndex;
+		boardPiecesNames[pointIndex] = pieces[pieceIndex];
+		boardPiecesIndexes[pointIndex] = pieceIndex;
 		piecesPoints[pieceIndex] = pointIndex;
 		puttedPiecesCounter++;
-		//updateTakebleForPut(pieces[pieceIndex], pointIndex);
-		updateTakebleForPut(pieceIndex, pointIndex);
-		updateFreeForPut(pieceIndex, pointIndex);
-	}
-	
-	private boolean isEmpty(int pointIndex) {
-		return board[pointIndex] == EMPTY;
+		boardFree[pointIndex]++;
+		for (int index = 0; index < nPoints; index++)
+			if (boardsGray[pieceIndex][pointIndex][index]) {
+				boardFree[index]++;
+				boardTakeble[index]++;
+			}		
 	}
 	
 	public int[][] getBoardFree() {
 		int[][] b = new int[xSize][ySize];
 		for (int pointIndex = 0; pointIndex < nPoints; pointIndex++) {
-			boolean empty = board[pointIndex] == EMPTY;
+			boolean empty = boardPiecesIndexes[pointIndex] == EMPTY;
 			boolean notTakeble;
-			if(updateTakeble) {
-				notTakeble = boardTakeble[pointIndex] == EMPTY;	
-			} else {
-				notTakeble = true;
-				for (int p = 0; p < nPieces; p++) {
-					char piece = pieces[p];
-					if (canPieceTakePoint(piece, piecesPoints[p], pointIndex)) {
-						notTakeble = false;
-						break;
-					}
-				}
-			}
+			notTakeble = boardTakeble[pointIndex] == EMPTY;
 			int[] point = getPointForIndex(pointIndex);
 			int x = point[0];
 			int y = point[1];
@@ -470,7 +378,7 @@ public class ChessBoardLight extends AbstractChessBoard {
 		for (int x = 0; x < xSize; x++)
 			for (int y = 0; y < ySize; y++) {
 				int pointIndex = getIndexForPoint(x, y);
-				int index = board[pointIndex];
+				int index = boardPiecesIndexes[pointIndex];
 				if (index != EMPTY)
 					b[x][y] = pieces[index];
 				else
@@ -483,7 +391,7 @@ public class ChessBoardLight extends AbstractChessBoard {
 		for (int x = 0; x < xSize; x++)
 			for (int y = 0; y < ySize; y++) {
 				int pointIndex = getIndexForPoint(x, y);
-				int index = board[pointIndex];
+				int index = boardPiecesIndexes[pointIndex];
 				if (index != EMPTY)
 					b[x][y] = pieces[index];
 				else
@@ -504,6 +412,13 @@ public class ChessBoardLight extends AbstractChessBoard {
 			}
 		return b;
 	}
+	
+	public void drawTakebleForPiece(int pieceIndex, int pointIndex) {
+		boolean[] takeble = Arrays.copyOf(boardsGray[pieceIndex][pointIndex], nPoints);
+		int[][] b = getBoardFromLinear(takeble);
+		String res = getArrayAsString(b);
+		System.out.println(res);
+	}	
     /**
      * Draw a board into System.out
      */
@@ -511,10 +426,7 @@ public class ChessBoardLight extends AbstractChessBoard {
     	System.out.println(getArrayAsString(getBoardView()));
     }
     public void drawTakeble() {
-    	if (updateTakeble)
-    		System.out.println(getArrayAsString(getBoardTakeble()));
-    	else
-    		System.out.println(getArrayAsString(getBoardTakeble()));
+    	System.out.println(getArrayAsString(getBoardTakeble()));
     }
 	public void drawBoardViewAndTakeble() {
     	System.out.println(getBoardViewAndTakebleAsString());
@@ -596,21 +508,4 @@ public class ChessBoardLight extends AbstractChessBoard {
     	return res;
     }
 
-/*	
-	public static void main (String arg[]) {
-		Log.out("\n\n********************** Test testBoardLightRecursion4x4 **********************\n");
-		char[] pcs1 = new char[]{ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.ROOK, ChessBoardLight.ROOK};
-		ChessBoardLight board1 = new ChessBoardLight(4, 4, pcs1);
-		board1.getArrangementVariants(false, false, true, false);
-
-		int counter = 0;
-        for (ChessBoardLight b : board1.getUniqueVariants()) {
-        	System.out.println("Variant " + (++counter));
-        	b.drawBoard();
-        }			
-	}
-*/
-	public char[] getBoardViewAsArray() {
-		return boardView;
-	}
 }

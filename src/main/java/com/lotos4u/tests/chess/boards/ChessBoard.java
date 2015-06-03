@@ -66,6 +66,7 @@ public class ChessBoard extends AbstractChessBoard {
 	
 	public void addPiece(Piece p) {
 		pieces.add(p);
+		nPieces = pieces.size();
 	}
 
 	protected List<Piece> getWithoutFist(List<Piece> input){
@@ -310,9 +311,6 @@ public class ChessBoard extends AbstractChessBoard {
 	    return xSize*ySize;
 	}
 
-	public int getPiecesNumber(){
-        return pieces.size();
-    }
 	public List<Piece> getPiecesUnPositioned(){
 		List<Piece> res = new ArrayList<Piece>();
 		for (Piece p : pieces) {
@@ -412,7 +410,7 @@ public class ChessBoard extends AbstractChessBoard {
 	}
 	
 	private boolean isBoardLikeThis(ChessBoard board) {
-		return (pieces.size() == board.getPiecesNumber()) && (xSize == board.getxSize()) && (ySize == board.getySize());
+		return (pieces.size() == board.getNPieces()) && (xSize == board.getxSize()) && (ySize == board.getySize());
 	}
 	
     private boolean isArrangeEquals(ChessBoard board) {

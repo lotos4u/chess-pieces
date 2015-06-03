@@ -1,6 +1,10 @@
 package com.lotos4u.tests.chess.general;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -9,6 +13,7 @@ import org.junit.Test;
 
 import com.lotos4u.tests.chess.boards.ChessBoard;
 import com.lotos4u.tests.chess.boards.ChessBoardLight;
+import com.lotos4u.tests.chess.boards.ChessBoardLight.ComparablePoint;
 import com.lotos4u.tests.chess.boards.MicroBoard;
 import com.lotos4u.tests.chess.boards.Point;
 import com.lotos4u.tests.chess.pieces.Bishop;
@@ -443,22 +448,16 @@ public class MainTest {
 		long time = 0, timeLight = 0;
 		while (counter++ < 100) {
 			
-			ChessBoardLight.updateFreeUniversal = false;
-			ChessBoardLight.sortAfter = false;
-			ChessBoardLight.testBeforePut = true;
-			ChessBoardLight.updateTakebleUniversal = true;
-			ChessBoardLight.updateTakeble = true;
+			ChessBoardLight.filterVariantsAfter = false;
+			ChessBoardLight.sortPoints = false;
 			long start = System.currentTimeMillis();
 			boardLight.getArrangementVariants(false, false, false, false, false);
 			//board.arrangeVariants(false);	
 			long end = System.currentTimeMillis();
 			time += (end - start);
 			
-			ChessBoardLight.updateFreeUniversal = false;
-			ChessBoardLight.sortAfter = false;
-			ChessBoardLight.testBeforePut = true;
-			ChessBoardLight.updateTakebleUniversal = true;
-			ChessBoardLight.updateTakeble = true;
+			ChessBoardLight.filterVariantsAfter = false;
+			ChessBoardLight.sortPoints = true;
 			long startLight = System.currentTimeMillis();
 			boardLight.getArrangementVariants(false, false, false, false, false);	
 			long endLight = System.currentTimeMillis();
@@ -473,13 +472,16 @@ public class MainTest {
 		Log.out("\n\n********************** Test testRRNNNNon4x4_1_Light **********************\n");
 		char[] pcs1 = new char[]{ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.ROOK, ChessBoardLight.ROOK};
 		ChessBoardLight board1 = new ChessBoardLight(4, 4, pcs1);
+		ChessBoardLight.filterVariantsAfter = true;
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
         for (MicroBoard b : board1.getUniqueVariants()) {
-        	//System.out.println("Variant " + (++counter));
-        	//b.drawBoard();
-        }		
+        	//System.out.println("Variant " + (++counter) + ", H=" + b.hashCode());
+        	//b.draw();
+        }
+        System.out.println("Hash calls " + MicroBoard.hashCounter);
+        System.out.println("Equals calls " + MicroBoard.equalsCounter);
 	}
 	@Test @Ignore
 	public void testRRNNNNon4x4_2_Light() {
@@ -592,6 +594,46 @@ Number of put tries = 76037489
 Number of Equals calls = 1374903753
 Number of HashCode calls = 24510642 
 
+Number of all variants = 24510624
+Arrangements time 449563 ms
+Number of unique variants = 3063828
+Full time = 449563 ms
+Number of recursive calls = 8366386
+Number of recursive calls per ms = 18.0
+Number of put tries = 54731825
+Number of Equals calls = 0
+Number of HashCode calls = 0
+
+Number of all variants = 24510624
+Arrangements time 461497 ms
+Number of unique variants = 3063828
+Full time = 461497 ms
+Number of recursive calls = 8366386
+Number of recursive calls per ms = 18.0
+Number of put tries = 54731825
+Number of Equals calls = 0
+Number of HashCode calls = 0
+
+Number of all variants = 24510624
+Arrangements time 458255 ms
+Number of unique variants = 3063828
+Full time = 458255 ms
+Number of recursive calls = 8366386
+Number of recursive calls per ms = 18.0
+Number of put tries = 54731825
+Number of Equals calls = 0
+Number of HashCode calls = 0
+
+Number of all variants = 24510624
+Arrangements time 23230 ms
+Number of unique variants = 3063828
+Full time = 23230 ms
+Number of recursive calls = 0
+Number of recursive calls per ms = 0.0
+Number of put tries = 0
+Number of Equals calls = 21462687
+Number of HashCode calls = 24510642
+
 HTPC
 Number of all variants = 24510624
 Arragements time 889820 ms
@@ -609,6 +651,17 @@ Number of unique variants = 3063828
 Full time = 856887 ms
 Number of recursive calls = 8366386
 Number of recursive calls per ms = 9.0
+Number of put tries = 54731825
+Number of Equals calls = 0
+Number of HashCode calls = 0
+
+E-LOTOS-i3
+Number of all variants = 24510624
+Arrangements time 490545 ms
+Number of unique variants = 3063828
+Full time = 490545 ms
+Number of recursive calls = 8366386
+Number of recursive calls per ms = 17.0
 Number of put tries = 54731825
 Number of Equals calls = 0
 Number of HashCode calls = 0
@@ -643,21 +696,45 @@ Number of HashCode calls = 0
 		board1.drawTakebleForPiece(0, 7);
 	}
 	
+	@Test @Ignore
+	public void testNeighs() {
+		Log.out("\n\n********************** Test testNeighs **********************\n");
+		char[] pcs1 = new char[]{
+				ChessBoardLight.QUEEN,
+				ChessBoardLight.QUEEN,
+				ChessBoardLight.BISHOP,
+				ChessBoardLight.BISHOP,
+				ChessBoardLight.KING, 
+				ChessBoardLight.KING,
+				ChessBoardLight.KNIGHT 
+			};
+		ChessBoardLight board1 = new ChessBoardLight(7, 7, pcs1);
+		for (int i = 0; i < board1.getNPoints(); i++) {
+			int[] point = board1.getPointForIndex(i);
+			System.out.println("(" + point[0] + "," + point[1] + ") - " + board1.getNeighborsNumber(i));
+		}
+		ChessBoardLight.sortPoints = true;
+		List<ComparablePoint> free = board1.getFreePoints();
+		board1.updateNeighborsNumber();
+		for (ComparablePoint i : free) {
+			System.out.println(i.index);
+		}
+	}
 	
 	@Test
 	public void testComplexComparable() {
 		//testUpdateUniversalTakeble_Light();
+		//testNeighs();
 		
-		/*
-		testRKKon3x3();
-		testRKKon3x3_Light();
-		testRRNNNNon4x4_1();
-		testRRNNNNon4x4_1_Light();
-		testRRNNNNon4x4_2();
-		testRRNNNNon4x4_2_Light();
-		testKRQQBBNon6x6();
-		testKRQQBBNon6x6_Light();
-		*/
+		//testRKKon3x3();
+		//testRKKon3x3_Light();
+		//testRRNNNNon4x4_1();
+		//testRRNNNNon4x4_1_Light();
+		//testRRNNNNon4x4_2();
+		//testRRNNNNon4x4_2_Light();
+		//testKRQQBBNon6x6();
+		//testKRQQBBNon6x6_Light();
+		
 		
 		
 		//testBoard4x4Multi();

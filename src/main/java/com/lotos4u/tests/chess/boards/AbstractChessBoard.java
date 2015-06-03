@@ -5,11 +5,32 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class AbstractChessBoard implements IChessBoard {
+public abstract class AbstractChessBoard {
+	public static final char KING = 'K';
+	public static final char QUEEN = 'Q';
+	public static final char KNIGHT = 'N';
+	public static final char ROOK = 'R';
+	public static final char BISHOP = 'B';
+	
+	public static final char KING_TAKES = 'k';
+	public static final char QUEEN_TAKES = 'q';
+	public static final char KNIGHT_TAKES = 'n';
+	public static final char ROOK_TAKES = 'r';
+	public static final char BISHOP_TAKES = 'b';
+
+	public static final int KING_POWER = 20;
+	public static final int QUEEN_POWER = 100;
+	public static final int KNIGHT_POWER = 40;
+	public static final int ROOK_POWER = 80;
+	public static final int BISHOP_POWER = 60;
+	
+	public static final char NONAME = ' ';
+	public static final int EMPTY = -1;	
 	protected int xSize;
 	protected int ySize;
 	protected int nPoints;
-	protected char[] board;
+	protected int nPieces;
+	protected char[] boardPiecesNames;
 	
 	public static boolean updateEqualsCounter = false;
 	public static boolean updateHashCounter = false;
@@ -17,13 +38,26 @@ public abstract class AbstractChessBoard implements IChessBoard {
 	public static int equalsCounter = 0;
 	public static int hashCounter = 0;
 	
+	/*
+	
+	public int getXSize();
+	public int getYSize();
+	public int getNPoints();
+	public int getNPieces();
+	
+	public char[] getBoardViewAsArray();
+	 * */
 	public AbstractChessBoard(int x, int y) {
 		xSize = x;
 		ySize = y;
 		nPoints = x*y;
-		board = new char[nPoints];
+		boardPiecesNames = new char[nPoints];
+		Arrays.fill(boardPiecesNames, NONAME);
 	}
 	
+	public int getNPieces() {
+		return nPieces;
+	}	
 	public int getXSize() {
 		return xSize;
 	}
@@ -48,6 +82,9 @@ public abstract class AbstractChessBoard implements IChessBoard {
 	protected char getPieceForWeak(int weak) {
 		return getPieceForPower(QUEEN_POWER - weak);
 	}
+	protected boolean isPointInside(int x, int y) {
+		return ((x >= 0) && (x < xSize) && (y >= 0) && (y < ySize));
+	}	
 	protected char getPieceForPower(int power) {
 		if (power == QUEEN_POWER) 
 			return QUEEN;
@@ -159,7 +196,7 @@ public abstract class AbstractChessBoard implements IChessBoard {
 		for (int x = 0; x < xSize; x++)
 			for (int y = 0; y < ySize; y++) {
 				int pointIndex = getIndexForPoint(x, y);
-				b[x][y] = board[pointIndex];
+				b[x][y] = boardPiecesNames[pointIndex];
 			}
 		return b;
 	}
@@ -233,27 +270,31 @@ public abstract class AbstractChessBoard implements IChessBoard {
     	return getArrayAsString(getBoardView());
     }
     
-    public boolean isSameGame(IChessBoard b) {
-    	return (b.getXSize() == xSize) && 
-    			(b.getYSize() == ySize) &&
-    			(b.getNPieces() == getNPieces());
+    public void draw() {
+    	System.out.println(getBoardViewAsString());
     }
 
-    public boolean isDifferentGame(IChessBoard b) {
+    public boolean isSameGame(AbstractChessBoard b) {
+    	return (b.getXSize() == xSize) && 
+    			(b.getYSize() == ySize) &&
+    			(b.nPieces == nPieces);
+    }
+
+    public boolean isDifferentGame(AbstractChessBoard b) {
     	return (b.getXSize() != xSize) || 
     			(b.getYSize() != ySize) ||
-    			(b.getNPieces() != getNPieces());
+    			(b.nPieces != nPieces);
     }
 
     public boolean isArrangeEquals(AbstractChessBoard b) {
     	if (isDifferentGame(b))
     		return false;
-    	return Arrays.equals(board, b.board);
+    	return Arrays.equals(boardPiecesNames, b.boardPiecesNames);
     }   
     
 	public void updateBoardView() {}
 
 	public char[] getBoardViewAsArray() {
-		return board;
+		return boardPiecesNames;
 	}
 }
