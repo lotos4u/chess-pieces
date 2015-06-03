@@ -11,8 +11,8 @@ import com.lotos4u.tests.chess.pieces.Piece;
 
 public class ChessBoard extends AbstractChessBoard {
 	//private Set<MicroBoard> uniqueVariants = new HashSet<MicroBoard>();
-	private Set<MicroBoard> uniqueVariants = new HashSet<MicroBoard>();
-	private List<MicroBoard> allVariants = new ArrayList<MicroBoard>();
+	private Set<MicroChessBoard> uniqueVariants = new HashSet<MicroChessBoard>();
+	private List<MicroChessBoard> allVariants = new ArrayList<MicroChessBoard>();
 		
 	/**
 	 * Chess pieces of this board
@@ -202,7 +202,7 @@ public class ChessBoard extends AbstractChessBoard {
 			if (putted) {
 				res = isArranged() || arrangeRecursively();
 				if (res) { //Arrangement successful
-					MicroBoard m = new MicroBoard(this);
+					MicroChessBoard m = new MicroChessBoard(this);
 					allVariantsCounter++;
 					if (sortAfter) {
 						allVariants.add(m);
@@ -232,8 +232,8 @@ public class ChessBoard extends AbstractChessBoard {
 		tryToPutCounter = 0;
 		allVariants.clear();
 		uniqueVariants.clear();
-		MicroBoard.equalsCounter = 0;
-		MicroBoard.hashCounter = 0;
+		MicroChessBoard.equalsCounter = 0;
+		MicroChessBoard.hashCounter = 0;
 		Collections.sort(pieces);
 		arrangeRecursively();
 		recursionFinish = System.currentTimeMillis();
@@ -258,8 +258,8 @@ public class ChessBoard extends AbstractChessBoard {
 		if (recTime > 0) 
 			if (logSummary) Log.out("Number of recursive calls per ms = " + (float)(recursiveCallCounter/recTime));
 		if (logSummary) Log.out("Number of put tries = " + tryToPutCounter);
-		if (logSummary) Log.out("Number of Equals calls = " + MicroBoard.equalsCounter);
-		if (logSummary) Log.out("Number of Hashcode calls = " + MicroBoard.hashCounter);
+		if (logSummary) Log.out("Number of Equals calls = " + MicroChessBoard.equalsCounter);
+		if (logSummary) Log.out("Number of Hashcode calls = " + MicroChessBoard.hashCounter);
 		return res;
 	}
 	
@@ -272,7 +272,7 @@ public class ChessBoard extends AbstractChessBoard {
 		return "" + sec;
 	}
 	
-	public Set<MicroBoard> getVariants(){
+	public Set<MicroChessBoard> getVariants(){
 		return uniqueVariants;
 	}
 	

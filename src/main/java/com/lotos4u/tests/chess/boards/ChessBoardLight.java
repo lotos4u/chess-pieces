@@ -27,8 +27,8 @@ public class ChessBoardLight extends AbstractChessBoard {
 		}
 	}	
 
-	protected Set<MicroBoard> uniqueVariants = new HashSet<MicroBoard>();
-	protected List<MicroBoard> allVariants = new LinkedList<MicroBoard>();
+	protected Set<MicroChessBoard> uniqueVariants = new HashSet<MicroChessBoard>();
+	protected List<MicroChessBoard> allVariants = new LinkedList<MicroChessBoard>();
 	
 	protected int[] boardPiecesIndexes; //numbers (pieces indexes) at the points
 	protected int[] boardFree; //numbers (pieces indexes) at the points
@@ -55,7 +55,7 @@ public class ChessBoardLight extends AbstractChessBoard {
 	protected int clearPointCounter;
 	protected int setPositionCounter;
 	
-	public static boolean sortPoints = false;
+	public static boolean sortPoints = true;
 	
 	private int[] sortedPoints;
 	
@@ -63,7 +63,6 @@ public class ChessBoardLight extends AbstractChessBoard {
 	public ChessBoardLight(int x, int y, char[] inPieces) {
 		super(x, y);
 		nPieces = inPieces.length;
-		nPoints = x*y;
 		boardPiecesIndexes = new int[nPoints];
 		pointsNeighbors = new int[nPoints];
 		boardFree = new int[nPoints];
@@ -94,43 +93,29 @@ public class ChessBoardLight extends AbstractChessBoard {
 			sortedPoints[i] = sortedComparablePoints.get(i).index;
 	}
 	
-	public Set<MicroBoard> getUniqueVariants() {
+	public Set<MicroChessBoard> getUniqueVariants() {
 		return uniqueVariants;
 	}
 
-	public List<MicroBoard> getAllVariants() {
+	public List<MicroChessBoard> getAllVariants() {
 		return allVariants;
 	}
 
 	public int getNeighborsNumber(int pointIndex) {
 		int res = 0;
 		int[] point = getPointForIndex(pointIndex);
-		int x, x0 = point[0];
-		int y, y0 = point[1];
-		x = x0 + 1; y = y0;
-		if (isPointInside(x, y))
-			res++;
-		x = x0 - 1; y = y0;
-		if (isPointInside(x, y))
-			res++;
-		x = x0; y = y0 + 1;
-		if (isPointInside(x, y))
-			res++;
-		x = x0; y = y0 - 1;
-		if (isPointInside(x, y))
-			res++;
-		x = x0 + 1; y = y0 + 1;
-		if (isPointInside(x, y))
-			res++;
-		x = x0 + 1; y = y0 - 1;
-		if (isPointInside(x, y))
-			res++;
-		x = x0 - 1; y = y0 + 1;
-		if (isPointInside(x, y))
-			res++;
-		x = x0 - 1; y = y0 - 1;
-		if (isPointInside(x, y))
-			res++;
+		int x0 = point[0], x1 = x0 - 2, x2 = x0 + 2;
+		int y0 = point[1], y1 = y0 - 2, y2 = y0 + 2;
+		for (int x = x1; x <= x2; x++)
+			for (int y = y1; y <= y2; y++) {
+				int diffX = Math.abs(x - x0);
+				int diffY = Math.abs(y - y0);
+				if (isPointInside(x, y))
+					if (Math.max(diffX, diffY) == 1)
+						res += 2;
+					else
+						res += 1;
+			}
 		return res;
 	}
 	public void updateNeighborsNumber() {
@@ -162,29 +147,34 @@ public class ChessBoardLight extends AbstractChessBoard {
 		isSafeCallCounter = 0;
 		clearPointCounter = 0;
 		setPositionCounter = 0;
+		MicroChessBoard.equalsCounter = 0;
+		MicroChessBoard.hashCounter = 0;	
 		uniqueVariants.clear();
 		allVariants.clear();
-		MicroBoard.equalsCounter = 0;
-		MicroBoard.hashCounter = 0;	
-		if (logSummary) System.out.println("Chess complexity is = " + nPoints*nPieces);
 		updateUniversalTakeble();
-		long updateTakebleTime = System.currentTimeMillis() - recursionStart;
-		if (logSummary) System.out.println("Update takeble time " + updateTakebleTime + " ms");
+		if (logSummary) System.out.println("Update takeble time " + (System.currentTimeMillis() - recursionStart) + " ms");
 		arrangeRecursively();
 		recursionFinish = System.currentTimeMillis();
 		long recTime = recursionFinish-recursionStart;
 		if (logSummary) System.out.println("Number of all variants = " + variantsCounter);
 		if (logSummary) System.out.println("Arrangements time " + recTime + " ms");
-		if (logSummary) System.out.println("Number of unique variants = " + uniqueVariants.size());
+		if (logSummary) System.out.println("Number of unique variants = " + uniqueCounter);
 		if (logSummary) System.out.println("Number of recursive calls = " + recursiveCallCounter);
-		if (recTime > 0) 
-			if (logSummary) System.out.println("Number of recursive calls per ms = " + (float)(recursiveCallCounter/recTime));
+		/*
 		if (logSummary) System.out.println("Number of isSafe = " + isSafeCallCounter);
 		if (logSummary) System.out.println("Number of clearPoint = " + clearPointCounter);
 		if (logSummary) System.out.println("Number of setPosition = " + setPositionCounter);
 		if (logSummary) System.out.println("Number of Equals calls = " + equalsCounter);
 		if (logSummary) System.out.println("Number of HashCode calls = " + hashCounter);
-
+		if (recTime > 0) {
+			if (logSummary) System.out.println("Number of recursive calls per ms = " + (float)(recursiveCallCounter/recTime));
+			if (logSummary) System.out.println("Number of isSafe per ms = " + (float)(isSafeCallCounter/recTime));
+			if (logSummary) System.out.println("Number of clearPoint per ms = " + (float)(clearPointCounter/recTime));
+			if (logSummary) System.out.println("Number of setPosition per ms = " + (float)(setPositionCounter/recTime));
+			if (logSummary) System.out.println("Number of Equals calls per ms = " + (float)(equalsCounter/recTime));
+			if (logSummary) System.out.println("Number of HashCode calls per ms = " + (float)(hashCounter/recTime));
+		}
+*/
 		if (logSummary) System.out.println();
 		return uniqueVariants.size();		
 	}
@@ -208,14 +198,12 @@ public class ChessBoardLight extends AbstractChessBoard {
 	}
 
 	private int[] getFreePoints() {
-		int[] res = new int[nPoints];
-		Arrays.fill(res, EMPTY);
-		int index = -1;
+		int[] free = new int[freePointsCounter];
+		int index = 0;
 		for (int p : sortedPoints)
 			if (boardFree[p] < 0)
-				res[++index] = p;
-		return (index == -1) ? null : res;
-		//return (index == -1) ? null : Arrays.copyOf(res, (index+1));
+				free[index++] = p;
+		return free;
 	}
 
 	public int getFistUnpositionedIndex() {
@@ -232,24 +220,20 @@ public class ChessBoardLight extends AbstractChessBoard {
 
 		int pieceIndex = getFistUnpositionedIndex();
 		
-		int[] free = getFreePoints();
-		
-		if (free == null)
+		if (freePointsCounter < 1)
 			return false;
 		
+		int[] free = getFreePoints();
+		
 		for (int pointIndex : free) {
-			if (pointIndex < 0)
-				break;
-			if ((boardFree[pointIndex] >= 0))
-				continue;
 			if (isItSafeToPutPieceAtPoint(pieceIndex, pointIndex)) {
 				setPiecePosition(pieceIndex, pointIndex);
 				if (isArranged() || arrangeRecursively()) {
 					variantsCounter++;
-					MicroBoard b = new MicroBoard(this);
+					MicroChessBoard b = new MicroChessBoard(this);
 					if (uniqueVariants.add(b)) {
 						uniqueCounter++;
-						//if ((uniqueCounter % 500000) == 0) System.out.println("N unique = " + uniqueCounter + " from " + variantsCounter + " variants, " + (System.currentTimeMillis() - recursionStart) + " ms");
+						if ((uniqueCounter % 500000) == 0) System.out.println("N unique = " + uniqueCounter + " from " + variantsCounter + " variants, " + (System.currentTimeMillis() - recursionStart) + " ms");
 					}
 				}
 			}
@@ -278,41 +262,41 @@ public class ChessBoardLight extends AbstractChessBoard {
 	public boolean isArranged() {
 		return puttedPiecesCounter == nPieces;
 	}
-	private void clearBoardPoint(int pointIndex, int oldPieceIndex) {
-		puttedPiecesCounter--;
-		piecesPoints[oldPieceIndex] = EMPTY;
-		boardFree[pointIndex]--;
-		for (int index = 0; index < nPoints; index++)
-			if (boardsGray[oldPieceIndex][pointIndex][index]) {
-				boardFree[index]--;
-				boardTakeble[index]--;
-			}
-		freePointsCounter++;
-	}
 	private void clearBoardPoint(int pointIndex) {
-		//clearPointCounter++;
 		if (boardPiecesIndexes[pointIndex] >= 0) {
-			clearBoardPoint(pointIndex, boardPiecesIndexes[pointIndex]);
+			int oldPieceIndex = boardPiecesIndexes[pointIndex];
+			puttedPiecesCounter--;
+			piecesPoints[oldPieceIndex] = EMPTY;
+			boardFree[pointIndex]--;
+			freePointsCounter++;
+			for (int index = 0; index < nPoints; index++)
+				if (boardsGray[oldPieceIndex][pointIndex][index]) {
+					if(boardFree[index] == 0)
+						freePointsCounter++;
+					boardFree[index]--;
+					boardTakeble[index]--;
+				}
 		}
 		boardPiecesNames[pointIndex] = NONAME;
 		boardPiecesIndexes[pointIndex] = EMPTY;
-		
 	}
 	
-	public void setPiecePosition(int pieceIndex, int pointIndex) {
-		//setPositionCounter++;
-		clearBoardPoint(pointIndex);
-		boardPiecesNames[pointIndex] = pieces[pieceIndex];
-		boardPiecesIndexes[pointIndex] = pieceIndex;
-		piecesPoints[pieceIndex] = pointIndex;
+	public void setPiecePosition(int pieceIndex, int newPointIndex) {
+		clearBoardPoint(newPointIndex);
+		boardPiecesNames[newPointIndex] = pieces[pieceIndex];
+		boardPiecesIndexes[newPointIndex] = pieceIndex;
+		piecesPoints[pieceIndex] = newPointIndex;
 		puttedPiecesCounter++;
-		boardFree[pointIndex]++;
+		boardFree[newPointIndex]++;
+		freePointsCounter--;
 		for (int index = 0; index < nPoints; index++)
-			if (boardsGray[pieceIndex][pointIndex][index]) {
+			if (boardsGray[pieceIndex][newPointIndex][index]) {
+				if (boardFree[index] == -1)
+					freePointsCounter--;
 				boardFree[index]++;
 				boardTakeble[index]++;
 			}
-		freePointsCounter--;
+		
 	}
 	
 	public int[][] getBoardFree() {
@@ -384,17 +368,8 @@ public class ChessBoardLight extends AbstractChessBoard {
     public void drawBoard() {
     	System.out.println(getArrayAsString(getBoardView()));
     }
-    public void drawTakeble() {
-    	System.out.println(getArrayAsString(getBoardTakeble()));
-    }
-	public void drawBoardViewAndTakeble() {
-    	System.out.println(getBoardViewAndTakebleAsString());
-    }
-    public void drawBoardAndTakeble() {
-    	System.out.println(getBoardAndTakebleAsString());
-    }
-    public void drawBoardAndBoardViewAndTakeble() {
-    	System.out.println(getBoardAndBoardViewAndTakebleAsString());
+    public void drawNeighbors() {
+    	System.out.println(getArrayAsString(getBoardFromLinear(pointsNeighbors)));	
     }
     public void drawBoardAndBoardViewAndTakebleAndFree() {
     	System.out.println(getBoardAndBoardViewAndTakebleAndFreeAsString());
@@ -407,28 +382,6 @@ public class ChessBoardLight extends AbstractChessBoard {
     	List<String> freeStrings = getArrayAsStrings(getBoardFree());
     	for (int i = 0; i < boardStrings.size(); i++) {
     		res += boardViewStrings.get(i) + "    " + boardStrings.get(i) + "    " + takebleStrings.get(i) + "    " + freeStrings.get(i) + "\n";
-		}
-    	res += "\n";
-    	return res;
-    }
-    private String getBoardAndBoardViewAndTakebleAsString() {
-    	String res = "";
-    	List<String> boardViewStrings = getArrayAsStrings(getBoardView());
-    	List<String> boardStrings = getArrayAsStrings(getBoardIndexes());
-    	List<String> takebleStrings = getArrayAsStrings(getBoardTakeble());
-    	for (int i = 0; i < boardStrings.size(); i++) {
-    		res += boardViewStrings.get(i) + "    " + boardStrings.get(i) + "    " + takebleStrings.get(i) + "\n";
-		}
-    	res += "\n";
-    	return res;
-    }
-
-    private String getBoardViewAndTakebleAsString() {
-    	String res = "";
-    	List<String> boardStrings = getArrayAsStrings(getBoardView());
-    	List<String> takebleStrings = getArrayAsStrings(getBoardTakeble());
-    	for (int i = 0; i < boardStrings.size(); i++) {
-    		res += boardStrings.get(i) + "    " + takebleStrings.get(i) + "\n";
 		}
     	res += "\n";
     	return res;
@@ -455,7 +408,7 @@ public class ChessBoardLight extends AbstractChessBoard {
     public String getSortedPointsIndexesAsString() {
     	String res = "";
     	for (int index : sortedPoints) {
-    		res += "" + index + " ";
+    		res += "" + index + "(" + pointsNeighbors[index] + ") ";
     	}
     	return res;
     }

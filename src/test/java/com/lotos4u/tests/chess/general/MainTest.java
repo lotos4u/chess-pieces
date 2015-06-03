@@ -14,7 +14,7 @@ import org.junit.Test;
 import com.lotos4u.tests.chess.boards.ChessBoard;
 import com.lotos4u.tests.chess.boards.ChessBoardLight;
 import com.lotos4u.tests.chess.boards.ChessBoardLight.ComparablePoint;
-import com.lotos4u.tests.chess.boards.MicroBoard;
+import com.lotos4u.tests.chess.boards.MicroChessBoard;
 import com.lotos4u.tests.chess.boards.Point;
 import com.lotos4u.tests.chess.pieces.Bishop;
 import com.lotos4u.tests.chess.pieces.King;
@@ -133,7 +133,7 @@ public class MainTest {
         int res = board.arrangeVariants(true);
 
         int counter = 0;
-        for (MicroBoard b : board.getVariants()) {
+        for (MicroChessBoard b : board.getVariants()) {
         	//System.out.println("Variant " + (counter++));
         	//System.out.println(b.getBoardViewAsString());;
         }
@@ -157,7 +157,7 @@ public class MainTest {
         int res = board.arrangeVariants(true);
 
         int counter = 0;
-        for (MicroBoard b : board.getVariants()) {
+        for (MicroChessBoard b : board.getVariants()) {
         	//System.out.println("Variant " + (counter++));
         	//System.out.println(b.getBoardViewAsString());;
         }
@@ -177,7 +177,7 @@ public class MainTest {
         int res = board.arrangeVariants(true);
 
         int counter = 0;
-        for (MicroBoard b : board.getVariants()) {
+        for (MicroChessBoard b : board.getVariants()) {
         	//System.out.println("Variant " + (counter++));
         	//System.out.println(b.getBoardViewAsString());;
         }
@@ -199,7 +199,7 @@ public class MainTest {
         int boards = board.arrangeVariants(true);
         
         int counter = 1;
-        for (MicroBoard b : board.getVariants()) {
+        for (MicroChessBoard b : board.getVariants()) {
         	//System.out.println("Variant " + (counter++));
         	//System.out.println(b.getBoardViewAsString());;
         }
@@ -223,7 +223,7 @@ public class MainTest {
         board.addPiece(new Knight());
         int boards = board.arrangeVariants(true);
         int counter = 1;
-        for (MicroBoard b : board.getVariants()) {
+        for (MicroChessBoard b : board.getVariants()) {
         	//System.out.println("Variant " + (counter++));
         	//System.out.println(b.getBoardViewAsString());;
         }
@@ -285,8 +285,8 @@ public class MainTest {
 		chessBoard2.getPiece(1).setPosition(2, 2, chessBoard1);
 		chessBoard2.getPiece(2).setPosition(3, 1, chessBoard1);
 
-		MicroBoard b1 = new MicroBoard(chessBoard1);
-		MicroBoard b2 = new MicroBoard(chessBoard2);
+		MicroChessBoard b1 = new MicroChessBoard(chessBoard1);
+		MicroChessBoard b2 = new MicroChessBoard(chessBoard2);
 		System.out.println("Equals=" + b1.equals(b2));
 		System.out.println("H1=" + b1.hashCode() + ", H2=" + b2.hashCode());
 
@@ -377,7 +377,7 @@ public class MainTest {
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
-        for (MicroBoard b : board1.getUniqueVariants()) {
+        for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter));
         	//b.drawBoard();
         }		
@@ -404,16 +404,16 @@ public class MainTest {
 			long endLight = System.currentTimeMillis();
 			timeLight += (endLight - startLight);
 			
-			int equalsLight = MicroBoard.equalsCounter;
-			int hashLight = MicroBoard.hashCounter;
+			int equalsLight = MicroChessBoard.equalsCounter;
+			int hashLight = MicroChessBoard.hashCounter;
 			
 			long start = System.currentTimeMillis();
 			board.arrangeVariants(false);	
 			long end = System.currentTimeMillis();
 			time += (end - start);
 
-			int equals= MicroBoard.equalsCounter;
-			int hash = MicroBoard.hashCounter;
+			int equals= MicroChessBoard.equalsCounter;
+			int hash = MicroChessBoard.hashCounter;
 			
 			System.out.println("Arrangement #" + counter + ": " + (end - start) + " ms, Equals " + equals + ", Hash " + hash + " (Light: " + (endLight - startLight) + " ms, Equals " + equalsLight + ", Hash " + hashLight + ")");
 		}	
@@ -471,12 +471,12 @@ public class MainTest {
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
-        for (MicroBoard b : board1.getUniqueVariants()) {
+        for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter) + ", H=" + b.hashCode());
         	//b.draw();
         }
-        System.out.println("Hash calls " + MicroBoard.hashCounter);
-        System.out.println("Equals calls " + MicroBoard.equalsCounter);
+        System.out.println("Hash calls " + MicroChessBoard.hashCounter);
+        System.out.println("Equals calls " + MicroChessBoard.equalsCounter);
 	}
 	@Test @Ignore
 	public void testRRNNNNon4x4_2_Light() {
@@ -486,7 +486,7 @@ public class MainTest {
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
-        for (MicroBoard b : board1.getUniqueVariants()) {
+        for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter));
         	//b.drawBoard();
         }		
@@ -499,7 +499,7 @@ public class MainTest {
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
-        for (MicroBoard b : board1.getUniqueVariants()) {
+        for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter));
         	//b.drawBoard();
         }		
@@ -513,7 +513,7 @@ public class MainTest {
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
-        for (MicroBoard b : board1.getUniqueVariants()) {
+        for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter));
         	//b.drawBoard();
         }		
@@ -535,7 +535,7 @@ public class MainTest {
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
-        for (MicroBoard b : board1.getUniqueVariants()) {
+        for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter));
         	//b.drawBoard();
         }	
@@ -571,7 +571,7 @@ Number of Hashcode calls = 24510642
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
-        for (MicroBoard b : board1.getUniqueVariants()) {
+        for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter));
         	//b.drawBoard();
         }		
