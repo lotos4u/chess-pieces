@@ -38,15 +38,6 @@ public abstract class AbstractChessBoard {
 	public static int equalsCounter = 0;
 	public static int hashCounter = 0;
 	
-	/*
-	
-	public int getXSize();
-	public int getYSize();
-	public int getNPoints();
-	public int getNPieces();
-	
-	public char[] getBoardViewAsArray();
-	 * */
 	public AbstractChessBoard(int x, int y) {
 		xSize = x;
 		ySize = y;
@@ -55,6 +46,10 @@ public abstract class AbstractChessBoard {
 		Arrays.fill(boardPiecesNames, NONAME);
 	}
 	
+	public AbstractChessBoard() {
+		super();
+	}
+
 	public int getNPieces() {
 		return nPieces;
 	}	

@@ -317,8 +317,6 @@ public class MainTest {
 		//board1.setPiecePosition(4, 4, 4);
 		//board1.draw();
 		
-		board1.dropPieces();
-		
 		/*
 		board1.setPiecePosition(1, 0, 0);
 		board1.drawBoardViewAndTakeble();
@@ -448,7 +446,6 @@ public class MainTest {
 		long time = 0, timeLight = 0;
 		while (counter++ < 100) {
 			
-			ChessBoardLight.filterVariantsAfter = false;
 			ChessBoardLight.sortPoints = false;
 			long start = System.currentTimeMillis();
 			boardLight.getArrangementVariants(false, false, false, false, false);
@@ -456,7 +453,6 @@ public class MainTest {
 			long end = System.currentTimeMillis();
 			time += (end - start);
 			
-			ChessBoardLight.filterVariantsAfter = false;
 			ChessBoardLight.sortPoints = true;
 			long startLight = System.currentTimeMillis();
 			boardLight.getArrangementVariants(false, false, false, false, false);	
@@ -472,7 +468,6 @@ public class MainTest {
 		Log.out("\n\n********************** Test testRRNNNNon4x4_1_Light **********************\n");
 		char[] pcs1 = new char[]{ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.ROOK, ChessBoardLight.ROOK};
 		ChessBoardLight board1 = new ChessBoardLight(4, 4, pcs1);
-		ChessBoardLight.filterVariantsAfter = true;
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
@@ -666,6 +661,16 @@ Number of put tries = 54731825
 Number of Equals calls = 0
 Number of HashCode calls = 0
 
+Number of all variants = 24510624
+Arrangements time 86709 ms
+Number of unique variants = 3063828
+Full time = 86709 ms
+Number of recursive calls = 0
+Number of recursive calls per ms = 0.0
+Number of put tries = 0
+Number of Equals calls = 21462687
+Number of HashCode calls = 24510642
+
          * */
 	}
 	@Test @Ignore
@@ -713,12 +718,14 @@ Number of HashCode calls = 0
 			int[] point = board1.getPointForIndex(i);
 			System.out.println("(" + point[0] + "," + point[1] + ") - " + board1.getNeighborsNumber(i));
 		}
+		/*
 		ChessBoardLight.sortPoints = true;
 		List<ComparablePoint> free = board1.getFreePoints();
 		board1.updateNeighborsNumber();
 		for (ComparablePoint i : free) {
 			System.out.println(i.index);
 		}
+		*/
 	}
 	
 	@Test
