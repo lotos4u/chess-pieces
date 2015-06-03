@@ -11,8 +11,8 @@ public abstract class AbstractChessBoard implements IChessBoard {
 	protected int nPoints;
 	protected char[] board;
 	
-	protected boolean updateEqualsCounter = true;
-	protected boolean updateHashCounter = true;
+	public static boolean updateEqualsCounter = false;
+	public static boolean updateHashCounter = false;
 	
 	public static int equalsCounter = 0;
 	public static int hashCounter = 0;
@@ -245,50 +245,12 @@ public abstract class AbstractChessBoard implements IChessBoard {
     			(b.getNPieces() != getNPieces());
     }
 
-    public boolean isArrangeEqualsNative(AbstractChessBoard b) {
-    	return Arrays.equals(board, b.board);
-    	/*
-    	for (int i = 0; i < nPoints; i++) {
-    		if (board[i] != b.board[i])
-    			return false;
-    	}
-    	return true;
-    	*/
-    }
-
     public boolean isArrangeEquals(AbstractChessBoard b) {
     	if (isDifferentGame(b))
     		return false;
-    	return isArrangeEqualsNative(b);
+    	return Arrays.equals(board, b.board);
     }   
     
-	@Override
-	public boolean equals(Object obj) {
-		if (updateEqualsCounter) equalsCounter++;
-		if (!(obj instanceof ChessBoardLight))
-			return false;
-		ChessBoardLight b = (ChessBoardLight) obj;
-		//if (!isArrangeEquals(b))
-		if (!isArrangeEqualsNative(b))
-			return false;
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		if (updateHashCounter) hashCounter++;
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + xSize;
-        result = prime * result + ySize;
-        result = prime * result + getNPieces();
-        //Arrays.
-        for (int i = 0; i < nPoints; i++) {
-        	result += board[i]*i;
-        }
-        return result;
-    }
-	
 	public void updateBoardView() {}
 
 	public char[] getBoardViewAsArray() {

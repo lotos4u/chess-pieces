@@ -219,8 +219,8 @@ public class MainTest {
         int boards = board.arrangeVariants(true);
         int counter = 1;
         for (MicroBoard b : board.getVariants()) {
-        	System.out.println("Variant " + (counter++));
-        	System.out.println(b.getBoardViewAsString());;
+        	//System.out.println("Variant " + (counter++));
+        	//System.out.println(b.getBoardViewAsString());;
         }
         
         Assert.assertTrue(boards > 0);
@@ -401,12 +401,18 @@ public class MainTest {
 			long endLight = System.currentTimeMillis();
 			timeLight += (endLight - startLight);
 			
+			int equalsLight = MicroBoard.equalsCounter;
+			int hashLight = MicroBoard.hashCounter;
+			
 			long start = System.currentTimeMillis();
 			board.arrangeVariants(false);	
 			long end = System.currentTimeMillis();
 			time += (end - start);
+
+			int equals= MicroBoard.equalsCounter;
+			int hash = MicroBoard.hashCounter;
 			
-			System.out.println("Arrangement #" + counter + ": " + (end - start) + " ms, (Light: " + (endLight - startLight) + " ms)");
+			System.out.println("Arrangement #" + counter + ": " + (end - start) + " ms, Equals " + equals + ", Hash " + hash + " (Light: " + (endLight - startLight) + " ms, Equals " + equalsLight + ", Hash " + hashLight + ")");
 		}	
 		System.out.println("One Arragements takes " + (time/counter) + " ms (Light " + (timeLight/counter) + " ms)");
 	}	
@@ -437,19 +443,30 @@ public class MainTest {
 		long time = 0, timeLight = 0;
 		while (counter++ < 100) {
 			
+			ChessBoardLight.updateFreeUniversal = false;
+			ChessBoardLight.sortAfter = false;
+			ChessBoardLight.testBeforePut = true;
+			ChessBoardLight.updateTakebleUniversal = true;
+			ChessBoardLight.updateTakeble = true;
+			long start = System.currentTimeMillis();
+			boardLight.getArrangementVariants(false, false, false, false, false);
+			//board.arrangeVariants(false);	
+			long end = System.currentTimeMillis();
+			time += (end - start);
+			
+			ChessBoardLight.updateFreeUniversal = false;
+			ChessBoardLight.sortAfter = false;
+			ChessBoardLight.testBeforePut = true;
+			ChessBoardLight.updateTakebleUniversal = true;
+			ChessBoardLight.updateTakeble = true;
 			long startLight = System.currentTimeMillis();
 			boardLight.getArrangementVariants(false, false, false, false, false);	
 			long endLight = System.currentTimeMillis();
 			timeLight += (endLight - startLight);
-			
-			long start = System.currentTimeMillis();
-			board.arrangeVariants(false);	
-			long end = System.currentTimeMillis();
-			time += (end - start);
-			
-			System.out.println("Arrangement #" + counter + ": " + (end - start) + " ms, (Light: " + (endLight - startLight) + " ms)");
+
+			System.out.println("Arrangement #" + counter + " FIRST: " + (end - start) + " ms, SECOND: " + (endLight - startLight) + " ms");
 		}	
-		System.out.println("One Arragements takes " + (time/counter) + " ms (Light " + (timeLight/counter) + " ms)");
+		System.out.println("One Arragements takes FIRST: " + (time/counter) + " ms SECOND: " + (timeLight/counter) + " ms");
 	}		
 	@Test @Ignore
 	public void testRRNNNNon4x4_1_Light() {
@@ -554,7 +571,7 @@ Number of Hashcode calls = 24510642
 				ChessBoardLight.KNIGHT 
 			};
 		ChessBoardLight board1 = new ChessBoardLight(7, 7, pcs1);
-		board1.getArrangementVariants(false, false, true, true, false);
+		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
         for (MicroBoard b : board1.getUniqueVariants()) {
@@ -562,6 +579,7 @@ Number of Hashcode calls = 24510642
         	//b.drawBoard();
         }		
         /*
+LOTOS
 Chess complexity is = 343
 Number of all variants = 24510624
 Number of unique variants = 3063828
@@ -573,6 +591,28 @@ Number of recursive calls per ms = 49.0
 Number of put tries = 76037489
 Number of Equals calls = 1374903753
 Number of HashCode calls = 24510642 
+
+HTPC
+Number of all variants = 24510624
+Arragements time 889820 ms
+Number of unique variants = 3063828
+Full time = 889820 ms
+Number of recursive calls = 8366386
+Number of recursive calls per ms = 9.0
+Number of put tries = 54731825
+Number of Equals calls = 0
+Number of HashCode calls = 0
+
+Number of all variants = 24510624
+Arragements time 856887 ms
+Number of unique variants = 3063828
+Full time = 856887 ms
+Number of recursive calls = 8366386
+Number of recursive calls per ms = 9.0
+Number of put tries = 54731825
+Number of Equals calls = 0
+Number of HashCode calls = 0
+
          * */
 	}
 	@Test @Ignore
@@ -617,15 +657,16 @@ Number of HashCode calls = 24510642
 		testRRNNNNon4x4_2_Light();
 		testKRQQBBNon6x6();
 		testKRQQBBNon6x6_Light();
-		
 		*/
 		
-		testBoard4x4Multi();
-		testBoard6x6Multi();
+		
+		//testBoard4x4Multi();
+		//testBoard6x6Multi();
 		//testBoardLightRecursion4x4Multi();
 		
+		testKKQQBBNon7x7_Light();
 		//testKKQQBBNon7x7();
-		//testKKQQBBNon7x7_Light();
+		
 	}
 
 }

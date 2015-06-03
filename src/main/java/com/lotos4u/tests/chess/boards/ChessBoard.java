@@ -229,6 +229,8 @@ public class ChessBoard extends AbstractChessBoard {
 		uniqueVariantsCounter = 0;
 		putCounter = 0;
 		tryToPutCounter = 0;
+		allVariants.clear();
+		uniqueVariants.clear();
 		MicroBoard.equalsCounter = 0;
 		MicroBoard.hashCounter = 0;
 		Collections.sort(pieces);
@@ -247,7 +249,7 @@ public class ChessBoard extends AbstractChessBoard {
 		if (logSummary) Log.out("Number of all variants = " + allVariantsCounter);
 		if (logSummary) Log.out("Number of unique variants = " + res);
 		if (sortAfter) {
-			if (logSummary) Log.out("Arrangement time = " + recTime + " ms");
+			if (logSummary) Log.out("Arrangements time = " + recTime + " ms");
 			if (logSummary) Log.out("Sort time = " + sortTime + " ms");
 		}
 		if (logSummary) Log.out("Full time = " + (recTime + sortTime) + " ms");
