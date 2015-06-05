@@ -377,10 +377,10 @@ public class MainTest {
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
-        for (MicroChessBoard b : board1.getUniqueVariants()) {
+        //for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter));
         	//b.drawBoard();
-        }		
+        //}		
 	}
 	@Test @Ignore
 	public void testBoard4x4Multi() {
@@ -404,18 +404,12 @@ public class MainTest {
 			long endLight = System.currentTimeMillis();
 			timeLight += (endLight - startLight);
 			
-			int equalsLight = MicroChessBoard.equalsCounter;
-			int hashLight = MicroChessBoard.hashCounter;
-			
 			long start = System.currentTimeMillis();
 			board.arrangeVariants(false);	
 			long end = System.currentTimeMillis();
 			time += (end - start);
 
-			int equals= MicroChessBoard.equalsCounter;
-			int hash = MicroChessBoard.hashCounter;
-			
-			System.out.println("Arrangement #" + counter + ": " + (end - start) + " ms, Equals " + equals + ", Hash " + hash + " (Light: " + (endLight - startLight) + " ms, Equals " + equalsLight + ", Hash " + hashLight + ")");
+			System.out.println("Arrangement #" + counter + ": " + (end - start) + " ms, (Light: " + (endLight - startLight) + " ms)");
 		}	
 		System.out.println("One Arragements takes " + (time/counter) + " ms (Light " + (timeLight/counter) + " ms)");
 	}	
@@ -464,6 +458,42 @@ public class MainTest {
 		System.out.println("One Arragements takes FIRST: " + (time/counter) + " ms SECOND: " + (timeLight/counter) + " ms");
 	}		
 	@Test @Ignore
+	public void testBoard7x7Multi() {
+		Log.out("\n\n********************** Test testBoard7x7Multi **********************\n");
+		char[] pcs1 = new char[]{
+				ChessBoardLight.QUEEN,
+				ChessBoardLight.QUEEN,
+				ChessBoardLight.BISHOP,
+				ChessBoardLight.BISHOP,
+				ChessBoardLight.KING, 
+				ChessBoardLight.KING,
+				ChessBoardLight.KNIGHT 
+			};
+		ChessBoardLight boardLight = new ChessBoardLight(7, 7, pcs1);		
+
+		int counter = 0;
+		long time = 0, timeLight = 0;
+		while (counter++ < 100) {
+			/*
+			ChessBoardLight.sortPoints = false;
+			long start = System.currentTimeMillis();
+			boardLight.getArrangementVariants(false, false, false, false, false);
+			//board.arrangeVariants(false);	
+			long end = System.currentTimeMillis();
+			time += (end - start);
+			*/
+			ChessBoardLight.sortPoints = true;
+			long startLight = System.currentTimeMillis();
+			int n = boardLight.getArrangementVariants(false, false, false, false, false);	
+			long endLight = System.currentTimeMillis();
+			timeLight += (endLight - startLight);
+
+			System.out.println("Arrangement #" + counter + ", N = " + n + ", " + (endLight - startLight) + " ms");
+			//System.out.println("Arrangement #" + counter + " FIRST: " + (end - start) + " ms, SECOND: " + (endLight - startLight) + " ms");
+		}	
+		System.out.println("One Arragements takes: " + (timeLight/counter) + " ms");
+	}		
+	@Test @Ignore
 	public void testRRNNNNon4x4_1_Light() {
 		Log.out("\n\n********************** Test testRRNNNNon4x4_1_Light **********************\n");
 		char[] pcs1 = new char[]{ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.KNIGHT, ChessBoardLight.ROOK, ChessBoardLight.ROOK};
@@ -471,12 +501,10 @@ public class MainTest {
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
-        for (MicroChessBoard b : board1.getUniqueVariants()) {
+        //for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter) + ", H=" + b.hashCode());
         	//b.draw();
-        }
-        System.out.println("Hash calls " + MicroChessBoard.hashCounter);
-        System.out.println("Equals calls " + MicroChessBoard.equalsCounter);
+        //}
 	}
 	@Test @Ignore
 	public void testRRNNNNon4x4_2_Light() {
@@ -486,10 +514,10 @@ public class MainTest {
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
-        for (MicroChessBoard b : board1.getUniqueVariants()) {
+        //for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter));
         	//b.drawBoard();
-        }		
+        //}		
 	}
 	@Test @Ignore 
 	public void testRRNNNNon4x4_3_Light() {
@@ -499,10 +527,10 @@ public class MainTest {
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
-        for (MicroChessBoard b : board1.getUniqueVariants()) {
+        //for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter));
         	//b.drawBoard();
-        }		
+        //}		
 	}
 
 	@Test @Ignore
@@ -513,10 +541,10 @@ public class MainTest {
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
-        for (MicroChessBoard b : board1.getUniqueVariants()) {
+        //for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter));
         	//b.drawBoard();
-        }		
+        //}		
 	}
 
 	@Test @Ignore
@@ -535,25 +563,11 @@ public class MainTest {
 		board1.getArrangementVariants(false, false, false, true, false);
 
 		int counter = 0;
-        for (MicroChessBoard b : board1.getUniqueVariants()) {
+        //for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter));
         	//b.drawBoard();
-        }	
+        //}	
 	}
-	/*
-Chess complexity is = 343
-Number of all variants = 24510624
-Number of unique variants = 3063828
-Arrangement time = 127948 ms
-Sort time = 2817137 ms
-Full time = 2945085 ms
-Number of recursive calls = 8366386
-Number of recursive calls per ms = 65.0
-Number of put tries = 54731825
-Number of Equals calls = 804939026
-Number of Hashcode calls = 24510642
-	 * */
-
 	
 	@Test @Ignore
 	public void testKKQQBBNon7x7_Light() {
@@ -568,13 +582,43 @@ Number of Hashcode calls = 24510642
 				ChessBoardLight.KNIGHT 
 			};
 		ChessBoardLight board1 = new ChessBoardLight(7, 7, pcs1);
-		board1.getArrangementVariants(false, false, false, true, false);
+		board1.getArrangementVariants(false, false, true, true, false);
 
 		int counter = 0;
-        for (MicroChessBoard b : board1.getUniqueVariants()) {
+        //for (MicroChessBoard b : board1.getUniqueVariants()) {
         	//System.out.println("Variant " + (++counter));
         	//b.drawBoard();
-        }		
+        //}	
+		
+/*
+
+MY HASH
+N unique = 500000 from 2013791 variants, Hash=0, Equals=10779124, 2325 ms
+N unique = 1000000 from 4189840 variants, Hash=0, Equals=29711120, 5341 ms
+N unique = 1500000 from 6726828 variants, Hash=0, Equals=62748293, 10698 ms
+N unique = 2000000 from 9588775 variants, Hash=0, Equals=113277668, 16304 ms
+N unique = 2500000 from 13245216 variants, Hash=0, Equals=191879227, 24058 ms
+N unique = 3000000 from 20482979 variants, Hash=0, Equals=434754634, 43051 ms
+Number of all variants = 24510624
+Arrangements time 55025 ms
+Number of unique variants = 3063828
+Number of Equals calls = 584938165
+
+ARRAYS HASH
+N unique = 500000 from 2013791 variants, Hash=0, Equals=1513812, 1758 ms
+N unique = 1000000 from 4189840 variants, Hash=0, Equals=3189969, 3551 ms
+N unique = 1500000 from 6726828 variants, Hash=0, Equals=5227182, 6849 ms
+N unique = 2000000 from 9588775 variants, Hash=0, Equals=7589510, 9227 ms
+N unique = 2500000 from 13245216 variants, Hash=0, Equals=10746628, 12274 ms
+N unique = 3000000 from 20482979 variants, Hash=0, Equals=17486045, 18627 ms
+Number of all variants = 24510624
+Arrangements time 22234 ms
+Number of unique variants = 3063828
+Number of Equals calls = 21450905
+
+
+ * */		
+		
         /*
 LOTOS
 Chess complexity is = 343
@@ -727,6 +771,58 @@ Number of HashCode calls = 24510642
 		}
 		*/
 	}
+
+	public void testCompactObjects(Object testObject1, Object testObject2) {
+		long number = 1000000000l;
+		System.out.println("Results for " + testObject1.getClass());
+		System.out.println("Number of cycles = " + number);
+		long start = System.nanoTime();
+		for (long i = 0; i < number; i++) {
+			int hash = testObject1.hashCode();
+		}
+		long finish = System.nanoTime();
+		long hashTime = finish - start;
+		
+
+		start = System.nanoTime();
+		for (long i = 0; i < number; i++) {
+			boolean equal = testObject1.equals(testObject2);
+		}
+		finish = System.nanoTime();
+		long equalsTime = finish - start;
+
+		
+		System.out.println("Full Hash Time = " + ((double)hashTime)/1000000 + " ms");
+		System.out.println("Single Hash Time = " + ((double)hashTime)/((double)number) + " ns");
+		System.out.println("Full Equals Time = " + ((double)equalsTime)/1000000 + " ms");
+		System.out.println("Single Equals Time = " + ((double)equalsTime)/((double)number) + " ns");
+		System.out.println();
+		
+	}
+	
+	@Test @Ignore
+	public void testCompactObjects() {
+		char[] charArray = new char[] {'q','w','e','r','t','y','u','i','q','w','e','r','t','y','u','i'};
+		String stringObject1 = new String(charArray);
+		String stringObject2 = new String(charArray);
+		
+		testCompactObjects(stringObject1, stringObject2);
+		
+		char[] pcs1 = new char[]{
+				ChessBoardLight.QUEEN,
+				ChessBoardLight.QUEEN,
+				ChessBoardLight.BISHOP,
+				ChessBoardLight.BISHOP,
+				ChessBoardLight.KING, 
+				ChessBoardLight.KING,
+				ChessBoardLight.KNIGHT 
+			};
+		ChessBoardLight board1 = new ChessBoardLight(7, 7, pcs1);
+		
+		MicroChessBoard mb1 = new MicroChessBoard(board1);
+		MicroChessBoard mb2 = new MicroChessBoard(board1);
+		testCompactObjects(mb1, mb2);
+	}
 	
 	@Test
 	public void testComplexComparable() {
@@ -746,9 +842,11 @@ Number of HashCode calls = 24510642
 		
 		//testBoard4x4Multi();
 		//testBoard6x6Multi();
+		testBoard7x7Multi();
 		//testBoardLightRecursion4x4Multi();
 		
-		testKKQQBBNon7x7_Light();
+		//testCompactObjects();
+		//testKKQQBBNon7x7_Light();
 		//testKKQQBBNon7x7();
 		
 	}

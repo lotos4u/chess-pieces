@@ -232,8 +232,6 @@ public class ChessBoard extends AbstractChessBoard {
 		tryToPutCounter = 0;
 		allVariants.clear();
 		uniqueVariants.clear();
-		MicroChessBoard.equalsCounter = 0;
-		MicroChessBoard.hashCounter = 0;
 		Collections.sort(pieces);
 		arrangeRecursively();
 		recursionFinish = System.currentTimeMillis();
@@ -258,8 +256,6 @@ public class ChessBoard extends AbstractChessBoard {
 		if (recTime > 0) 
 			if (logSummary) Log.out("Number of recursive calls per ms = " + (float)(recursiveCallCounter/recTime));
 		if (logSummary) Log.out("Number of put tries = " + tryToPutCounter);
-		if (logSummary) Log.out("Number of Equals calls = " + MicroChessBoard.equalsCounter);
-		if (logSummary) Log.out("Number of Hashcode calls = " + MicroChessBoard.hashCounter);
 		return res;
 	}
 	
@@ -543,5 +539,11 @@ public class ChessBoard extends AbstractChessBoard {
 			}
 		}
 		return res;
+	}
+
+	@Override
+	protected void updatePiecesNames() {
+		// TODO Auto-generated method stub
+		
 	}
 }

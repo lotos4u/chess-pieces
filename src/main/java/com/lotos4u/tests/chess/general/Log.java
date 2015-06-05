@@ -36,4 +36,8 @@ public class Log {
     public static void pause() {
     	try {pauseReader.readLine();} catch (IOException e) {e.printStackTrace();}
     }
+    
+    public static long getMilliSeconds() {
+    	return System.nanoTime()/1000000;
+    }
 }

@@ -31,12 +31,7 @@ public abstract class AbstractChessBoard {
 	protected int nPoints;
 	protected int nPieces;
 	protected char[] boardPiecesNames;
-	
-	public static boolean updateEqualsCounter = false;
-	public static boolean updateHashCounter = false;
-	
-	public static int equalsCounter = 0;
-	public static int hashCounter = 0;
+
 	
 	public AbstractChessBoard(int x, int y) {
 		xSize = x;
@@ -79,7 +74,8 @@ public abstract class AbstractChessBoard {
 	}
 	protected boolean isPointInside(int x, int y) {
 		return ((x >= 0) && (x < xSize) && (y >= 0) && (y < ySize));
-	}	
+	}
+
 	protected char getPieceForPower(int power) {
 		if (power == QUEEN_POWER) 
 			return QUEEN;
@@ -178,15 +174,24 @@ public abstract class AbstractChessBoard {
 		for (int index = 0; index < nPoints; index++)
 			if (input[index] != EMPTY) {
 				int[] point = getPointForIndex(index);
-				int x = point[0];
-				int y = point[1];
-				b[x][y] = input[index];
+				b[point[0]][point[1]] = input[index];
+			}
+		return b;
+	}
+	public char[][] getBoardFromLinear(char[] input) {
+		char[][] b = new char[xSize][ySize];
+		for (int i = 0; i < xSize; i++)
+			Arrays.fill(b[i], NONAME);
+		for (int index = 0; index < nPoints; index++)
+			if (input[index] != NONAME) {
+				int[] point = getPointForIndex(index);
+				b[point[0]][point[1]] = input[index];
 			}
 		return b;
 	}
 	
 	public char[][] getBoardView() {
-		updateBoardView();
+		updatePiecesNames();
 		char[][] b = new char[xSize][ySize];
 		for (int x = 0; x < xSize; x++)
 			for (int y = 0; y < ySize; y++) {
@@ -265,10 +270,6 @@ public abstract class AbstractChessBoard {
     	return getArrayAsString(getBoardView());
     }
     
-    public void draw() {
-    	System.out.println(getBoardViewAsString());
-    }
-
     public boolean isSameGame(AbstractChessBoard b) {
     	return (b.getXSize() == xSize) && 
     			(b.getYSize() == ySize) &&
@@ -280,16 +281,5 @@ public abstract class AbstractChessBoard {
     			(b.getYSize() != ySize) ||
     			(b.nPieces != nPieces);
     }
-
-    public boolean isArrangeEquals(AbstractChessBoard b) {
-    	if (isDifferentGame(b))
-    		return false;
-    	return Arrays.equals(boardPiecesNames, b.boardPiecesNames);
-    }   
-    
-	public void updateBoardView() {}
-
-	public char[] getBoardViewAsArray() {
-		return boardPiecesNames;
-	}
+    protected abstract void updatePiecesNames();
 }
