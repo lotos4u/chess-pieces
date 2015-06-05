@@ -2,6 +2,8 @@ package com.lotos4u.tests.chess.boards;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 //public class MicroChessBoard extends AbstractChessBoard {
 public class MicroChessBoard {
 	protected int xSize;
@@ -28,9 +30,10 @@ public class MicroChessBoard {
 		nPieces = input.nPieces;
 		nCompact = nPieces*2;
 		
-		compactPieces = Arrays.copyOf(input.compactPieces, nCompact);
+		//compactPieces = Arrays.copyOf(input.compactPieces, nCompact);
+		//compactPieces = ArrayUtils.clone(input.compactPieces);
 		
-		//boardPiecesNames = Arrays.copyOf(input.boardPiecesNames, nPoints);
+		boardPiecesNames = ArrayUtils.clone(input.boardPiecesNames);
 		
 		//asString = new String(compactPieces);
 		//System.arraycopy(input.compactPieces[1], 0, compactPieces, nPieces, nPieces);
@@ -85,11 +88,9 @@ public class MicroChessBoard {
 		MicroChessBoard b = (MicroChessBoard) obj;
 		//return boardAsString.equals(b.boardAsString);
 		//if (useCompact) {
-		return Arrays.equals(compactPieces, b.compactPieces);
-		//return asString.equals(b.asString);
-		//} else {
-		//return Arrays.equals(boardPiecesNames, b.boardPiecesNames);
-		//}
+		//return ArrayUtils.isEquals(compactPieces, b.compactPieces);
+		//return Arrays.equals(compactPieces, b.compactPieces);
+		return Arrays.equals(boardPiecesNames, b.boardPiecesNames);
 	}
 
 	@Override
@@ -97,8 +98,8 @@ public class MicroChessBoard {
 		//if (updateHashCounter) 
 		//hashCounter++;
 		//if (useCompact) {
-		return Arrays.hashCode(compactPieces);
-		//return Arrays.hashCode(boardPiecesNames);
+		//return Arrays.hashCode(compactPieces);
+		return Arrays.hashCode(boardPiecesNames);
 		//return asString.hashCode();
 			//return asString.hashCode();
 	//System.out.println("Local right hash=" + Arrays.hashCode(compactPieces));

@@ -488,7 +488,7 @@ public class MainTest {
 			long endLight = System.currentTimeMillis();
 			timeLight += (endLight - startLight);
 
-			System.out.println("Arrangement #" + counter + ", N = " + n + ", " + (endLight - startLight) + " ms");
+			System.out.println("Arrangement #" + counter + ", N = " + n + ", " + (endLight - startLight) + " ms, Average = " + (timeLight/counter) + " ms");
 			//System.out.println("Arrangement #" + counter + " FIRST: " + (end - start) + " ms, SECOND: " + (endLight - startLight) + " ms");
 		}	
 		System.out.println("One Arragements takes: " + (timeLight/counter) + " ms");
@@ -717,34 +717,6 @@ Number of HashCode calls = 24510642
 
          * */
 	}
-	@Test @Ignore
-	public void testUpdateUniversalTakeble_Light() {
-		Log.out("\n\n********************** Test testUpdateUniversalTakeble_Light **********************\n");
-		char[] pcs1 = new char[]{
-				ChessBoardLight.QUEEN,
-				ChessBoardLight.QUEEN,
-				ChessBoardLight.BISHOP,
-				ChessBoardLight.BISHOP,
-				ChessBoardLight.KING, 
-				ChessBoardLight.KING,
-				ChessBoardLight.KNIGHT 
-			};
-		ChessBoardLight board1 = new ChessBoardLight(7, 7, pcs1);	
-		long start = System.currentTimeMillis();
-		board1.updateUniversalTakeble();
-		long finish = System.currentTimeMillis();
-		Log.out("Updating time = " + (finish-start) + " ms");
-		
-		board1.drawTakebleForPiece(0, 0);
-		board1.drawTakebleForPiece(0, 1);
-		board1.drawTakebleForPiece(0, 2);
-		board1.drawTakebleForPiece(0, 3);
-		board1.drawTakebleForPiece(0, 4);
-		board1.drawTakebleForPiece(0, 5);
-		board1.drawTakebleForPiece(0, 6);
-		board1.drawTakebleForPiece(0, 7);
-	}
-	
 	@Test @Ignore
 	public void testNeighs() {
 		Log.out("\n\n********************** Test testNeighs **********************\n");
